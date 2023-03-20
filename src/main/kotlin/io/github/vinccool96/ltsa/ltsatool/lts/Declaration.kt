@@ -2,11 +2,11 @@ package io.github.vinccool96.ltsa.ltsatool.lts
 
 abstract class Declaration {
 
-    fun explicitStates(stateMachine: StateMachine) {}
+    open fun explicitStates(stateMachine: StateMachine) {}
 
-    fun crunch(stateMachine: StateMachine) {}
+    open fun crunch(stateMachine: StateMachine) {}
 
-    fun transition(stateMachine: StateMachine) {}
+    open fun transition(stateMachine: StateMachine) {}
 
     companion object {
 
