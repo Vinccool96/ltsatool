@@ -4,13 +4,13 @@ import java.util.*
 
 interface Automata {
 
-    fun getAlphabet(): Array<String>
+    val alphabet: Array<String>
 
-    fun getTransitions(var1: ByteArray): MyList
+    fun getTransitions(var1: ByteArray?): MyList
 
-    fun getViolatedProperty(): String?
+    val violatedProperty: String?
 
-    fun getTraceToState(var1: ByteArray, var2: ByteArray): Vector
+    fun getTraceToState(var1: ByteArray, var2: ByteArray): Vector<String>
 
     fun END(var1: ByteArray): Boolean
 
@@ -20,7 +20,7 @@ interface Automata {
 
     fun setStackChecker(var1: StackCheck)
 
-    fun isPartialOrder(): Boolean
+    val isPartialOrder: Boolean
 
     fun disablePartialOrder()
 

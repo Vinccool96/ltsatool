@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ltsatool.iml" filepath="$PROJECT_DIR$/.idea/modules/ltsatool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/nasa-graph/ltsatool.nasa-graph.main.iml" filepath="$PROJECT_DIR$/.idea/modules/nasa-graph/ltsatool.nasa-graph.main.iml" />
     </modules>
   </component>
 </project>

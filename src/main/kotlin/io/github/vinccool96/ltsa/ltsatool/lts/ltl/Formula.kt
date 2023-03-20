@@ -3,10 +3,19 @@ package io.github.vinccool96.ltsa.ltsatool.lts.ltl
 import java.util.*
 
 abstract class Formula : Comparable<Formula> {
+
     var id = -1
+
     private var untilIndex = -1
+
     private var rightOfWhichUntil: BitSet? = null
+
     var visited = false
+        private set
+
+    fun setVisited() {
+        visited = true
+    }
 
     open fun getUI(): Int {
         return untilIndex

@@ -2,16 +2,15 @@ package io.github.vinccool96.ltsa.ltsatool.lts
 
 import java.util.*
 
-
 abstract class ActionLabels {
 
     var follower: ActionLabels? = null
 
-    protected var locals: Hashtable<*, *>? = null
+    protected var locals: Hashtable<String, Value>? = null
 
-    protected var globals: Hashtable<*, *>? = null
+    protected var globals: Hashtable<String, Value>? = null
 
-    open fun initContext(var1: Hashtable<*, *>?, var2: Hashtable<*, *>?) {
+    open fun initContext(var1: Hashtable<String, Value>?, var2: Hashtable<String, Value>?) {
         locals = var1
         globals = var2
         initialise()
@@ -42,7 +41,7 @@ abstract class ActionLabels {
 
     abstract fun hasMoreNames(): Boolean
 
-    open fun getActions(var1: Hashtable<*, *>?, var2: Hashtable<*, *>?): Vector<String> {
+    open fun getActions(var1: Hashtable<String, Value>?, var2: Hashtable<String, Value>?): Vector<String> {
         val names = Vector<String>()
         initContext(var1, var2)
         while (hasMoreNames()) {
@@ -54,7 +53,7 @@ abstract class ActionLabels {
     }
 
     open fun hasMultipleValues(): Boolean {
-        return if (this !is ActionRange && this !is ActionSet && this !is ActionVarRange && this !is ActionVarSet) {
+        return if (this !is ActionRange && this !is ActionSet) {
             follower?.hasMultipleValues() ?: false
         } else {
             true

@@ -12,7 +12,7 @@ class Symbol {
 
     private var string: String? = null
 
-    var longValue = 0
+    var intValue = 0
 
     var any: Any? = null
 
@@ -24,7 +24,7 @@ class Symbol {
         endPos = -1
         commentColor = Color(102, 153, 153)
         upperColor = Color(0, 0, 160)
-        kind = 106
+        kind = UNKNOWN_TYPE
     }
 
     constructor(var1: Symbol) {
@@ -35,7 +35,7 @@ class Symbol {
         startPos = var1.startPos
         endPos = var1.endPos
         string = var1.string
-        longValue = var1.longValue
+        intValue = var1.intValue
         any = var1.any
     }
 
@@ -50,7 +50,7 @@ class Symbol {
         this.kind = kind
         startPos = -1
         string = null
-        longValue = 0
+        intValue = 0
     }
 
     constructor(kind: Int, string: String) {
@@ -60,7 +60,7 @@ class Symbol {
         this.kind = kind
         startPos = -1
         this.string = string
-        longValue = 0
+        intValue = 0
     }
 
     constructor(kind: Int, value: Int) {
@@ -70,7 +70,7 @@ class Symbol {
         this.kind = kind
         startPos = -1
         string = null
-        longValue = value
+        intValue = value
     }
 
     fun setString(string: String) {
@@ -180,7 +180,7 @@ class Symbol {
             UNKNOWN_TYPE -> "unknown"
             UPPERIDENT -> string
             IDENTIFIER -> string
-            INT_VALUE -> longValue.toString()
+            INT_VALUE -> intValue.toString()
             STRING_VALUE -> string
             WEAKUNTIL, COMMENT, DOUBLE_VALUE -> "ERROR"
             else -> "ERROR"
