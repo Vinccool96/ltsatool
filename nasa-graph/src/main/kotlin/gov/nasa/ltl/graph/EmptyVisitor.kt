@@ -1,6 +1,6 @@
 package gov.nasa.ltl.graph
 
-open class EmptyVisitor(protected val arg: Any?) : Visitor {
+open class EmptyVisitor(protected var arg: Any?) : Visitor {
 
     constructor() : this(null)
 

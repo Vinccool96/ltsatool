@@ -5,14 +5,13 @@ import io.github.vinccool96.ltsa.ltsatool.utils.toArrayOfNull
 import java.io.PrintStream
 import java.util.*
 
+open class CompactState : Automata {
 
-class CompactState : Automata {
-
-    var name: String? = null
+    var name: String? = var1
 
     var maxStates = 0
 
-    override var alphabet: Array<String>
+    final override var alphabet: Array<String>
 
     var states: Array<EventState?>
 
@@ -27,11 +26,11 @@ class CompactState : Automata {
         states = arrayOf()
     }
 
-    constructor(var1: Int, var2: String?, var3: MyHashStack, var4: MyList, var5: Array<String>, var6: Int) {
+    constructor(maxStates: Int, name: String?, var3: MyHashStack, var4: MyList, var5: Array<String>, var6: Int) {
         alphabet = var5
-        name = var2
-        maxStates = var1
-        states = arrayOfNulls(maxStates)
+        this.name = name
+        this.maxStates = maxStates
+        states = arrayOfNulls(this.maxStates)
         while (!var4.empty()) {
             val var7 = var4.getFrom()
             val var8 = if (var4.getTo() == null) -1 else var3[var4.getTo()]
@@ -734,8 +733,7 @@ class CompactState : Automata {
         private fun copyOffset(var0: Int, var1: Array<EventState?>, var2: CompactState, var3: Boolean) {
             for (var4 in 0 until var2.states.size) {
                 if (!var3) {
-                    var1[var4 + var0] =
-                            EventState.offsetSeq(var0, var2.endseq, var2.maxStates + var0, var2.states[var4])
+                    var1[var4 + var0] = EventState.offsetSeq(var0, var2.endseq, var2.maxStates + var0, var2.states[var4])
                 } else {
                     var1[var4 + var0] = EventState.offsetSeq(var0, var2.endseq, var2.endseq + var0, var2.states[var4])
                 }

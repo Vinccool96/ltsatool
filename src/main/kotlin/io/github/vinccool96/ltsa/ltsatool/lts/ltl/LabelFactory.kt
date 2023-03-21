@@ -17,7 +17,7 @@ class LabelFactory(var1: String?, var2: FormulaFactory, var3: Vector<String>) {
 
     var name: String? = var1
 
-    var tr = HashMap<String, BitSet>()
+    var transLabels = HashMap<String, BitSet>()
 
     var ps: Array<BitSet>
 
@@ -30,7 +30,7 @@ class LabelFactory(var1: String?, var2: FormulaFactory, var3: Vector<String>) {
     private val realFluents: MutableList<PredicateDefinition> = ArrayList()
 
     init {
-        tr = HashMap()
+        transLabels = HashMap()
 
         val var4 = allprops.size
         val ps = arrayOfNulls<BitSet>(var4)
@@ -60,7 +60,7 @@ class LabelFactory(var1: String?, var2: FormulaFactory, var3: Vector<String>) {
             ++var6
         }
 
-        tr["true"] = var5
+        transLabels["true"] = var5
 
         this.compileProps()
     }
@@ -103,7 +103,7 @@ class LabelFactory(var1: String?, var2: FormulaFactory, var3: Vector<String>) {
             ++var6
         }
         val var8 = var2.toString()
-        tr[var8] = var5
+        transLabels[var8] = var5
         return var8
     }
 

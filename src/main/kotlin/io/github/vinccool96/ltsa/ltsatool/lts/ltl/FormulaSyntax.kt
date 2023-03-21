@@ -3,9 +3,9 @@ package io.github.vinccool96.ltsa.ltsatool.lts.ltl
 import io.github.vinccool96.ltsa.ltsatool.lts.*
 import java.util.*
 
-
 class FormulaSyntax private constructor(var left: FormulaSyntax?, var operator: Symbol?, var right: FormulaSyntax?,
-        var proposition: Symbol?, var range: ActionLabels?, var action: ActionLabels?, var parameters: Vector<Short>?) {
+        var proposition: Symbol?, var range: ActionLabels?, var action: ActionLabels?,
+        var parameters: Vector<Symbol>?) {
 
     fun expand(var1: FormulaFactory, var2: Hashtable<String, Value>, var3: Hashtable<String, Value>?): Formula? {
         return if (proposition == null) {
@@ -36,7 +36,7 @@ class FormulaSyntax private constructor(var left: FormulaSyntax?, var operator: 
             }
         } else if (range != null) {
             var1.make(proposition!!, range!!, var2, var3)
-        } else if (PredicateDefinition.definitions != null && PredicateDefinition.definitions.containsKey(
+        } else if (PredicateDefinition.definitionsDelegate.isInitialized() && PredicateDefinition.definitions.containsKey(
                         proposition.toString())) {
             var1.make(proposition!!)
         } else {
@@ -89,11 +89,11 @@ class FormulaSyntax private constructor(var left: FormulaSyntax?, var operator: 
             return FormulaSyntax(null, null, null, var0, var1, null, null)
         }
 
-        fun make(var0: Symbol, var1: Vector<Short>): FormulaSyntax {
+        fun make(var0: Symbol, var1: Vector<Symbol>): FormulaSyntax {
             return FormulaSyntax(null, null, null, var0, null, null, var1)
         }
 
-        fun makeE(var0: Symbol, var1: Stack<Short>): FormulaSyntax {
+        fun makeE(var0: Symbol, var1: Stack<Symbol>): FormulaSyntax {
             return FormulaSyntax(null, var0, null, null, null, null, var1)
         }
 

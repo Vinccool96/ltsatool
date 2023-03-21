@@ -8,7 +8,7 @@ class Node(val graph: Graph, attributes: Attributes) {
     var attributes: Attributes = attributes
         set(value) {
             val id = this.id
-            field = Attributes(this.attributes)
+            field = Attributes(value)
             this.id = id
         }
 
@@ -47,7 +47,7 @@ class Node(val graph: Graph, attributes: Attributes) {
             return this.attributes.getInt("_id")
         }
         internal set(value) {
-            attributes.setInt("_id", id)
+            attributes.setInt("_id", value)
         }
 
     val incomingEdgeCount: Int

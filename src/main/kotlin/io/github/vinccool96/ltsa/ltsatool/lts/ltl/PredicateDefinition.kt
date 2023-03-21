@@ -61,11 +61,11 @@ class PredicateDefinition {
 
     companion object {
 
-        private val definitionsDelegate = lazy {
+        val definitionsDelegate = lazy {
             Hashtable<String, PredicateDefinition>()
         }
 
-        private val definitions: Hashtable<String, PredicateDefinition> by definitionsDelegate
+        val definitions: Hashtable<String, PredicateDefinition> by definitionsDelegate
 
         fun put(var0: Symbol, var1: ActionLabels, var2: ActionLabels, var3: ActionLabels, var4: Stack<Symbol>) {
             if (definitions.put(var0.toString(), PredicateDefinition(var0, var1, var2, var3, var4)) != null) {
