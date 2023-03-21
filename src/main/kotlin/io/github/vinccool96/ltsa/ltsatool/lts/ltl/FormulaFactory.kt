@@ -76,22 +76,22 @@ class FormulaFactory {
         return unique(Proposition(Symbol(123, var2)))
     }
 
-    fun make(formula: Formula, symbol: Symbol, otherFormula: Formula): Formula? {
+    fun make(formula: Formula?, symbol: Symbol, otherFormula: Formula): Formula? {
         return when (symbol.kind) {
             Symbol.UNTIL -> {
                 if (normalLTL) {
-                    makeUntil(formula, otherFormula)
-                } else makeUntil(makeImplies(makeTick(), formula), makeAnd(makeTick(), otherFormula))
+                    makeUntil(formula!!, otherFormula)
+                } else makeUntil(makeImplies(makeTick(), formula!!), makeAnd(makeTick(), otherFormula))
             }
             Symbol.NEXTTIME -> {
                 if (normalLTL) {
                     makeNext(otherFormula)
                 } else makeNext(makeWeakUntil(this.makeNot(makeTick()), makeAnd(makeTick(), otherFormula)))
             }
-            Symbol.OR -> makeOr(formula, otherFormula)
-            Symbol.AND -> makeAnd(formula, otherFormula)
+            Symbol.OR -> makeOr(formula!!, otherFormula)
+            Symbol.AND -> makeAnd(formula!!, otherFormula)
             Symbol.PLING -> this.makeNot(otherFormula)
-            Symbol.ARROW -> makeImplies(formula, otherFormula)
+            Symbol.ARROW -> makeImplies(formula!!, otherFormula)
             Symbol.EVENTUALLY -> {
                 if (normalLTL) {
                     makeEventually(otherFormula)
@@ -102,11 +102,11 @@ class FormulaFactory {
                     makeAlways(otherFormula)
                 } else makeAlways(makeImplies(makeTick(), otherFormula))
             }
-            Symbol.EQUIVALENT -> makeEquivalent(formula, otherFormula)
+            Symbol.EQUIVALENT -> makeEquivalent(formula!!, otherFormula)
             Symbol.WEAKUNTIL -> {
                 if (normalLTL) {
-                    makeWeakUntil(formula, otherFormula)
-                } else makeWeakUntil(makeImplies(makeTick(), formula), makeAnd(makeTick(), otherFormula))
+                    makeWeakUntil(formula!!, otherFormula)
+                } else makeWeakUntil(makeImplies(makeTick(), formula!!), makeAnd(makeTick(), otherFormula))
             }
             else -> {
                 Diagnostics.fatal("Unexpected operator in LTL expression: $symbol", symbol as Symbol?)
@@ -208,7 +208,7 @@ class FormulaFactory {
         return var2.contains(var3)
     }
 
-    fun syntaxImplied(formula: Formula?, var2: SortedSet<Formula>, var3: SortedSet<Formula>): Boolean {
+    fun syntaxImplied(formula: Formula?, var2: SortedSet<Formula>, var3: SortedSet<Formula>?): Boolean {
         return if (formula == null) {
             true
         } else if (formula is True) {
@@ -224,7 +224,7 @@ class FormulaFactory {
             val var7 = syntaxImplied(sub2Formula, var2, var3)
             val var8 = syntaxImplied(sub1Formula, var2, var3)
             val var9: Boolean = if (var6 != null) {
-                var3.contains(var6) ?: false
+                var3?.contains(var6) ?: false
             } else {
                 true
             }
@@ -234,7 +234,7 @@ class FormulaFactory {
                 } else if (formula !is And) {
                     if (formula is Next) {
                         if (sub1Formula != null) {
-                            var3.contains(sub1Formula) ?: false
+                            var3?.contains(sub1Formula) ?: false
                         } else {
                             true
                         }

@@ -73,7 +73,7 @@ class LabelFactory(var1: String?, var2: FormulaFactory, var3: Vector<String>) {
             return var1
         }
 
-    fun makeLabel(var1: SortedSet<Proposition>): String {
+    fun makeLabel(var1: SortedSet<out Formula>): String {
         val var2 = StringBuffer()
         val var3 = allprops.iterator()
         var var4 = false
@@ -146,13 +146,13 @@ class LabelFactory(var1: String?, var2: FormulaFactory, var3: Vector<String>) {
             var var14: Iterator<*>
             var14 = var1.falseActions!!.iterator()
             while (var14.hasNext()) {
-                var6[var7] = var14.next() as String?
+                var6[var7] = var14.next()
                 var3!!.set(var7)
                 ++var7
             }
             var14 = var1.trueActions!!.iterator()
             while (var14.hasNext()) {
-                var6[var7] = var14.next() as String?
+                var6[var7] = var14.next()
                 var2!!.set(var7)
                 ++var7
             }
@@ -160,17 +160,18 @@ class LabelFactory(var1: String?, var2: FormulaFactory, var3: Vector<String>) {
         return var6.toArrayOfNotNull()
     }
 
-    fun getFluents(): Array<PredicateDefinition>? {
-        return if (this.realFluents.isEmpty()) {
-            null
-        } else {
-            val var1 = arrayOfNulls<PredicateDefinition>(this.realFluents.size)
-            for (var2 in var1.indices) {
-                var1[var2] = this.realFluents[var2]
+    val fluents: Array<PredicateDefinition>?
+        get() {
+            return if (this.realFluents.isEmpty()) {
+                null
+            } else {
+                val var1 = arrayOfNulls<PredicateDefinition>(this.realFluents.size)
+                for (var2 in var1.indices) {
+                    var1[var2] = this.realFluents[var2]
+                }
+                var1.toArrayOfNotNull()
             }
-            var1.toArrayOfNotNull()
         }
-    }
 
     protected fun compileProps() {
         propProcs = Vector()
