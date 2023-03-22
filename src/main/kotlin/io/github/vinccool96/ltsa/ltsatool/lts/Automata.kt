@@ -10,7 +10,7 @@ interface Automata {
 
     val violatedProperty: String?
 
-    fun getTraceToState(var1: ByteArray, var2: ByteArray): Vector<String>
+    fun getTraceToState(var1: ByteArray, var2: ByteArray): Vector<String>?
 
     fun END(var1: ByteArray): Boolean
 

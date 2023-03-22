@@ -8,7 +8,7 @@ class MyList {
 
     protected var count = 0
 
-    fun add(var1: Int, var2: ByteArray, var3: Int) {
+    fun add(var1: Int, var2: ByteArray?, var3: Int) {
         val var4 = MyListEntry(var1, var2, var3)
         if (head == null) {
             tail = var4

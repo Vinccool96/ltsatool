@@ -4,11 +4,11 @@ import java.util.*
 
 interface Animator {
 
-    fun initialise(var1: Vector<Short>?): BitSet?
+    fun initialise(var1: Vector<String>): BitSet
 
     val menuNames: Array<String>
 
-    val vllNames: Array<String>
+    val allNames: Array<String>
 
     fun menuStep(var1: Int): BitSet?
 
@@ -24,7 +24,7 @@ interface Animator {
 
     fun nonMenuChoice(): Boolean
 
-    val priorityActions: BitSet
+    val priorityActions: BitSet?
 
     val priority: Boolean
 
@@ -34,6 +34,6 @@ interface Animator {
 
     fun traceChoice(): Boolean
 
-    fun traceStep(): BitSet
+    fun traceStep(): BitSet?
 
 }
