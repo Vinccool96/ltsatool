@@ -791,7 +791,7 @@ class Analyser(private var cs: CompositeState, private val output: LTSOutput, pr
         eman?.post(LTSEvent(0, currentA))
         getMenu(var1)
         if (cs.errorTrace != null) {
-            _replay = cs.errorTrace.elements()
+            _replay = (cs.errorTrace as Vector<String>).elements()
             if (_replay!!.hasMoreElements()) {
                 _replayAction = _replay!!.nextElement() as String
             }

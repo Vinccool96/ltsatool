@@ -27,7 +27,7 @@ class CompositeState(var name: String, var machines: Vector<CompactState>) {
 
     val alphaStop = CompactState()
 
-    var errorTrace: List<String> = Vector()
+    var errorTrace: MutableList<String> = Vector()
         set(value) {
             field = Vector()
             (field as Vector<String>).addAll(value)
@@ -112,7 +112,7 @@ class CompositeState(var name: String, var machines: Vector<CompactState>) {
             val var3 = Analyser(this, var1, null)
             var3.analyse()
             if (var3.errorTrace != null) {
-                this.errorTrace = var3.errorTrace!!
+                this.errorTrace = (var3.errorTrace as MutableList<String>)
             }
         }
     }

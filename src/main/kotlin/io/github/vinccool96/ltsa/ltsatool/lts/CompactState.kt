@@ -7,7 +7,7 @@ import java.util.*
 
 open class CompactState : Automata {
 
-    var name: String? = var1
+    var name: String? = null
 
     var maxStates = 0
 
