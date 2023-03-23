@@ -4,10 +4,9 @@ import io.github.vinccool96.ltsa.ltsatool.lts.*
 import java.util.*
 
 class FormulaSyntax private constructor(var left: FormulaSyntax?, var operator: Symbol?, var right: FormulaSyntax?,
-        var proposition: Symbol?, var range: ActionLabels?, var action: ActionLabels?,
-        var parameters: Vector<Symbol>?) {
+        var proposition: Symbol?, var range: ActionLabels?, var action: ActionLabels?, val parameters: Vector<Any>?) {
 
-    fun expand(var1: FormulaFactory, var2: Hashtable<String, Value>, var3: Hashtable<String, Value>?): Formula? {
+    fun expand(var1: FormulaFactory, var2: Hashtable<String, Value>, var3: Hashtable<String, Value>): Formula? {
         return if (proposition == null) {
             if (action != null) {
                 var1.make(action!!, var2, var3)
@@ -40,19 +39,20 @@ class FormulaSyntax private constructor(var left: FormulaSyntax?, var operator: 
                         proposition.toString())) {
             var1.make(proposition!!)
         } else {
-            val var4: AssertDefinition? = AssertDefinition.definitions.get(proposition.toString())
+            val var4 = AssertDefinition.definitions?.get(proposition.toString())
             if (var4 == null) {
                 Diagnostics.fatal("LTL fluent or assertion not defined: $proposition", proposition)
+                return null
             }
             if (parameters == null) {
                 var4.ltlFormula.expand(var1, var2, var4.initParams)
             } else {
-                if (parameters!!.size != var4.params.size()) {
+                if (parameters.size != var4.params.size) {
                     Diagnostics.fatal("Actual parameters do not match formals: $proposition", proposition)
                 }
-                val var5 = Hashtable<Symbol, Symbol>()
-                val var6 = paramValues(parameters, var2, var3)
-                for (var7 in parameters!!.indices) {
+                val var5 = Hashtable<String, Value>()
+                val var6 = paramValues(parameters as Vector<Stack<Symbol>>, var2, var3)
+                for (var7 in parameters.indices) {
                     var5[var4.params.elementAt(var7)] = var6!!.elementAt(var7)
                 }
                 var4.ltlFormula.expand(var1, var2, var5)
@@ -89,11 +89,11 @@ class FormulaSyntax private constructor(var left: FormulaSyntax?, var operator: 
             return FormulaSyntax(null, null, null, var0, var1, null, null)
         }
 
-        fun make(var0: Symbol, var1: Vector<Symbol>): FormulaSyntax {
+        fun make(var0: Symbol, var1: Vector<Any>): FormulaSyntax {
             return FormulaSyntax(null, null, null, var0, null, null, var1)
         }
 
-        fun makeE(var0: Symbol, var1: Stack<Symbol>): FormulaSyntax {
+        fun makeE(var0: Symbol, var1: Stack<Any>): FormulaSyntax {
             return FormulaSyntax(null, var0, null, null, null, null, var1)
         }
 

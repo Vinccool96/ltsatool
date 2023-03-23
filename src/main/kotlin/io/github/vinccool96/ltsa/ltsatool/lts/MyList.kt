@@ -30,20 +30,24 @@ class MyList {
         return head == null
     }
 
-    fun getFrom(): Int {
-        return head?.fromState ?: -1
-    }
+    val from: Int
+        get() {
+            return head?.fromState ?: -1
+        }
 
-    fun getTo(): ByteArray? {
-        return head?.toState
-    }
+    val to: ByteArray?
+        get() {
+            return head?.toState
+        }
 
-    fun getAction(): Int {
-        return head?.actionNo ?: -1
-    }
+    val action: Int
+        get() {
+            return head?.actionNo ?: -1
+        }
 
-    fun size(): Int {
-        return count
-    }
+    val size: Int
+        get() {
+            return count
+        }
 
 }

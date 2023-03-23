@@ -824,7 +824,7 @@ class EventState(var event: Int, var next: Int) {
             }
         }
 
-        fun getPath(var0: EventState?, var1: Array<String?>): Vector<String> {
+        fun getPath(var0: EventState?, var1: Array<String>): Vector<String> {
             var var2 = var0
             val var3 = Vector<String>()
             while (var2 != null) {

@@ -251,7 +251,7 @@ class Analyser(private var cs: CompositeState, private val output: LTSOutput, pr
             }
         }
         val var6 = System.currentTimeMillis()
-        this.outStatistics(stateCount, compTrans!!.size())
+        this.outStatistics(stateCount, compTrans!!.size)
         output.outln("Composed in " + (var6 - var2) + "ms")
         analysed = null
         compTrans = null
@@ -527,7 +527,7 @@ class Analyser(private var cs: CompositeState, private val output: LTSOutput, pr
                     analysed!!.mark(stateCount++)
                     if (stateCount % 10000 == 0) {
                         output.out("Depth ${analysed!!.getDepth} ")
-                        outStatistics(stateCount, compTrans!!.size())
+                        outStatistics(stateCount, compTrans!!.size)
                     }
                     val var2 = eligibleTransitions(var1)
                     if (var2 == null) {

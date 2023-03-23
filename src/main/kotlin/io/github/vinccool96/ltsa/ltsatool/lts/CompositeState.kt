@@ -4,7 +4,6 @@ import io.github.vinccool96.ltsa.ltsatool.lts.ltl.FluentTrace
 import io.github.vinccool96.ltsa.ltsatool.utils.toArrayOfNotNull
 import java.util.*
 
-
 class CompositeState(var name: String, var machines: Vector<CompactState>) {
 
     var composition: CompactState? = null
@@ -35,7 +34,7 @@ class CompositeState(var name: String, var machines: Vector<CompactState>) {
 
     private var saved: CompactState? = null
 
-    private val tracer: FluentTrace? = null
+    var fluentTracer: FluentTrace? = null
 
     constructor(machines: Vector<CompactState>) : this("DEFAULT", machines)
 
@@ -107,7 +106,7 @@ class CompositeState(var name: String, var machines: Vector<CompactState>) {
         if (composition != null) {
             val var2 = CounterExample(this)
             var2.print(var1)
-            errorTrace = var2.getErrorTrace()
+            errorTrace = var2.errorTrace!!
         } else {
             val var3 = Analyser(this, var1, null)
             var3.analyse()
@@ -124,14 +123,14 @@ class CompositeState(var name: String, var machines: Vector<CompactState>) {
         }
         val var2: ProgressCheck
         if (composition != null) {
-            var2 = ProgressCheck(composition, var1)
+            var2 = ProgressCheck(composition!!, var1)
             var2.doProgressCheck()
         } else {
             val var3 = Analyser(this, var1, null as EventManager?)
             var2 = ProgressCheck(var3, var1)
             var2.doProgressCheck()
         }
-        errorTrace = var2.getErrorTrace()
+        errorTrace = var2.errorTrace!!
     }
 
     fun checkLTL(var1: LTSOutput, var2: CompositeState) {
@@ -148,15 +147,15 @@ class CompositeState(var name: String, var machines: Vector<CompactState>) {
             hidden = var3!!.alphabetV
             exposeNotHide = true
             machines.add(var3.also { saved = it })
-            val var6 = Analyser(this, var1, null as EventManager?)
+            val var6 = Analyser(this, var1, null)
             if (!var2.composition!!.hasERROR()) {
-                val var7 = ProgressCheck(var6, var1, var2.tracer)
+                val var7 = ProgressCheck(var6, var1, var2.fluentTracer)
                 var7.doLTLCheck()
-                errorTrace = var7.getErrorTrace()
+                errorTrace = var7.errorTrace!!
             } else {
-                var6.analyse(var2.tracer!!)
+                var6.analyse(var2.fluentTracer!!)
                 if (var6.errorTrace != null) {
-                    this.errorTrace = (var6.errorTrace!!)
+                    this.errorTrace = var6.errorTrace as MutableList<String>
                 }
             }
             hidden = var4
@@ -169,14 +168,14 @@ class CompositeState(var name: String, var machines: Vector<CompactState>) {
             if (reduceFlag) {
                 composition!!.removeNonDetTau()
             }
-            val var2 = Minimiser(composition, var1)
+            val var2 = Minimiser(composition!!, var1)
             composition = var2.minimise()
         }
     }
 
     fun determinise(var1: LTSOutput) {
         if (composition != null) {
-            val var2 = Minimiser(composition, var1)
+            val var2 = Minimiser(composition!!, var1)
             composition = var2.traceMinimise()
             if (isProperty) {
                 composition!!.makeProperty()

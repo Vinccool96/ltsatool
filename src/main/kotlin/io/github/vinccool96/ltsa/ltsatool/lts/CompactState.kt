@@ -1,7 +1,6 @@
 package io.github.vinccool96.ltsa.ltsatool.lts
 
 import io.github.vinccool96.ltsa.ltsatool.utils.toArrayOfNotNull
-import io.github.vinccool96.ltsa.ltsatool.utils.toArrayOfNull
 import java.io.PrintStream
 import java.util.*
 
@@ -32,9 +31,9 @@ open class CompactState : Automata {
         this.maxStates = maxStates
         states = arrayOfNulls(this.maxStates)
         while (!var4.empty()) {
-            val var7 = var4.getFrom()
-            val var8 = if (var4.getTo() == null) -1 else var3[var4.getTo()]
-            states[var7] = EventState.add(states[var7], EventState(var4.getAction(), var8))
+            val var7 = var4.from
+            val var8 = if (var4.to == null) -1 else var3[var4.to]
+            states[var7] = EventState.add(states[var7], EventState(var4.action, var8))
             var4.next()
         }
         endseq = var6
@@ -167,13 +166,13 @@ open class CompactState : Automata {
     fun relabel(var1: Relation) {
         hasduplicates = false
         if (var1.isRelation) {
-            relational_relabel(var1)
+            relationalRelabel(var1)
         } else {
             functionalRelabel(var1)
         }
     }
 
-    private fun relational_relabel(var1: Relation) {
+    private fun relationalRelabel(var1: Relation) {
         val var2 = Vector<Any>()
         val var3 = Relation()
         var2.setSize(alphabet.size)
@@ -636,7 +635,7 @@ open class CompactState : Automata {
     override fun getTraceToState(var1: ByteArray, var2: ByteArray): Vector<String> {
         val var3 = EventState(0, 0)
         EventState.search(var3, states, decode(var1), decode(var2), -123456)
-        return EventState.getPath(var3.path, this.alphabet.toArrayOfNull())
+        return EventState.getPath(var3.path, this.alphabet)
     }
 
     override fun END(var1: ByteArray): Boolean {
