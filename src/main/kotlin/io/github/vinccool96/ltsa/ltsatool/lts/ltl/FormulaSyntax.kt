@@ -77,7 +77,7 @@ class FormulaSyntax private constructor(var left: FormulaSyntax?, var operator: 
 
     companion object {
 
-        fun make(var0: FormulaSyntax, var1: Symbol, var2: FormulaSyntax): FormulaSyntax {
+        fun make(var0: FormulaSyntax?, var1: Symbol, var2: FormulaSyntax): FormulaSyntax {
             return FormulaSyntax(var0, var1, var2, null, null, null, null)
         }
 

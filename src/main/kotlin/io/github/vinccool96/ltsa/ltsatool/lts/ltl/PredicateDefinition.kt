@@ -21,7 +21,8 @@ class PredicateDefinition {
 
     var range: ActionLabels? = null
 
-    private constructor(var1: Symbol, var2: ActionLabels, var3: ActionLabels, var4: ActionLabels, var5: Stack<Symbol>) {
+    private constructor(var1: Symbol, var2: ActionLabels, var3: ActionLabels, var4: ActionLabels,
+            var5: Stack<Symbol>?) {
         name = var1
         range = var2
         trueSet = var3
@@ -67,7 +68,7 @@ class PredicateDefinition {
 
         val definitions: Hashtable<String, PredicateDefinition> by definitionsDelegate
 
-        fun put(var0: Symbol, var1: ActionLabels, var2: ActionLabels, var3: ActionLabels, var4: Stack<Symbol>) {
+        fun put(var0: Symbol, var1: ActionLabels, var2: ActionLabels, var3: ActionLabels, var4: Stack<Symbol>?) {
             if (definitions.put(var0.toString(), PredicateDefinition(var0, var1, var2, var3, var4)) != null) {
                 Diagnostics.fatal("duplicate LTL predicate definition: $var0", var0 as Symbol?)
             }

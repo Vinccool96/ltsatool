@@ -218,9 +218,9 @@ class CompositeState(var name: String, var machines: Vector<CompactState>) {
             }
             name = "$var3}::$name"
             alphaStop.addAccess(var1)
-            val var8: Enumeration<*> = machines.elements()
+            val var8 = machines.elements()
             while (var8.hasMoreElements()) {
-                val var7 = var8.nextElement() as CompactState
+                val var7 = var8.nextElement()
                 var7.addAccess(var1)
             }
         }
@@ -235,7 +235,7 @@ class CompositeState(var name: String, var machines: Vector<CompactState>) {
         } else {
             val var3 = machines.elements()
             while (var3.hasMoreElements()) {
-                val var4 = var3.nextElement() as CompactState
+                val var4 = var3.nextElement()
                 var4.relabel(var1)
             }
             null

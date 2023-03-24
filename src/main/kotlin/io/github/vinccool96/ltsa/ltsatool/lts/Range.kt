@@ -5,10 +5,14 @@ import java.util.*
 
 class Range : Declaration() {
 
-    var ranges: Hashtable<*, *>? = null
-
     var low: Stack<Symbol>? = null
 
     var high: Stack<Symbol>? = null
+
+    companion object {
+
+        var ranges: Hashtable<String, Range>? = null
+
+    }
 
 }

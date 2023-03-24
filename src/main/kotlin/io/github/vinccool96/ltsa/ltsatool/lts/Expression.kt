@@ -6,7 +6,7 @@ import java.util.*
 @Suppress("USELESS_CAST")
 object Expression {
 
-    var constants: Hashtable<*, *>? = null
+    var constants: Hashtable<String, Value>? = null
 
     private fun labelVar(symbols: Stack<Symbol>?, var1: Hashtable<String, Value>?,
             var2: Hashtable<String, Value>?): String? {
@@ -102,11 +102,11 @@ object Expression {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getValue(var0: Stack<Symbol>, var1: Hashtable<String, Value>, var2: Hashtable<String, Value>): Value {
+    fun getValue(var0: Stack<Symbol>, var1: Hashtable<String, Value>?, var2: Hashtable<String, Value>?): Value {
         return getVal(var0.clone() as Stack<Symbol>, var1, var2)
     }
 
-    private fun getVal(var0: Stack<Symbol>, var1: Hashtable<String, Value>, var2: Hashtable<String, Value>): Value {
+    private fun getVal(var0: Stack<Symbol>, var1: Hashtable<String, Value>?, var2: Hashtable<String, Value>?): Value {
         val var3 = labelVar(var0, var1, var2)
         return if (var3 != null) Value(var3) else Value(eval(var0, var1, var2))
     }
@@ -140,7 +140,7 @@ object Expression {
                     var5 = var2[symbol.toString()]
                 }
                 if (var5 == null) {
-                    var5 = constants!![symbol.toString()] as Value?
+                    var5 = constants!![symbol.toString()]
                 }
                 if (var5 == null) {
                     fatal("constant or parameter not defined- $symbol", symbol as Symbol?)
