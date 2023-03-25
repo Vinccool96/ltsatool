@@ -240,8 +240,7 @@ class LTSCanvas(var1: Boolean) : JPanel(), Scrollable {
         maxUnitIncrement = var1
     }
 
-    @Deprecated("Deprecated in Java", ReplaceWith("true"))
-    override fun isFocusTraversable(): Boolean {
+    override fun isFocusable(): Boolean {
         return true
     }
 
