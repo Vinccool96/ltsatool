@@ -26,34 +26,36 @@ import uk.ac.ic.doc.scenebeans.activity.Activity;
 import uk.ac.ic.doc.scenebeans.activity.ActivityRunner;
 
 
-/** A Command that stops an {@link Activity}
- *  when it is invoked.
+/**
+ * A Command that stops an {@link Activity}
+ * when it is invoked.
  */
 public class StopActivityCommand implements Command {
+
     private Activity _activity;
 
-    /** Constructs a StopActivityCommand.
+    /**
+     * Constructs a StopActivityCommand.
      *
-     *  @param a
-     *      The Activity to stop.
+     * @param a The Activity to stop.
      */
     public StopActivityCommand(Activity a) {
         _activity = a;
     }
 
-    /** Returns the activity that is stopped by this command.
+    /**
+     * Returns the activity that is stopped by this command.
      *
-     *  @return
-     *      The activity stopped by this command.
+     * @return The activity stopped by this command.
      */
     public Activity getActivity() {
         return _activity;
     }
 
-    /** Sets the activity that is stopped by this command.
+    /**
+     * Sets the activity that is stopped by this command.
      *
-     *  @param a
-     *      The activity stopped by this command.
+     * @param a The activity stopped by this command.
      */
     public void setActivity(Activity a) {
         _activity = a;
@@ -65,5 +67,6 @@ public class StopActivityCommand implements Command {
             r.removeActivity(_activity);
         }
     }
+
 }
 

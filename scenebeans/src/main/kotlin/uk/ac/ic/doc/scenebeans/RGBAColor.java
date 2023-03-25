@@ -26,10 +26,12 @@ import java.awt.*;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../beans/rgbacolor.html">RGBAColor</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/rgbacolor.html">RGBAColor</a>
+ * SceneBean.
  */
 public class RGBAColor extends StyleBase {
+
     private float _r, _g, _b, _a;
 
     public RGBAColor() {
@@ -115,55 +117,65 @@ public class RGBAColor extends StyleBase {
         };
     }
 
-
-    public class ColorAdapter implements ColorBehaviourListener, Serializable {
-        public void behaviourUpdated(Color color) {
-            setColor(color);
-        }
-    }
-
     public final ColorAdapter newColorAdapter() {
         return new ColorAdapter();
-    }
-
-    public class RedAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setRed(v);
-        }
     }
 
     public final RedAdapter newRedAdapter() {
         return new RedAdapter();
     }
 
-    public class GreenAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setGreen(v);
-        }
-    }
-
     public final GreenAdapter newGreenAdapter() {
         return new GreenAdapter();
-    }
-
-    public class BlueAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setBlue(v);
-        }
     }
 
     public final BlueAdapter newBlueAdapter() {
         return new BlueAdapter();
     }
 
-    public class AlphaAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setAlpha(v);
-        }
-    }
-
     public final AlphaAdapter newAlphaAdapter() {
         return new AlphaAdapter();
     }
+
+    public class ColorAdapter implements ColorBehaviourListener, Serializable {
+
+        public void behaviourUpdated(Color color) {
+            setColor(color);
+        }
+
+    }
+
+    public class RedAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setRed(v);
+        }
+
+    }
+
+    public class GreenAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setGreen(v);
+        }
+
+    }
+
+    public class BlueAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setBlue(v);
+        }
+
+    }
+
+    public class AlphaAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setAlpha(v);
+        }
+
+    }
+
 }
 

@@ -27,13 +27,16 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 
-/** The <a href="../../../../../../beans/line.html">Line</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/line.html">Line</a>
+ * SceneBean.
  */
 public class Line
         extends SceneGraphBase
         implements Primitive {
+
     private double _x0, _y0, _x1, _y1;
+
     private Shape _last_drawn = null;
 
 
@@ -133,71 +136,82 @@ public class Line
         setDirty(false);
     }
 
-
-    public class Start
-            implements PointBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(Point2D p) {
-            setStart(p);
-        }
-    }
-
     public final Start newStartAdapter() {
         return new Start();
-    }
-
-    public class End
-            implements PointBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(Point2D p) {
-            setEnd(p);
-        }
     }
 
     public final End newEndAdapter() {
         return new End();
     }
 
-
-    public class StartX
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setStartX(v);
-        }
-    }
-
     public final StartX newStartXAdapter() {
         return new StartX();
-    }
-
-    public class StartY
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setStartY(v);
-        }
     }
 
     public final StartY newStartYAdapter() {
         return new StartY();
     }
 
-    public class EndX
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setEndX(v);
-        }
-    }
-
     public final EndX newEndXAdapter() {
         return new EndX();
-    }
-
-    public class EndY
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setEndY(v);
-        }
     }
 
     public final EndY newEndYAdapter() {
         return new EndY();
     }
+
+    public class Start
+            implements PointBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(Point2D p) {
+            setStart(p);
+        }
+
+    }
+
+    public class End
+            implements PointBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(Point2D p) {
+            setEnd(p);
+        }
+
+    }
+
+    public class StartX
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setStartX(v);
+        }
+
+    }
+
+    public class StartY
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setStartY(v);
+        }
+
+    }
+
+    public class EndX
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setEndX(v);
+        }
+
+    }
+
+    public class EndY
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setEndY(v);
+        }
+
+    }
+
 }

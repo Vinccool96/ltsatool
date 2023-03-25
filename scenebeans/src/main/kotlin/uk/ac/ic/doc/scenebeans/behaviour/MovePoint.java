@@ -29,14 +29,18 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../../beans/movepoint.html">MovePoint</a> 
- *  behaviour bean.
+/**
+ * The <a href="../../../../../../../beans/movepoint.html">MovePoint</a>
+ * behaviour bean.
  */
 public class MovePoint
         extends PointActivityBase
         implements Serializable {
+
     private Point2D _from, _to;
+
     private double _x_len, _y_len;
+
     private double _duration, _timeout;
 
     public MovePoint() {
@@ -115,36 +119,42 @@ public class MovePoint
         _y_len = _to.getY() - _from.getY();
     }
 
-
-    class FromAdapter implements PointBehaviourListener, Serializable {
-        public void behaviourUpdated(Point2D v) {
-            setFrom(v);
-        }
-    }
-
     public final PointBehaviourListener newFromAdapter() {
         return new FromAdapter();
-    }
-
-    class ToAdapter implements PointBehaviourListener, Serializable {
-        public void behaviourUpdated(Point2D v) {
-            setTo(v);
-        }
     }
 
     public final PointBehaviourListener newToAdapter() {
         return new ToAdapter();
     }
 
-    class DurationAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setDuration(v);
-        }
-    }
-
     public final DoubleBehaviourListener newDurationAdapter() {
         return new DurationAdapter();
     }
+
+    class FromAdapter implements PointBehaviourListener, Serializable {
+
+        public void behaviourUpdated(Point2D v) {
+            setFrom(v);
+        }
+
+    }
+
+    class ToAdapter implements PointBehaviourListener, Serializable {
+
+        public void behaviourUpdated(Point2D v) {
+            setTo(v);
+        }
+
+    }
+
+    class DurationAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setDuration(v);
+        }
+
+    }
+
 }
 
 

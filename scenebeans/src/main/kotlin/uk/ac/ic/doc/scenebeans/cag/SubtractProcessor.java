@@ -28,6 +28,7 @@ import java.awt.geom.Area;
 
 
 public class SubtractProcessor extends CAGProcessor {
+
     public SubtractProcessor(Graphics2D g) {
         super(g);
     }
@@ -39,4 +40,5 @@ public class SubtractProcessor extends CAGProcessor {
     protected void accumulateArea(Area accumulator, Area a) {
         accumulator.subtract(a);
     }
+
 }

@@ -26,17 +26,21 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 
-/** The TransformBase provides default implementations of most of the methods
- *  of the {@link Transform} interface, including
- *  rendering and double-dispatch.  To implement a concrete transform node,
- *  just derive from TransformBase and implement the 
- *  {@link Transform#getTransform} method.
+/**
+ * The TransformBase provides default implementations of most of the methods
+ * of the {@link Transform} interface, including
+ * rendering and double-dispatch.  To implement a concrete transform node,
+ * just derive from TransformBase and implement the
+ * {@link Transform#getTransform} method.
  */
 public abstract class TransformBase
         extends SceneGraphBase
         implements Transform {
+
     private SceneGraph _child;
+
     private transient SceneGraph _last_drawn_child = new Null();
+
     private transient AffineTransform _last_drawn_transform = null;
 
     protected TransformBase() {
@@ -47,56 +51,58 @@ public abstract class TransformBase
         _child = (child == null) ? new Null() : child;
     }
 
-    /** Returns the transformed graph.
+    /**
+     * Returns the transformed graph.
      *
-     *  @return
-     *      The scene graph that is transformed by this node.
+     * @return The scene graph that is transformed by this node.
      */
     public SceneGraph getTransformedGraph() {
         return _child;
     }
 
-    /** Sets the transformed graph.
+    /**
+     * Sets the transformed graph.
      *
-     *  @param g
-     *      The new transformed graph.
+     * @param g The new transformed graph.
      */
     public void setTransformedGraph(SceneGraph g) {
         _child = (g == null) ? new Null() : g;
         setDirty(true);
     }
 
-    /** Returns the last transformed scene graph drawn by this node.  This
-     *  is used to optimise the rendering process.  User code should avoid
-     *  calling this.
+    /**
+     * Returns the last transformed scene graph drawn by this node.  This
+     * is used to optimise the rendering process.  User code should avoid
+     * calling this.
      */
     public SceneGraph getLastDrawnTransformedGraph() {
         return _last_drawn_child;
     }
 
-    /** Returns the last transformation drawn by this node.  This
-     *  is used to optimise the rendering process.  User code should avoid
-     *  calling this.
+    /**
+     * Returns the last transformation drawn by this node.  This
+     * is used to optimise the rendering process.  User code should avoid
+     * calling this.
      */
     public AffineTransform getLastDrawnTransform() {
         return _last_drawn_transform;
     }
 
-    /** Calls back to the {@link SceneGraphProcessor}
-     *  <var>p</var> to be processed as a 
-     *  {@link Transform}.
+    /**
+     * Calls back to the {@link SceneGraphProcessor}
+     * <var>p</var> to be processed as a
+     * {@link Transform}.
      *
-     *  @param p
-     *      A SceneGraphProcessor that is traversing the scene graph.
+     * @param p A SceneGraphProcessor that is traversing the scene graph.
      */
     public void accept(SceneGraphProcessor p) {
         p.process(this);
     }
 
-    /** Implements the rendering of this node and its subgraph.
+    /**
+     * Implements the rendering of this node and its subgraph.
      *
-     *  @param g
-     *      The graphics context onto which to draw the scene graph.
+     * @param g The graphics context onto which to draw the scene graph.
      */
     public void draw(Graphics2D g) {
         AffineTransform old_xform = g.getTransform();
@@ -109,4 +115,5 @@ public abstract class TransformBase
         _last_drawn_transform = new_xform;
         setDirty(false);
     }
+
 }

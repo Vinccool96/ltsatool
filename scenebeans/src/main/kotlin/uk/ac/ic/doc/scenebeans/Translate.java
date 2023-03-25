@@ -26,10 +26,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 
-/** The <a href="../../../../../../beans/translate.html">Translate</a>
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/translate.html">Translate</a>
+ * SceneBean.
  */
 public class Translate extends TransformBase {
+
     private double _x, _y;
 
     public Translate() {
@@ -75,38 +77,44 @@ public class Translate extends TransformBase {
         return AffineTransform.getTranslateInstance(_x, _y);
     }
 
-    public class TranslationAdapter
-            implements PointBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(Point2D p) {
-            setX(p.getX());
-            setY(p.getY());
-        }
-    }
-
     public final TranslationAdapter newTranslationAdapter() {
         return new TranslationAdapter();
-    }
-
-
-    public class XAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setX(v);
-        }
     }
 
     public final XAdapter newXAdapter() {
         return new XAdapter();
     }
 
-    public class YAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setY(v);
-        }
-    }
-
     public final YAdapter newYAdapter() {
         return new YAdapter();
     }
+
+    public class TranslationAdapter
+            implements PointBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(Point2D p) {
+            setX(p.getX());
+            setY(p.getY());
+        }
+
+    }
+
+    public class XAdapter
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setX(v);
+        }
+
+    }
+
+    public class YAdapter
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setY(v);
+        }
+
+    }
+
 }

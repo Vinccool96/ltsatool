@@ -27,14 +27,17 @@ import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener;
 import java.io.Serializable;
 
 
-/** The
- *  <a href="../../../../../../../beans/constmove.html">ConstantSpeedMove</a> 
- *  behaviour bean.
+/**
+ * The
+ * <a href="../../../../../../../beans/constmove.html">ConstantSpeedMove</a>
+ * behaviour bean.
  */
 public class ConstantSpeedMove
         extends DoubleActivityBase
         implements Serializable {
+
     private double _from, _to;
+
     private double _speed, _timeout;
 
     public ConstantSpeedMove() {
@@ -110,34 +113,40 @@ public class ConstantSpeedMove
         return Math.max(_speed * Math.abs(_to - _from), 0.001);
     }
 
-
-    class FromAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setFrom(v);
-        }
-    }
-
     public final DoubleBehaviourListener newFromAdapter() {
         return new FromAdapter();
-    }
-
-    class ToAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setTo(v);
-        }
     }
 
     public final DoubleBehaviourListener newToAdapter() {
         return new ToAdapter();
     }
 
-    class SpeedAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setSpeed(v);
-        }
-    }
-
     public final DoubleBehaviourListener newSpeedAdapter() {
         return new SpeedAdapter();
     }
+
+    class FromAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setFrom(v);
+        }
+
+    }
+
+    class ToAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setTo(v);
+        }
+
+    }
+
+    class SpeedAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setSpeed(v);
+        }
+
+    }
+
 }

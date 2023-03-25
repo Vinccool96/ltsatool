@@ -26,64 +26,67 @@ import java.awt.*;
 import java.io.Serializable;
 
 
-/** The SceneGraph interface is implemented by all classes that act as part
- *  of the scene graph.  A concrete class will typically implement an
- *  interface, derived from SceneGraph, that can be processed by a
- *  {@link SceneGraphProcessor}, or, more typically,
- *  extend one of the ...Base classes that provide common implementations of
- *  the scene-graph interfaces and implement the double-dispatch to 
- *  SceneGraphProcessors.
+/**
+ * The SceneGraph interface is implemented by all classes that act as part
+ * of the scene graph.  A concrete class will typically implement an
+ * interface, derived from SceneGraph, that can be processed by a
+ * {@link SceneGraphProcessor}, or, more typically,
+ * extend one of the ...Base classes that provide common implementations of
+ * the scene-graph interfaces and implement the double-dispatch to
+ * SceneGraphProcessors.
  *
- *  @see SceneGraphProcessor
- *  @see CompositeNode
- *  @see Primitive
- *  @see Style
- *  @see Transform
- *  @see Input
- *  @see SceneGraphBase
- *  @see CompositeBase
- *  @see PrimitiveBase
- *  @see StyleBase
- *  @see TransformBase
- *  @see InputBase
+ * @see SceneGraphProcessor
+ * @see CompositeNode
+ * @see Primitive
+ * @see Style
+ * @see Transform
+ * @see Input
+ * @see SceneGraphBase
+ * @see CompositeBase
+ * @see PrimitiveBase
+ * @see StyleBase
+ * @see TransformBase
+ * @see InputBase
  */
 public interface SceneGraph extends Serializable {
-    /** Returns whether this node is "dirty", that is, whether it's visible
-     *  state been modified since it was last rendered. This is used 
-     *  internally to optimise the rendering process and should not be 
-     *  called by user code unless you intend to interact with the renderer in
-     *  some bizarre manner.
+
+    /**
+     * Returns whether this node is "dirty", that is, whether it's visible
+     * state been modified since it was last rendered. This is used
+     * internally to optimise the rendering process and should not be
+     * called by user code unless you intend to interact with the renderer in
+     * some bizarre manner.
      *
-     *  @return
-     *      <code>true</code> if the node has been modified since it was
-     *      last drawn, <code>false</code> otherwise.
+     * @return <code>true</code> if the node has been modified since it was
+     * last drawn, <code>false</code> otherwise.
      */
     boolean isDirty();
 
-    /** Record whether the node is "dirty".  This is used internally to
-     *  optimise the rendering process and should not be called by
-     *  user code unless you intend to interact with the renderer in
-     *  some bizarre manner.
+    /**
+     * Record whether the node is "dirty".  This is used internally to
+     * optimise the rendering process and should not be called by
+     * user code unless you intend to interact with the renderer in
+     * some bizarre manner.
      *
-     *  @param b
-     *      A flag indicating whether the node is dirty (<code>true</code>) or
-     *      clean (<code>false</code>).
+     * @param b A flag indicating whether the node is dirty (<code>true</code>) or
+     *          clean (<code>false</code>).
      */
     void setDirty(boolean b);
 
-    /** Draws the SceneGraph onto <var>g</var>.
+    /**
+     * Draws the SceneGraph onto <var>g</var>.
      *
-     *  @param g
-     *      The graphics context onto which to draw the scene graph.
+     * @param g The graphics context onto which to draw the scene graph.
      */
     void draw(Graphics2D g);
 
-    /** Calls back to the {@link SceneGraphProcessor}
-     *  <var>p</var> to be processed as its correct type.  This is an example
-     *  of the "GoF" <em>Visitor</em> pattern.
+    /**
+     * Calls back to the {@link SceneGraphProcessor}
+     * <var>p</var> to be processed as its correct type.  This is an example
+     * of the "GoF" <em>Visitor</em> pattern.
      *
-     *  @param p
-     *      A SceneGraphProcessor that is traversing the scene graph.
+     * @param p A SceneGraphProcessor that is traversing the scene graph.
      */
     void accept(SceneGraphProcessor p);
+
 }

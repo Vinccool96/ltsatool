@@ -25,33 +25,34 @@ package uk.ac.ic.doc.scenebeans.event;
 import java.util.EventObject;
 
 
-/** AnimationEvents are announced by behaviours and certain input 
- *  scene-graph nodes.  Each event contains a name that identifies
- *  the event.  The event names announced by SceneBeans can be configured
- *  by the application to map animation events to application actions.
+/**
+ * AnimationEvents are announced by behaviours and certain input
+ * scene-graph nodes.  Each event contains a name that identifies
+ * the event.  The event names announced by SceneBeans can be configured
+ * by the application to map animation events to application actions.
  */
 public class AnimationEvent extends EventObject {
+
     private String _name;
 
-    /** Constructs an AnimationEvent.
+    /**
+     * Constructs an AnimationEvent.
      *
-     *  @param source
-     *      The object announcing the event.
-     *
-     *  @param name
-     *      The name of the event.
+     * @param source The object announcing the event.
+     * @param name   The name of the event.
      */
     public AnimationEvent(Object source, String name) {
         super(source);
         _name = name;
     }
 
-    /** Returns the name of the event.
+    /**
+     * Returns the name of the event.
      *
-     *  @return
-     *      The name of the event.
+     * @return The name of the event.
      */
     public String getName() {
         return _name;
     }
+
 }

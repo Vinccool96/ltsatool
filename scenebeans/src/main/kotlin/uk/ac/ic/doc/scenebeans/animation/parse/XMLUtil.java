@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 
 
 class XMLUtil {
+
     static String getRequiredAttribute(Element elt, String name)
             throws AnimationParseException {
         String value = elt.getAttribute(name);
@@ -56,4 +57,5 @@ class XMLUtil {
             throw new AnimationParseException(type_str + " element expected");
         }
     }
+
 }

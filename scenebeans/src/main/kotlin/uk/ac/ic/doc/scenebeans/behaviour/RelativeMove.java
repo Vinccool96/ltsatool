@@ -27,13 +27,16 @@ import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../../beans/relmove.html">RelativeMove</a> 
- *  behaviour bean.
+/**
+ * The <a href="../../../../../../../beans/relmove.html">RelativeMove</a>
+ * behaviour bean.
  */
 public class RelativeMove
         extends DoubleActivityBase
         implements Serializable {
+
     private double _from, _delta;
+
     private double _duration, _timeout;
 
     public RelativeMove() {
@@ -99,36 +102,42 @@ public class RelativeMove
         }
     }
 
-
-    class FromAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setFrom(v);
-        }
-    }
-
     public final DoubleBehaviourListener newFromAdapter() {
         return new FromAdapter();
-    }
-
-    class DurationAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setDuration(v);
-        }
     }
 
     public final DoubleBehaviourListener newDurationAdapter() {
         return new DurationAdapter();
     }
 
-    class DeltaAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setDelta(v);
-        }
-    }
-
     public final DoubleBehaviourListener newDeltaAdapter() {
         return new DeltaAdapter();
     }
+
+    class FromAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setFrom(v);
+        }
+
+    }
+
+    class DurationAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setDuration(v);
+        }
+
+    }
+
+    class DeltaAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setDelta(v);
+        }
+
+    }
+
 }
 
 

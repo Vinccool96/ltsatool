@@ -13,18 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 
-/** Functions to instantiate objects from parameters supplied as Strings
+/**
+ * Functions to instantiate objects from parameters supplied as Strings
  */
 public class StringParser {
-    private Map _parsers = new HashMap();
 
-    /** Implementations of this interface can be registered by Class
-     *  to parse strings for classes that cannot be instantiated by the
-     *  default algorithm.
-     */
-    public interface TypeSpecificParser {
-        Object parse(String str_value) throws IllegalArgumentException;
-    }
+    private Map _parsers = new HashMap();
 
     TypeSpecificParser getParser(Class c) {
         synchronized (_parsers) {
@@ -38,20 +32,17 @@ public class StringParser {
         }
     }
 
-    /** Instantiates an object of class <var>c</var> from string value
-     *  <var>s</var>.
+    /**
+     * Instantiates an object of class <var>c</var> from string value
+     * <var>s</var>.
      *
-     *  @param c
-     *      The class to instantiate.
-     *  @param s
-     *      The string representation of the instance to be created.
-     *  @return
-     *      An instance of class <var>c</var>.  If <var>c</var> represents
-     *      a primitive type the appropriate wrapper class from the
-     *      <code>java.lang</code> package is instantiated and returned.
-     *  @exception IllegalArgumentException
-     *      The string value is of the wrong format to instantiate class
-     *      <var>c</var>.
+     * @param c The class to instantiate.
+     * @param s The string representation of the instance to be created.
+     * @return An instance of class <var>c</var>.  If <var>c</var> represents
+     * a primitive type the appropriate wrapper class from the
+     * <code>java.lang</code> package is instantiated and returned.
+     * @throws IllegalArgumentException The string value is of the wrong format to instantiate class
+     *                                  <var>c</var>.
      */
     public Object newObject(Class c, String s)
             throws IllegalArgumentException {
@@ -111,8 +102,9 @@ public class StringParser {
         }
     }
 
-    /** Instantiates an object of class <var>c</var> using strings in
-     *  <var>args</var> as the parameters of the constructor.
+    /**
+     * Instantiates an object of class <var>c</var> using strings in
+     * <var>args</var> as the parameters of the constructor.
      */
     public Object newObject(Class c, List args)
             throws IllegalArgumentException {
@@ -145,4 +137,16 @@ public class StringParser {
         throw new IllegalArgumentException(
                 "failed to find a suitable constructor of class " + c.getName());
     }
+
+    /**
+     * Implementations of this interface can be registered by Class
+     * to parse strings for classes that cannot be instantiated by the
+     * default algorithm.
+     */
+    public interface TypeSpecificParser {
+
+        Object parse(String str_value) throws IllegalArgumentException;
+
+    }
+
 }

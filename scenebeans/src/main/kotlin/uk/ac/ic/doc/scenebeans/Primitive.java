@@ -25,31 +25,34 @@ package uk.ac.ic.doc.scenebeans;
 import java.awt.*;
 
 
-/** The primitive nodes of the scene graph represent shapes that are rendered
- *  onto the display surface.
+/**
+ * The primitive nodes of the scene graph represent shapes that are rendered
+ * onto the display surface.
  */
 public interface Primitive extends SceneGraph {
-    /** Returns the shape that is drawn onto the graphics context.
-     *  The graphics context is necessary because text is drawn
-     *  differently depending on the {@link java.awt.font.FontRenderContext}
-     *  associated with the graphics context.
+
+    /**
+     * Returns the shape that is drawn onto the graphics context.
+     * The graphics context is necessary because text is drawn
+     * differently depending on the {@link java.awt.font.FontRenderContext}
+     * associated with the graphics context.
      *
-     *  @param g
-     *      The graphics context in which the shape is being drawn.
-     *  @return
-     *      The shape rendered onto the graphics context by this primitive.
-     *      The shape returned is <em>not</em> transformed by the current
-     *      {@link java.awt.geom.AffineTransform} of the graphics context.
-     *      If code needs the transformed shape, it must perform the
-     *      transformation itself.
+     * @param g The graphics context in which the shape is being drawn.
+     * @return The shape rendered onto the graphics context by this primitive.
+     * The shape returned is <em>not</em> transformed by the current
+     * {@link java.awt.geom.AffineTransform} of the graphics context.
+     * If code needs the transformed shape, it must perform the
+     * transformation itself.
      */
     Shape getShape(Graphics2D g);
 
-    /** Returns the shape that was last drawn by this Primitive.
-     *  This supports dirty-rectangle caching to improve rendering
-     *  performance.  However, it only works when the animation is
-     *  rendered onto a single canvas.  User code should avoid calling
-     *  this method.
+    /**
+     * Returns the shape that was last drawn by this Primitive.
+     * This supports dirty-rectangle caching to improve rendering
+     * performance.  However, it only works when the animation is
+     * rendered onto a single canvas.  User code should avoid calling
+     * this method.
      */
     Shape getLastDrawnShape();
+
 }

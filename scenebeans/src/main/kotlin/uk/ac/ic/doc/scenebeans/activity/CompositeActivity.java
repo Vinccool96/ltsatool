@@ -23,9 +23,11 @@
 package uk.ac.ic.doc.scenebeans.activity;
 
 
-/** Base class of activities that schedule the execution of other activities.
+/**
+ * Base class of activities that schedule the execution of other activities.
  */
 public abstract class CompositeActivity
         extends FiniteActivityBase
         implements ActivityRunner {
+
 }

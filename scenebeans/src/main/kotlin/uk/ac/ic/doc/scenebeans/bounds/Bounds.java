@@ -30,30 +30,18 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 
 
-/** A SceneGraphProcessor that calculates the rectangle enclosing a SceneGraph.
+/**
+ * A SceneGraphProcessor that calculates the rectangle enclosing a SceneGraph.
  */
 public class Bounds
         implements SceneGraphProcessor {
+
     private Rectangle2D _bounds = null;
+
     private Graphics2D _graphics;
+
     private AffineTransform _transform;
 
-
-    /** Calculates the bounding rectangle of the scene graph <var>sg</var>
-     *  when rendered on the graphics context <var>g2</var>.
-     *
-     *  @param sg
-     *      The scene graph whose bounds are calculated.
-     *  @param g2
-     *      The graphics context on which the scene graph is to be rendered.
-     *  @return
-     *      The rectangle enclosing the scene graph.
-     */
-    public static Rectangle2D getBounds(SceneGraph sg, Graphics2D g2) {
-        Bounds bounds = new Bounds(g2);
-        sg.accept(bounds);
-        return bounds.getBounds();
-    }
 
     public Bounds(Graphics2D graphics) {
         _graphics = graphics;
@@ -63,6 +51,20 @@ public class Bounds
     public Bounds(Graphics2D g, AffineTransform t) {
         _graphics = g;
         _transform = new AffineTransform(t);
+    }
+
+    /**
+     * Calculates the bounding rectangle of the scene graph <var>sg</var>
+     * when rendered on the graphics context <var>g2</var>.
+     *
+     * @param sg The scene graph whose bounds are calculated.
+     * @param g2 The graphics context on which the scene graph is to be rendered.
+     * @return The rectangle enclosing the scene graph.
+     */
+    public static Rectangle2D getBounds(SceneGraph sg, Graphics2D g2) {
+        Bounds bounds = new Bounds(g2);
+        sg.accept(bounds);
+        return bounds.getBounds();
     }
 
     /*  Returns the bounds calculated by this object, or <code>null</code>
@@ -109,8 +111,9 @@ public class Bounds
         }
     }
 
-    /** Adds a rectangle to the bounds being accumulated by this object.
-     *  If the rectangle is <code>null</code> nothing is added.
+    /**
+     * Adds a rectangle to the bounds being accumulated by this object.
+     * If the rectangle is <code>null</code> nothing is added.
      */
     protected void addBounds(Rectangle2D r) {
         if (r != null) {
@@ -121,4 +124,5 @@ public class Bounds
             }
         }
     }
+
 }

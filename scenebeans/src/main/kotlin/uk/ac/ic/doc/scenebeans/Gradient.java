@@ -26,12 +26,16 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 
-/** The Gradient SceneBean is currently experimental and will be fully supported
- *  in a later release.
+/**
+ * The Gradient SceneBean is currently experimental and will be fully supported
+ * in a later release.
  */
 public class Gradient extends StyleBase {
+
     private boolean _is_cyclic = false;
+
     private Point2D _from_pt, _to_pt;
+
     private Color _from_col, _to_col;
 
 
@@ -99,48 +103,56 @@ public class Gradient extends StyleBase {
         };
     }
 
-
-    class FromPointAdapter
-            implements PointBehaviourListener, Serializable {
-        public void behaviourUpdated(Point2D p) {
-            setFromPoint(p);
-        }
-    }
-
     public final FromPointAdapter newFromPointAdapter() {
         return new FromPointAdapter();
-    }
-
-    class ToPointAdapter
-            implements PointBehaviourListener, Serializable {
-        public void behaviourUpdated(Point2D p) {
-            setToPoint(p);
-        }
     }
 
     public final ToPointAdapter newToPointAdapter() {
         return new ToPointAdapter();
     }
 
-    class FromColorAdapter
-            implements ColorBehaviourListener, Serializable {
-        public void behaviourUpdated(Color color) {
-            setFromColor(color);
-        }
-    }
-
     public final FromColorAdapter newFromColorAdapter() {
         return new FromColorAdapter();
-    }
-
-    class ToColorAdapter
-            implements ColorBehaviourListener, Serializable {
-        public void behaviourUpdated(Color color) {
-            setToColor(color);
-        }
     }
 
     public final ToColorAdapter newToColorAdapter() {
         return new ToColorAdapter();
     }
+
+    class FromPointAdapter
+            implements PointBehaviourListener, Serializable {
+
+        public void behaviourUpdated(Point2D p) {
+            setFromPoint(p);
+        }
+
+    }
+
+    class ToPointAdapter
+            implements PointBehaviourListener, Serializable {
+
+        public void behaviourUpdated(Point2D p) {
+            setToPoint(p);
+        }
+
+    }
+
+    class FromColorAdapter
+            implements ColorBehaviourListener, Serializable {
+
+        public void behaviourUpdated(Color color) {
+            setFromColor(color);
+        }
+
+    }
+
+    class ToColorAdapter
+            implements ColorBehaviourListener, Serializable {
+
+        public void behaviourUpdated(Color color) {
+            setToColor(color);
+        }
+
+    }
+
 }

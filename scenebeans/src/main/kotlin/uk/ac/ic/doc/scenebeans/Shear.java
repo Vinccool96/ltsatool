@@ -25,10 +25,12 @@ package uk.ac.ic.doc.scenebeans;
 import java.awt.geom.AffineTransform;
 
 
-/** The <a href="../../../../../../beans/shear.html">Shear</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/shear.html">Shear</a>
+ * SceneBean.
  */
 public class Shear extends TransformBase {
+
     private double _x, _y;
 
     public Shear() {
@@ -65,23 +67,28 @@ public class Shear extends TransformBase {
         return AffineTransform.getShearInstance(_x, _y);
     }
 
-    public class X implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setX(v);
-        }
-    }
-
     public final X newXAdapter() {
         return new X();
-    }
-
-    public class Y implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setY(v);
-        }
     }
 
     public final Y newYAdapter() {
         return new Y();
     }
+
+    public class X implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setX(v);
+        }
+
+    }
+
+    public class Y implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setY(v);
+        }
+
+    }
+
 }

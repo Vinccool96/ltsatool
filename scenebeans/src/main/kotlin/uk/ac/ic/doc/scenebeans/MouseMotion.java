@@ -30,17 +30,44 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
 
-/** The <a href="../../../../../../beans/mousemotion.html">MouseMotion</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/mousemotion.html">MouseMotion</a>
+ * SceneBean.
  */
 public class MouseMotion extends InputBase {
+
     private boolean _is_active = true;
+
     private boolean _is_dragged = true;
+
     private PositionFacet _pos = new PositionFacet();
+
     private DoubleFacet _x = new DoubleFacet();
+
     private DoubleFacet _y = new DoubleFacet();
+
     private DoubleFacet _angle = new DoubleFacet();
 
+    public static void mouseMoved(SceneGraph sg, double x, double y)
+            throws NoninvertibleTransformException {
+        Processor p = new Processor(x, y, false);
+        dispatchMouseMotion(sg, p);
+    }
+
+    public static void mouseDragged(SceneGraph sg, double x, double y)
+            throws NoninvertibleTransformException {
+        Processor p = new Processor(x, y, true);
+        dispatchMouseMotion(sg, p);
+    }
+
+    private static void dispatchMouseMotion(SceneGraph sg, Processor p)
+            throws NoninvertibleTransformException {
+        try {
+            sg.accept(p);
+        } catch (TransformFailure ex) {
+            throw ex.cause;
+        }
+    }
 
     public boolean isActive() {
         return _is_active;
@@ -89,56 +116,43 @@ public class MouseMotion extends InputBase {
         _angle.postUpdate(angle);
     }
 
-
-    public static void mouseMoved(SceneGraph sg, double x, double y)
-            throws NoninvertibleTransformException {
-        Processor p = new Processor(x, y, false);
-        dispatchMouseMotion(sg, p);
-    }
-
-    public static void mouseDragged(SceneGraph sg, double x, double y)
-            throws NoninvertibleTransformException {
-        Processor p = new Processor(x, y, true);
-        dispatchMouseMotion(sg, p);
-    }
-
-    private static void dispatchMouseMotion(SceneGraph sg, Processor p)
-            throws NoninvertibleTransformException {
-        try {
-            sg.accept(p);
-        } catch (TransformFailure ex) {
-            throw ex.cause;
-        }
-    }
-
     private static class PositionFacet extends PointBehaviourBase {
+
         public void postUpdate(Point2D p) {
             super.postUpdate(p);
         }
+
     }
 
     ;
 
     private static class DoubleFacet extends DoubleBehaviourBase {
+
         public void postUpdate(double d) {
             super.postUpdate(d);
         }
+
     }
 
     ;
 
     private static class TransformFailure extends RuntimeException {
+
         NoninvertibleTransformException cause;
 
         TransformFailure(NoninvertibleTransformException ex) {
             cause = ex;
         }
+
     }
 
     private static class Processor
             implements SceneGraphProcessor {
+
         private AffineTransform _transform = new AffineTransform();
+
         private Point2D _point;
+
         private boolean _dragged;
 
         Processor(double x, double y, boolean dragged) {
@@ -185,7 +199,9 @@ public class MouseMotion extends InputBase {
 
             sg.getSensitiveGraph().accept(this);
         }
+
     }
+
 }
 
 

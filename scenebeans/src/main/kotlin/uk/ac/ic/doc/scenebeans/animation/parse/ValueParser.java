@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 
 class ValueParser
         extends StringParser {
+
     ValueParser(final URL document_base_url) {
         TypeSpecificParser double_parser = new TypeSpecificParser() {
             public Object parse(String str)
@@ -131,4 +132,5 @@ class ValueParser
             }
         });
     }
+
 }

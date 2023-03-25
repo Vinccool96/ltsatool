@@ -22,21 +22,24 @@
 
 package uk.ac.ic.doc.scenebeans;
 
-/** A behaviour that encapsulates a changing <code>double</code> value.
+/**
+ * A behaviour that encapsulates a changing <code>double</code> value.
  */
 public interface DoubleBehaviour {
-    /** Add a listener to this behaviour.  The listener will be notified
-     *  whenever the value of the behaviour changes.
+
+    /**
+     * Add a listener to this behaviour.  The listener will be notified
+     * whenever the value of the behaviour changes.
      *
-     *  @param l
-     *      The listener being added to the behaviour.
+     * @param l The listener being added to the behaviour.
      */
     void addDoubleBehaviourListener(DoubleBehaviourListener l);
 
-    /** Remove a listener to this behaviour.
+    /**
+     * Remove a listener to this behaviour.
      *
-     *  @param l
-     *      The listener being removed from the behaviour.
+     * @param l The listener being removed from the behaviour.
      */
     void removeDoubleBehaviourListener(DoubleBehaviourListener l);
+
 }

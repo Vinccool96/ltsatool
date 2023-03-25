@@ -6,6 +6,7 @@ package uk.ac.ic.doc.natutil;
 
 
 public class MacroException extends Exception {
+
     public MacroException(String msg) {
         super(msg);
     }
@@ -13,4 +14,5 @@ public class MacroException extends Exception {
     public MacroException() {
         super();
     }
+
 }

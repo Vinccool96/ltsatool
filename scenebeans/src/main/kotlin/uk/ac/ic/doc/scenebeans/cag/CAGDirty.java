@@ -25,11 +25,13 @@ package uk.ac.ic.doc.scenebeans.cag;
 import uk.ac.ic.doc.scenebeans.*;
 
 
-/** A SceneGraphProcessor that determines if any nodes of a scene graph are
- *  dirty.
+/**
+ * A SceneGraphProcessor that determines if any nodes of a scene graph are
+ * dirty.
  */
 public class CAGDirty
         implements SceneGraphProcessor {
+
     private boolean _is_dirty = false;
 
     public static boolean areChildrenDirty(CAGComposite sg) {
@@ -89,4 +91,5 @@ public class CAGDirty
             }
         }
     }
+
 }

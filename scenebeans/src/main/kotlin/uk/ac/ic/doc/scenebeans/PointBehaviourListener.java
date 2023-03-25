@@ -25,14 +25,17 @@ package uk.ac.ic.doc.scenebeans;
 import java.awt.geom.Point2D;
 
 
-/** The interface through which a {@link PointBehaviour}
- *  announces changes to the value that it manages.
+/**
+ * The interface through which a {@link PointBehaviour}
+ * announces changes to the value that it manages.
  */
 public interface PointBehaviourListener extends java.util.EventListener {
-    /** This method is called when the behaviour's value changes.
+
+    /**
+     * This method is called when the behaviour's value changes.
      *
-     *  @param new_value
-     *      The new value of the behaviour.
+     * @param new_value The new value of the behaviour.
      */
     void behaviourUpdated(Point2D new_value);
+
 }

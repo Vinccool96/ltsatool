@@ -25,9 +25,11 @@ package uk.ac.ic.doc.scenebeans;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
-/** The <a href="../../../../../../beans/circle.html">Circle</a> SceneBean.
+/**
+ * The <a href="../../../../../../beans/circle.html">Circle</a> SceneBean.
  */
 public class Circle extends PrimitiveBase {
+
     private double _radius;
 
     public Circle() {
@@ -52,14 +54,17 @@ public class Circle extends PrimitiveBase {
         setDirty(true);
     }
 
-    public class Radius
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double r) {
-            setRadius(r);
-        }
-    }
-
     public final Radius newRadiusAdapter() {
         return new Radius();
     }
+
+    public class Radius
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double r) {
+            setRadius(r);
+        }
+
+    }
+
 }

@@ -23,22 +23,26 @@
 package uk.ac.ic.doc.scenebeans.animation;
 
 
-/** An exception thrown to indicate that an error occurred in the execution of a
- *  {@link Command}.
+/**
+ * An exception thrown to indicate that an error occurred in the execution of a
+ * {@link Command}.
  */
 public class CommandException extends Exception {
-    /** Constructs a CommandException with no error message.
+
+    /**
+     * Constructs a CommandException with no error message.
      */
     public CommandException() {
         super();
     }
 
-    /** Constructs a CommandException.
+    /**
+     * Constructs a CommandException.
      *
-     *  @param msg
-     *      An error message.
+     * @param msg An error message.
      */
     public CommandException(String msg) {
         super(msg);
     }
+
 }

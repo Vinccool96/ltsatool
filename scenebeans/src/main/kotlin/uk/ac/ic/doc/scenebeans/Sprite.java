@@ -31,16 +31,22 @@ import java.io.ObjectInputStream;
 import java.net.URL;
 
 
-/** The <a href="../../../../../../beans/sprite.html">Sprite</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/sprite.html">Sprite</a>
+ * SceneBean.
  */
 public class Sprite
         extends SceneGraphBase
         implements Primitive, ImageObserver {
+
     private URL _src = null;
+
     private double _hotspot_x = 0.0;
+
     private double _hotspot_y = 0.0;
+
     private transient Image _image = null;
+
     private Shape _last_drawn = null;
 
     public Sprite() {
@@ -64,14 +70,14 @@ public class Sprite
         return _image;
     }
 
+    public URL getSrc() {
+        return _src;
+    }
+
     public void setSrc(URL src) {
         _src = src;
         setDirty(true);
         reloadImage();
-    }
-
-    public URL getSrc() {
-        return _src;
     }
 
     public Point2D getHotspot() {
@@ -138,33 +144,40 @@ public class Sprite
         Toolkit.getDefaultToolkit().prepareImage(_image, -1, -1, this);
     }
 
-    class Hotspot implements PointBehaviourListener {
-        public void behaviourUpdated(Point2D p) {
-            setHotspot(p);
-        }
-    }
-
     public PointBehaviourListener newHotspotAdapter() {
         return new Hotspot();
-    }
-
-    class HotspotX implements DoubleBehaviourListener {
-        public void behaviourUpdated(double v) {
-            setHotspotX(v);
-        }
     }
 
     public DoubleBehaviourListener newHotspotXAdapter() {
         return new HotspotX();
     }
 
-    class HotspotY implements DoubleBehaviourListener {
-        public void behaviourUpdated(double v) {
-            setHotspotY(v);
-        }
-    }
-
     public DoubleBehaviourListener newHotspotYAdapter() {
         return new HotspotY();
     }
+
+    class Hotspot implements PointBehaviourListener {
+
+        public void behaviourUpdated(Point2D p) {
+            setHotspot(p);
+        }
+
+    }
+
+    class HotspotX implements DoubleBehaviourListener {
+
+        public void behaviourUpdated(double v) {
+            setHotspotX(v);
+        }
+
+    }
+
+    class HotspotY implements DoubleBehaviourListener {
+
+        public void behaviourUpdated(double v) {
+            setHotspotY(v);
+        }
+
+    }
+
 }

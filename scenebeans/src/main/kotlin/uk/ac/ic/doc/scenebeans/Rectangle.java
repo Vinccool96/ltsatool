@@ -26,11 +26,14 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 
-/** The <a href="../../../../../../beans/rectangle.html">Rectangle</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/rectangle.html">Rectangle</a>
+ * SceneBean.
  */
 public class Rectangle extends PrimitiveBase {
+
     private double _x, _y;
+
     private double _w, _h;
 
     public Rectangle() {
@@ -84,48 +87,56 @@ public class Rectangle extends PrimitiveBase {
         setDirty(true);
     }
 
-
-    class XAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setX(v);
-        }
-    }
-
     public final XAdapter newXAdapter() {
         return new XAdapter();
-    }
-
-    class YAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setY(v);
-        }
     }
 
     public final YAdapter newYAdapter() {
         return new YAdapter();
     }
 
-    class WidthAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setWidth(v);
-        }
-    }
-
     public final WidthAdapter newWidthAdapter() {
         return new WidthAdapter();
-    }
-
-    class HeightAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setHeight(v);
-        }
     }
 
     public final HeightAdapter newHeightAdapter() {
         return new HeightAdapter();
     }
+
+    class XAdapter
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setX(v);
+        }
+
+    }
+
+    class YAdapter
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setY(v);
+        }
+
+    }
+
+    class WidthAdapter
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setWidth(v);
+        }
+
+    }
+
+    class HeightAdapter
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setHeight(v);
+        }
+
+    }
+
 }

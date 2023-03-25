@@ -25,13 +25,15 @@ package uk.ac.ic.doc.scenebeans;
 import java.awt.*;
 
 
-/** The InputBase class provides default implementations of most of the methods
- *  of the {@link Input} interface, including
- *  rendering and double-dispatch.
+/**
+ * The InputBase class provides default implementations of most of the methods
+ * of the {@link Input} interface, including
+ * rendering and double-dispatch.
  */
 public abstract class InputBase
         extends SceneGraphBase
         implements Input {
+
     private SceneGraph _sensitive;
 
     protected InputBase() {
@@ -42,21 +44,21 @@ public abstract class InputBase
         _sensitive = sensitive;
     }
 
-    /** Returns the subgraph that is sensitive to the type of input
-     *  defined by this bean.
+    /**
+     * Returns the subgraph that is sensitive to the type of input
+     * defined by this bean.
      *
-     *  @return
-     *      The sensitive subgraph.
+     * @return The sensitive subgraph.
      */
     public SceneGraph getSensitiveGraph() {
         return _sensitive;
     }
 
-    /** Sets the subgraph that is sensitive to the type of input
-     *  defined by this bean.
+    /**
+     * Sets the subgraph that is sensitive to the type of input
+     * defined by this bean.
      *
-     *  @param sg
-     *      The sensitive subgraph.
+     * @param sg The sensitive subgraph.
      */
     public void setSensitiveGraph(SceneGraph sg) {
         if (sg == null) {
@@ -66,24 +68,25 @@ public abstract class InputBase
         }
     }
 
-    /** Implements the rendering of this node and its subgraph.
+    /**
+     * Implements the rendering of this node and its subgraph.
      *
-     *  @param g
-     *      The graphics context onto which to draw the scene graph.
+     * @param g The graphics context onto which to draw the scene graph.
      */
     public void draw(Graphics2D g) {
         _sensitive.draw(g);
         setDirty(false);
     }
 
-    /** Calls back to the {@link SceneGraphProcessor}
-     *  <var>p</var> to be processed as an
-     *  {@link Input}.
+    /**
+     * Calls back to the {@link SceneGraphProcessor}
+     * <var>p</var> to be processed as an
+     * {@link Input}.
      *
-     *  @param p
-     *      A SceneGraphProcessor that is traversing the scene graph.
+     * @param p A SceneGraphProcessor that is traversing the scene graph.
      */
     public void accept(SceneGraphProcessor p) {
         p.process(this);
     }
+
 }

@@ -26,9 +26,11 @@ import java.beans.*;
 import java.lang.reflect.Method;
 
 
-/** Convenience functions for accessing features of Java Beans.
+/**
+ * Convenience functions for accessing features of Java Beans.
  */
 class BeanUtil {
+
     static BeanInfo getBeanInfo(Class c)
             throws AnimationParseException {
         try {
@@ -173,4 +175,5 @@ class BeanUtil {
         throw new AnimationParseException(
                 "listener not compatible with event source");
     }
+
 }

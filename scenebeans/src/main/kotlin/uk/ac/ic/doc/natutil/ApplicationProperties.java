@@ -14,30 +14,32 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 
-/** The ApplicationProperties class is used to access the properties that
- *  describe the setup of a local application installation.
- *  The properties file is located by the following algorithm:
+/**
+ * The ApplicationProperties class is used to access the properties that
+ * describe the setup of a local application installation.
+ * The properties file is located by the following algorithm:
  *
- *  <ul>
- *  <li>Each entry in the Java class path is examined in turn.
- *    <ul>
- *    <li>If the entry refers to a file named "<application>.jar" then the 
- *        properties are assumed to be in a file named 
- *        "<application>.properties" in the same directory as the
- *        file "<application>.jar".</li>
- *    <li>Otherwise, if the entry refers to a directory whose parent is
- *        named "<application>" then the properties are assumed to be in
- *        a file named "<application>.properties" in the a directory
- *        named "lib" in the parent directory of the class path entry.</li>
- *    </ul>
- *  <li>If the properties cannot be found by searching the class path then
- *      the properties are loaded from the resource "<application>.properties"
- *      of the main class passed to the constructor.</li>
- *  <li>If the property file cannot be loaded as a resource, an empty
- *      set of properties is used.</li>
- *  </ul>
+ * <ul>
+ * <li>Each entry in the Java class path is examined in turn.
+ *   <ul>
+ *   <li>If the entry refers to a file named "<application>.jar" then the
+ *       properties are assumed to be in a file named
+ *       "<application>.properties" in the same directory as the
+ *       file "<application>.jar".</li>
+ *   <li>Otherwise, if the entry refers to a directory whose parent is
+ *       named "<application>" then the properties are assumed to be in
+ *       a file named "<application>.properties" in the a directory
+ *       named "lib" in the parent directory of the class path entry.</li>
+ *   </ul>
+ * <li>If the properties cannot be found by searching the class path then
+ *     the properties are loaded from the resource "<application>.properties"
+ *     of the main class passed to the constructor.</li>
+ * <li>If the property file cannot be loaded as a resource, an empty
+ *     set of properties is used.</li>
+ * </ul>
  */
 public class ApplicationProperties extends Properties {
+
     public ApplicationProperties(String application, Class main_class)
             throws IOException {
         this(application, main_class, application + ".properties");
@@ -131,4 +133,5 @@ public class ApplicationProperties extends Properties {
             return null;
         }
     }
+
 }

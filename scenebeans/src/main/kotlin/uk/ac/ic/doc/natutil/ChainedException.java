@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 
 
 public class ChainedException extends Exception {
+
     private Throwable _cause;
 
     public ChainedException(String message, Throwable cause) {
@@ -60,4 +61,5 @@ public class ChainedException extends Exception {
             _cause.printStackTrace(out);
         }
     }
+
 }

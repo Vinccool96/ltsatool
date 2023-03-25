@@ -29,12 +29,14 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../../beans/copypoint.html">CopyPoint</a> 
- *  behaviour bean.
+/**
+ * The <a href="../../../../../../../beans/copypoint.html">CopyPoint</a>
+ * behaviour bean.
  */
 public class CopyPoint
         extends PointActivityBase
         implements Serializable {
+
     private Point2D _point, _offset;
 
     public CopyPoint() {
@@ -92,32 +94,6 @@ public class CopyPoint
         postUpdate(getValue());
     }
 
-
-    class PointAdapter implements PointBehaviourListener {
-        public void behaviourUpdated(Point2D v) {
-            setPoint(v);
-        }
-    }
-
-    class OffsetAdapter implements PointBehaviourListener {
-        public void behaviourUpdated(Point2D v) {
-            setOffset(v);
-        }
-    }
-
-
-    class XAdapter implements DoubleBehaviourListener {
-        public void behaviourUpdated(double v) {
-            setX(v);
-        }
-    }
-
-    class YAdapter implements DoubleBehaviourListener {
-        public void behaviourUpdated(double v) {
-            setY(v);
-        }
-    }
-
     public final XAdapter newXAdapter() {
         return new XAdapter();
     }
@@ -132,6 +108,38 @@ public class CopyPoint
 
     public final OffsetAdapter newOffsetAdapter() {
         return new OffsetAdapter();
+    }
+
+    class PointAdapter implements PointBehaviourListener {
+
+        public void behaviourUpdated(Point2D v) {
+            setPoint(v);
+        }
+
+    }
+
+    class OffsetAdapter implements PointBehaviourListener {
+
+        public void behaviourUpdated(Point2D v) {
+            setOffset(v);
+        }
+
+    }
+
+    class XAdapter implements DoubleBehaviourListener {
+
+        public void behaviourUpdated(double v) {
+            setX(v);
+        }
+
+    }
+
+    class YAdapter implements DoubleBehaviourListener {
+
+        public void behaviourUpdated(double v) {
+            setY(v);
+        }
+
     }
 
 

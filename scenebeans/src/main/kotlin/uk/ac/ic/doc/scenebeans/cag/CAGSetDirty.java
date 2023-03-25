@@ -27,6 +27,7 @@ import uk.ac.ic.doc.scenebeans.*;
 
 public class CAGSetDirty
         implements SceneGraphProcessor {
+
     private boolean _is_dirty;
 
     public CAGSetDirty(boolean b) {
@@ -66,4 +67,5 @@ public class CAGSetDirty
             sg.getSubgraph(i).accept(this);
         }
     }
+
 }

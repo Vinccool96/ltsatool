@@ -28,12 +28,14 @@ import uk.ac.ic.doc.scenebeans.activity.FiniteActivityBase;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../../beans/timer.html">Timer</a>
- *  behaviour bean.
+/**
+ * The <a href="../../../../../../../beans/timer.html">Timer</a>
+ * behaviour bean.
  */
 public class Timer
         extends FiniteActivityBase
         implements Serializable {
+
     private double _duration, _timeout;
 
     public Timer() {
@@ -70,16 +72,18 @@ public class Timer
         }
     }
 
-
-    class DurationAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setDuration(v);
-        }
-    }
-
     public final DoubleBehaviourListener newDurationAdapter() {
         return new DurationAdapter();
     }
+
+    class DurationAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setDuration(v);
+        }
+
+    }
+
 }
 
 

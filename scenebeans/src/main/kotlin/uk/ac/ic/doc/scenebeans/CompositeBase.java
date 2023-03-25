@@ -26,123 +26,128 @@ import java.awt.*;
 import java.util.ArrayList;
 
 
-/** The CompositeBase provides default implementations of most of the methods
- *  of the {@link CompositeNode} interface, including
- *  rendering and double-dispatch.  To implement a concrete composite node,
- *  just derive from CompositeBase and override the 
- *  <code>getVisibleSubgraphCount</code> and <code>getVisibleSubgraph</code>
- *  methods.
+/**
+ * The CompositeBase provides default implementations of most of the methods
+ * of the {@link CompositeNode} interface, including
+ * rendering and double-dispatch.  To implement a concrete composite node,
+ * just derive from CompositeBase and override the
+ * <code>getVisibleSubgraphCount</code> and <code>getVisibleSubgraph</code>
+ * methods.
  */
 public abstract class CompositeBase
         extends SceneGraphBase
         implements CompositeNode {
+
     private ArrayList _nodes = new ArrayList();
+
     private transient ArrayList _last_drawn_nodes = new ArrayList();
 
     protected CompositeBase() {
     }
 
-    /** Returns the number of subgraphs of this composite.
+    /**
+     * Returns the number of subgraphs of this composite.
      */
     public int getSubgraphCount() {
         return _nodes.size();
     }
 
-    /** Returns the <var>n</var>'th subgraph. 
-     *  Subgraphs are indexed from zero.
+    /**
+     * Returns the <var>n</var>'th subgraph.
+     * Subgraphs are indexed from zero.
      *
-     *  @exception IndexOutOfBoundsException
-     *      <var>n</var> >= getVisibleSubgraphCount().
+     * @throws IndexOutOfBoundsException <var>n</var> >= getVisibleSubgraphCount().
      */
     public SceneGraph getSubgraph(int n) {
         return (SceneGraph) _nodes.get(n);
     }
 
-    /** Returns getSubgraphCount().  By default, all subgraphs are visible.
-     *  Override this in derived classes for which this is not the case.
+    /**
+     * Returns getSubgraphCount().  By default, all subgraphs are visible.
+     * Override this in derived classes for which this is not the case.
      */
     public int getVisibleSubgraphCount() {
         return getSubgraphCount();
     }
 
-    /** Returns getSubgraph(n).  By default, all subgraphs are visible.
-     *  Override this in derived classes for which this is no the case.
+    /**
+     * Returns getSubgraph(n).  By default, all subgraphs are visible.
+     * Override this in derived classes for which this is no the case.
      */
     public SceneGraph getVisibleSubgraph(int n) {
         return getSubgraph(n);
     }
 
-    /** Returns the number of subgraphs that were rendered by the last
-     *  drawing operation.
-     *  This is used to optimise the rendering process.  User code should 
-     *  avoid calling this.
+    /**
+     * Returns the number of subgraphs that were rendered by the last
+     * drawing operation.
+     * This is used to optimise the rendering process.  User code should
+     * avoid calling this.
      */
     public int getLastDrawnSubgraphCount() {
         return _last_drawn_nodes.size();
     }
 
-    /** Returns the <var>n</var>'th subgraph that was rendered by the
-     *  past drawing operation.
-     *  This is used to optimise the rendering process.  User code should 
-     *  avoid calling this.
+    /**
+     * Returns the <var>n</var>'th subgraph that was rendered by the
+     * past drawing operation.
+     * This is used to optimise the rendering process.  User code should
+     * avoid calling this.
      *
-     *  @exception IndexOutOfBoundsException
-     *      <var>n</var> >= getVisibleSubgraphCount().  
+     * @throws IndexOutOfBoundsException <var>n</var> >= getVisibleSubgraphCount().
      */
     public SceneGraph getLastDrawnSubgraph(int n) {
         return (SceneGraph) _last_drawn_nodes.get(n);
     }
 
-    /** Calls back to the {@link SceneGraphProcessor}
-     *  <var>p</var> to be processed as a 
-     *  {@link CompositeNode}.
+    /**
+     * Calls back to the {@link SceneGraphProcessor}
+     * <var>p</var> to be processed as a
+     * {@link CompositeNode}.
      *
-     *  @param p
-     *      A SceneGraphProcessor that is traversing the scene graph.
+     * @param p A SceneGraphProcessor that is traversing the scene graph.
      */
     public void accept(SceneGraphProcessor p) {
         p.process(this);
     }
 
-    /** Adds a sub-graph to the composite.
+    /**
+     * Adds a sub-graph to the composite.
      *
-     *  @exception uk.ac.ic.doc.scenebeans.TooManyChildrenException
-     *      The maximum number of children have already been added to
-     *      this composite.
+     * @throws uk.ac.ic.doc.scenebeans.TooManyChildrenException The maximum number of children have already been added to
+     *                                                          this composite.
      */
     public void addSubgraph(SceneGraph g) {
         _nodes.add(g);
         setDirty(true);
     }
 
-    /** Removes a sub-graph.
+    /**
+     * Removes a sub-graph.
      *
-     *  @param sg
-     *      The subgraph to remove.
+     * @param sg The subgraph to remove.
      */
     public void removeSubgraph(SceneGraph g) {
         _nodes.remove(g);
         setDirty(true);
     }
 
-    /** Removes a sub-graph by index. 
-     *  Subgraphs are indexed from zero.
+    /**
+     * Removes a sub-graph by index.
+     * Subgraphs are indexed from zero.
      *
-     *  @param n
-     *      The index of the subgraph to remove.
-     *
-     *  @exception IndexOutOfBoundsException
-     *      <var>n</var> >= getVisibleSubgraphCount().  
+     * @param n The index of the subgraph to remove.
+     * @throws IndexOutOfBoundsException <var>n</var> >= getVisibleSubgraphCount().
      */
     public void removeSubgraph(int n) {
         _nodes.remove(n);
         setDirty(true);
     }
 
-    /** Implements the rendering of this node and its subgraphs.
+    /**
+     * Implements the rendering of this node and its subgraphs.
      *
-     *  @param g
-     *      The graphics context onto which to draw the scene graph.
+     * @param g The graphics context onto which to draw the scene graph.
      */
     public void draw(Graphics2D g) {
         _last_drawn_nodes.clear();
@@ -153,4 +158,5 @@ public abstract class CompositeBase
         }
         setDirty(false);
     }
+
 }

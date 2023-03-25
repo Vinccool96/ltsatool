@@ -31,43 +31,41 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-/** The Picker class determines the primitive scene-graph node that contains
- *  a point in the coordinate space of the display.
+/**
+ * The Picker class determines the primitive scene-graph node that contains
+ * a point in the coordinate space of the display.
  */
 public class Picker implements SceneGraphProcessor {
+
     private Graphics2D _gfx_context;
+
     private Point2D _point;
+
     private LinkedList _path = new LinkedList();
+
     private boolean _pick_successful = false;
 
 
-    private class PickFailure extends RuntimeException {
-        NoninvertibleTransformException cause;
-
-        PickFailure(NoninvertibleTransformException ex) {
-            cause = ex;
-        }
+    private Picker(Graphics2D gfx, Point2D p) {
+        _gfx_context = gfx;
+        _point = p;
     }
 
-    /** Determines the primitive scene-graph node that contains
-     *  a point in the coordinate space of the display and returns the
-     *  path from the root of the scene graph to that primitive.
+    /**
+     * Determines the primitive scene-graph node that contains
+     * a point in the coordinate space of the display and returns the
+     * path from the root of the scene graph to that primitive.
      *
-     *  @param gfx
-     *      A graphics context of the display on which the scene graph
-     *      is being rendered.  The point (<var>x</var>,<var>y</var>) is
-     *      in the coordinate space of this display.
-     *  @param sg
-     *      The scene graph being "picked".
-     *  @param x
-     *      The x coordinate of the pick point.
-     *  @param y
-     *      The y coordinate of the pick point.
-     *  @return
-     *      A list of nodes representing a path from the root of the scene graph
-     *      (the first element) to the primitive containing the pick point
-     *      (the last element).  If no primitive contains the pick point, an
-     *      empty list is returned.
+     * @param gfx A graphics context of the display on which the scene graph
+     *            is being rendered.  The point (<var>x</var>,<var>y</var>) is
+     *            in the coordinate space of this display.
+     * @param sg  The scene graph being "picked".
+     * @param x   The x coordinate of the pick point.
+     * @param y   The y coordinate of the pick point.
+     * @return A list of nodes representing a path from the root of the scene graph
+     * (the first element) to the primitive containing the pick point
+     * (the last element).  If no primitive contains the pick point, an
+     * empty list is returned.
      */
     public static List pick(Graphics2D gfx, SceneGraph sg,
             double x, double y)
@@ -75,23 +73,20 @@ public class Picker implements SceneGraphProcessor {
         return pick(gfx, sg, new Point2D.Double(x, y));
     }
 
-    /** Determines the primitive scene-graph node that contains
-     *  a point in the coordinate space of the display and returns the
-     *  path from the root of the scene graph to that primitive.
+    /**
+     * Determines the primitive scene-graph node that contains
+     * a point in the coordinate space of the display and returns the
+     * path from the root of the scene graph to that primitive.
      *
-     *  @param gfx
-     *      A graphics context of the display on which the scene graph
-     *      is being rendered.  The point (<var>x</var>,<var>y</var>) is
-     *      in the coordinate space of this display.
-     *  @param sg
-     *      The scene graph being "picked".
-     *  @param p
-     *      The pick point.
-     *  @return
-     *      A list of nodes representing a path from the root of the scene graph
-     *      (the first element) to the primitive containing the pick point
-     *      (the last element).  If no primitive contains the pick point, an
-     *      empty list is returned.
+     * @param gfx A graphics context of the display on which the scene graph
+     *            is being rendered.  The point (<var>x</var>,<var>y</var>) is
+     *            in the coordinate space of this display.
+     * @param sg  The scene graph being "picked".
+     * @param p   The pick point.
+     * @return A list of nodes representing a path from the root of the scene graph
+     * (the first element) to the primitive containing the pick point
+     * (the last element).  If no primitive contains the pick point, an
+     * empty list is returned.
      */
     public static List pick(Graphics2D gfx, SceneGraph sg, Point2D p)
             throws NoninvertibleTransformException {
@@ -104,17 +99,12 @@ public class Picker implements SceneGraphProcessor {
         }
     }
 
-
-    private Picker(Graphics2D gfx, Point2D p) {
-        _gfx_context = gfx;
-        _point = p;
-    }
-
     List getPath() {
         return _path;
     }
 
-    /** Implementation detail: cannot be called from user code.
+    /**
+     * Implementation detail: cannot be called from user code.
      */
     public void process(Primitive primitive) {
         Shape shape = primitive.getShape(_gfx_context);
@@ -125,7 +115,8 @@ public class Picker implements SceneGraphProcessor {
         }
     }
 
-    /** Implementation detail: cannot be called from user code.
+    /**
+     * Implementation detail: cannot be called from user code.
      */
     public void process(CompositeNode composite) {
         for (int i = 0; i < composite.getVisibleSubgraphCount(); i++) {
@@ -139,7 +130,8 @@ public class Picker implements SceneGraphProcessor {
         }
     }
 
-    /** Implementation detail: cannot be called from user code.
+    /**
+     * Implementation detail: cannot be called from user code.
      */
     public void process(Transform transform) {
         Point2D old_point = _point;
@@ -159,7 +151,8 @@ public class Picker implements SceneGraphProcessor {
         }
     }
 
-    /** Implementation detail: cannot be called from user code.
+    /**
+     * Implementation detail: cannot be called from user code.
      */
     public void process(Style style) {
         Style.Change old_style = style.changeStyle(_gfx_context);
@@ -173,7 +166,8 @@ public class Picker implements SceneGraphProcessor {
         }
     }
 
-    /** Implementation detail: cannot be called from user code.
+    /**
+     * Implementation detail: cannot be called from user code.
      */
     public void process(Input input) {
         SceneGraph g = input.getSensitiveGraph();
@@ -184,6 +178,17 @@ public class Picker implements SceneGraphProcessor {
             return;
         }
     }
+
+    private class PickFailure extends RuntimeException {
+
+        NoninvertibleTransformException cause;
+
+        PickFailure(NoninvertibleTransformException ex) {
+            cause = ex;
+        }
+
+    }
+
 }
 
 

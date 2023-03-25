@@ -32,18 +32,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/** A {@link CompositeNode} that composes its subgraphs by
- *  Constructive Area Geometry.  Derived classes use various CAG operators.
- *
- *  This class is a bit of a wierd hack.  It supports the CompositeNode
- *  interface, so that the XML parser and other graph builders can
- *  modify the graphs to be composed, but acts like a Primitive to any
+/**
+ * A {@link CompositeNode} that composes its subgraphs by
+ * Constructive Area Geometry.  Derived classes use various CAG operators.
+ * <p>
+ * This class is a bit of a wierd hack.  It supports the CompositeNode
+ * interface, so that the XML parser and other graph builders can
+ * modify the graphs to be composed, but acts like a Primitive to any
  * operation implemented as a {@link SceneGraphProcessor}.
  */
 public abstract class CAGComposite
         extends PrimitiveBase
         implements CompositeNode {
+
     private Area _area;
+
     private List _args = new ArrayList();
 
 
@@ -120,4 +123,5 @@ public abstract class CAGComposite
     }
 
     protected abstract CAGProcessor newCAGProcessor(Graphics2D g);
+
 }

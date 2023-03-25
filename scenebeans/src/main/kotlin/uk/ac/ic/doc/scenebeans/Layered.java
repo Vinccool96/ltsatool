@@ -23,10 +23,13 @@
 package uk.ac.ic.doc.scenebeans;
 
 
-/** The <a href="../../../../../../beans/layered.html">Layered</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/layered.html">Layered</a>
+ * SceneBean.
  */
 public class Layered extends CompositeBase {
+
     public Layered() {
     }
+
 }

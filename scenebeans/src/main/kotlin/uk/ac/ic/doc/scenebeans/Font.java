@@ -25,10 +25,12 @@ package uk.ac.ic.doc.scenebeans;
 import java.awt.*;
 
 
-/** The <a href="../../../../../../beans/font.html">Font</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/font.html">Font</a>
+ * SceneBean.
  */
 public class Font extends StyleBase {
+
     private java.awt.Font _font;
 
     public Font() {
@@ -67,4 +69,5 @@ public class Font extends StyleBase {
             }
         };
     }
+
 }

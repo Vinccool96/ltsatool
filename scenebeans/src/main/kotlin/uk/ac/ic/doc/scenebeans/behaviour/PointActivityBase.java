@@ -34,61 +34,65 @@ import java.util.Iterator;
 import java.util.List;
 
 
-/** Base class for {@link PointBehaviour} beans that
- *  are also {@link Activity} objects.
- *  Manages the list of behaviour listeners and provides subclasses with 
- *  a method with which they can announce behaviour updates.
+/**
+ * Base class for {@link PointBehaviour} beans that
+ * are also {@link Activity} objects.
+ * Manages the list of behaviour listeners and provides subclasses with
+ * a method with which they can announce behaviour updates.
  */
 public abstract class PointActivityBase
         extends FiniteActivityBase
         implements PointBehaviour, Serializable {
+
     private List _listeners;
 
-    /** Constructs a PointActivityBase.
+    /**
+     * Constructs a PointActivityBase.
      */
     protected PointActivityBase() {
         _listeners = new ArrayList();
     }
 
-    /** Constructs a PointActivityBase with a specific list.  This allows
-     *  derived classes to specify the type of list used to hold listener
-     *  references.
+    /**
+     * Constructs a PointActivityBase with a specific list.  This allows
+     * derived classes to specify the type of list used to hold listener
+     * references.
      *
-     *  @param l
-     *      The list to hold listener references.
+     * @param l The list to hold listener references.
      */
     protected PointActivityBase(List l) {
         _listeners = l;
     }
 
-    /** Adds a listener to the behaviour.
+    /**
+     * Adds a listener to the behaviour.
      *
-     *  @param l
-     *      The listener to add.
+     * @param l The listener to add.
      */
     public synchronized void
     addPointBehaviourListener(PointBehaviourListener l) {
         _listeners.add(l);
     }
 
-    /** Removes a listener from the behaviour.
+    /**
+     * Removes a listener from the behaviour.
      *
-     *  @param l
-     *      The listener to remove.
+     * @param l The listener to remove.
      */
     public synchronized void
     removePointBehaviourListener(PointBehaviourListener l) {
         _listeners.remove(l);
     }
 
-    /** Announces an update of the behaviour's value to all registered listeners.
+    /**
+     * Announces an update of the behaviour's value to all registered listeners.
      *
-     *  @param v
-     *      The new value of the behaviour.
+     * @param v The new value of the behaviour.
      */
     protected synchronized void postUpdate(Point2D v) {
         for (Iterator i = _listeners.iterator(); i.hasNext(); ) {
             ((PointBehaviourListener) i.next()).behaviourUpdated(v);
         }
     }
+
 }

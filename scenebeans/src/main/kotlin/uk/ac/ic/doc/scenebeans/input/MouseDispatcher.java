@@ -35,64 +35,69 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.util.List;
 
 
-/** A class that dispatches AWT mouse events to
- *  {@link MouseClick} and
- *  {@link MouseMotion} input nodes in a scene graph.
+/**
+ * A class that dispatches AWT mouse events to
+ * {@link MouseClick} and
+ * {@link MouseMotion} input nodes in a scene graph.
  */
 public class MouseDispatcher
         implements MouseListener, MouseMotionListener {
+
     private SceneGraph _scene_graph;
+
     private Object _lock;
 
-    /** Constructs a MouseDispatcher.  The <code>sceneGraph</code> and
-     *  <code>lock</code> properties must be set before it is attached to
-     *  a Component.
+    /**
+     * Constructs a MouseDispatcher.  The <code>sceneGraph</code> and
+     * <code>lock</code> properties must be set before it is attached to
+     * a Component.
      */
     public MouseDispatcher() {
         _scene_graph = null;
         _lock = null;
     }
 
-    /** Constructs a MouseDispatcher that dispatches mouse events to input
-     *  nodes in the scene graph <var>sg</var>.
+    /**
+     * Constructs a MouseDispatcher that dispatches mouse events to input
+     * nodes in the scene graph <var>sg</var>.
      *
-     *  @param sg
-     *      The scene graph whose input nodes will receive mouse events.
-     *  @param lock
-     *      The object on which to synchronize access to the scene graph.
+     * @param sg   The scene graph whose input nodes will receive mouse events.
+     * @param lock The object on which to synchronize access to the scene graph.
      */
     public MouseDispatcher(SceneGraph sg, Object lock) {
         _scene_graph = sg;
         _lock = lock;
     }
 
-    /** Returns the scene graph whose input nodes receive mouse events from
-     *  this MouseDispatcher.
+    /**
+     * Returns the scene graph whose input nodes receive mouse events from
+     * this MouseDispatcher.
      */
     public SceneGraph getSceneGraph() {
         return _scene_graph;
     }
 
-    /** Sets the scene graph whose input nodes will receive mouse events from
-     *  this MouseDispatcher.
+    /**
+     * Sets the scene graph whose input nodes will receive mouse events from
+     * this MouseDispatcher.
      *
-     *  @param sg
-     *      The scene graph whose input nodes will receive mouse events.
+     * @param sg The scene graph whose input nodes will receive mouse events.
      */
     public void setSceneGraph(SceneGraph sg) {
         _scene_graph = sg;
     }
 
-    /** Returns the object used to synchronize access to the scene graph.
+    /**
+     * Returns the object used to synchronize access to the scene graph.
      */
     public Object getLock() {
         return _lock;
     }
 
-    /** Sets the object used to synchronize access to the scene graph.
+    /**
+     * Sets the object used to synchronize access to the scene graph.
      *
-     *  @param lock
-     *      The object used to synchronize access to the scene graph.
+     * @param lock The object used to synchronize access to the scene graph.
      */
     public void setLock(Object lock) {
         _lock = lock;
@@ -173,28 +178,29 @@ public class MouseDispatcher
     }
 
 
-    /** Attaches this MouseDispatcher to Component <var>c</var>.  Mouse events
-     *  occurring on <var>c</var> will be directed to the dispatcher's scene
-     *  graph.
+    /**
+     * Attaches this MouseDispatcher to Component <var>c</var>.  Mouse events
+     * occurring on <var>c</var> will be directed to the dispatcher's scene
+     * graph.
      *
-     *  @param c
-     *      The component generating mouse events for the scene graph.
+     * @param c The component generating mouse events for the scene graph.
      */
     public void attachTo(Component c) {
         c.addMouseListener(this);
         c.addMouseMotionListener(this);
     }
 
-    /** Removes this MouseDispatcher from Component <var>c</var>.  Mouse events
-     *  occurring on <var>c</var> will not be directed to the dispatcher's scene
-     *  graph.
+    /**
+     * Removes this MouseDispatcher from Component <var>c</var>.  Mouse events
+     * occurring on <var>c</var> will not be directed to the dispatcher's scene
+     * graph.
      *
-     *  @param c
-     *      The component generating mouse events.
+     * @param c The component generating mouse events.
      */
     public void removeFrom(Component c) {
         c.removeMouseListener(this);
         c.removeMouseMotionListener(this);
     }
+
 }
 

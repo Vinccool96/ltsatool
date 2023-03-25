@@ -36,57 +36,66 @@ import java.io.Serializable;
 import java.util.*;
 
 
-/** An Animation is the basic unit of animation design.  It encapsulates a
- *  scene graph and the activities animating that graph, and can itself be
- *  embedded in a scene graph and run as an activity.
+/**
+ * An Animation is the basic unit of animation design.  It encapsulates a
+ * scene graph and the activities animating that graph, and can itself be
+ * embedded in a scene graph and run as an activity.
  */
 public class Animation
         extends ActivityBase
         implements CompositeNode, Serializable, ActivityRunner {
+
     private ActivityList _activities = ActivityList.EMPTY;
+
     private Layered _layers = new Layered();
+
     private Map _commands = new HashMap();
+
     private Set _event_names = new HashSet();
+
     private double _width = 0.0;
+
     private double _height = 0.0;
+
     private boolean _is_animated = false;
+
     private boolean _is_dirty = false;
 
-    /** Returns the width of the animation.  This is <em>not</em> calculated from
-     *  the scene graph, because the graph may be animated in arbitrary ways,
-     *  but must be precalculated by the animation designer.
+    /**
+     * Returns the width of the animation.  This is <em>not</em> calculated from
+     * the scene graph, because the graph may be animated in arbitrary ways,
+     * but must be precalculated by the animation designer.
      *
-     *  @return
-     *      The width of the animation.
+     * @return The width of the animation.
      */
     public double getWidth() {
         return _width;
     }
 
-    /** Sets the width of the animation.
+    /**
+     * Sets the width of the animation.
      *
-     *  @param width
-     *      The width of the animation.
+     * @param width The width of the animation.
      */
     public void setWidth(double width) {
         _width = width;
     }
 
-    /** Returns the height of the animation.  This is <em>not</em> calculated from
-     *  the scene graph, because the graph may be animated in arbitrary ways,
-     *  but must be precalculated by the animation designer.
+    /**
+     * Returns the height of the animation.  This is <em>not</em> calculated from
+     * the scene graph, because the graph may be animated in arbitrary ways,
+     * but must be precalculated by the animation designer.
      *
-     *  @return
-     *      The height of the animation.
+     * @return The height of the animation.
      */
     public double getHeight() {
         return _height;
     }
 
-    /** Sets the height of the animation.
+    /**
+     * Sets the height of the animation.
      *
-     *  @param height
-     *      The height of the animation.
+     * @param height The height of the animation.
      */
     public void setHeight(double height) {
         _height = height;
@@ -101,12 +110,12 @@ public class Animation
     }
 
 
-    /** Calls back to the {@link SceneGraphProcessor}
-     *  <var>p</var> to be processed as a 
-     *  {@link CompositeNode}.
+    /**
+     * Calls back to the {@link SceneGraphProcessor}
+     * <var>p</var> to be processed as a
+     * {@link CompositeNode}.
      *
-     *  @param p
-     *      A SceneGraphProcessor that is traversing the scene graph.
+     * @param p A SceneGraphProcessor that is traversing the scene graph.
      */
     public void accept(SceneGraphProcessor p) {
         p.process(this);
@@ -180,58 +189,55 @@ public class Animation
         _activities.performActivities(t);
     }
 
-    /** Adds a command to the Animation.  The command can then be invoked by
-     *  the {@link #invokeCommand} method.
+    /**
+     * Adds a command to the Animation.  The command can then be invoked by
+     * the {@link #invokeCommand} method.
      *
-     *  @param name
-     *      The name of the command.
-     *  @param command
-     *      The object that implements the command.
+     * @param name    The name of the command.
+     * @param command The object that implements the command.
      */
     public synchronized void addCommand(String name, Command command) {
         _commands.put(name, command);
     }
 
-    /** Removes a command from the Animation.
+    /**
+     * Removes a command from the Animation.
      *
-     *  @param name
-     *      The name of the command to be invoked.
+     * @param name The name of the command to be invoked.
      */
     public synchronized void removeCommand(String name) {
         _commands.remove(name);
     }
 
-    /** Returns the set of set command names that can be invoked on this 
-     *  Animation.
+    /**
+     * Returns the set of set command names that can be invoked on this
+     * Animation.
      *
-     *  @return
-     *     An immutable set of Strings, each of which is the name of a command
-     *     that can be invoked upon the Animation.
+     * @return An immutable set of Strings, each of which is the name of a command
+     * that can be invoked upon the Animation.
      */
     public synchronized Set getCommandNames() {
         return Collections.unmodifiableSet(_commands.keySet());
     }
 
-    /** Finds the object that implements a command that can be invoked upon
-     *  this Animation.
+    /**
+     * Finds the object that implements a command that can be invoked upon
+     * this Animation.
      *
-     *  @param name
-     *      The name of the command.
-     *  @return
-     *      The object implementing the command, or <code>null</code> if the
-     *      Animation does not have a command of that name.
+     * @param name The name of the command.
+     * @return The object implementing the command, or <code>null</code> if the
+     * Animation does not have a command of that name.
      */
     public synchronized Command getCommand(String name) {
         return (Command) _commands.get(name);
     }
 
-    /** Invokes a command on the Animation by name.
+    /**
+     * Invokes a command on the Animation by name.
      *
-     *  @param name
-     *      The name of the command.
-     *  @exception CommandException
-     *      An error occurred in processing the command, or the Animation
-     *      does not have a command of that name.
+     * @param name The name of the command.
+     * @throws CommandException An error occurred in processing the command, or the Animation
+     *                          does not have a command of that name.
      */
     public synchronized void invokeCommand(String name)
             throws CommandException {
@@ -243,33 +249,33 @@ public class Animation
         }
     }
 
-    /** Returns all the names of 
-     *  {@link uk.ac.ic.doc.scenebeans.event.AnimationEvent}s that will be 
-     *  announced by this Animation.
+    /**
+     * Returns all the names of
+     * {@link uk.ac.ic.doc.scenebeans.event.AnimationEvent}s that will be
+     * announced by this Animation.
      *
-     *  @return
-     *      An immutable set of Strings, each of which is the name of an
-     *      AnimationEvent that will be announced by this Animation.
+     * @return An immutable set of Strings, each of which is the name of an
+     * AnimationEvent that will be announced by this Animation.
      */
     public Set getEventNames() {
         return Collections.unmodifiableSet(_event_names);
     }
 
-    /** Adds an name to the set of names of AnimationEvents that will 
-     *  be posted by this Animation.
+    /**
+     * Adds an name to the set of names of AnimationEvents that will
+     * be posted by this Animation.
      *
-     *  @param name
-     *      The name of to be added.
+     * @param name The name of to be added.
      */
     public void addEventName(String name) {
         _event_names.add(name);
     }
 
-    /** Removes an name from the set of names of AnimationEvents that will 
-     *  be posted by this Animation.
+    /**
+     * Removes an name from the set of names of AnimationEvents that will
+     * be posted by this Animation.
      *
-     *  @param name
-     *      The name to be removed.
+     * @param name The name to be removed.
      */
     public void removeEventName(String name) {
         _event_names.remove(name);
@@ -278,4 +284,5 @@ public class Animation
     final void announceAnimationEvent(String event) {
         postActivityComplete(event);
     }
+
 }

@@ -26,10 +26,12 @@ import java.awt.*;
 import java.io.Serializable;
 
 
-/** The HSBAColor SceneBean is currently experimental and will be fully supported
- *  in a later release.
+/**
+ * The HSBAColor SceneBean is currently experimental and will be fully supported
+ * in a later release.
  */
 public class HSBAColor extends StyleBase {
+
     private float _h, _s, _b, _a;
 
     public HSBAColor() {
@@ -122,58 +124,68 @@ public class HSBAColor extends StyleBase {
         };
     }
 
-
-    class ColorAdapter implements ColorBehaviourListener, Serializable {
-        public void behaviourUpdated(Color color) {
-            setColor(color);
-        }
-    }
-
     public final ColorAdapter newColorAdapter() {
         return new ColorAdapter();
-    }
-
-    class HueAdapter
-            implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setHue(v);
-        }
     }
 
     public final HueAdapter newHueAdapter() {
         return new HueAdapter();
     }
 
-    class SaturationAdapter
-            implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setSaturation(v);
-        }
-    }
-
     public final SaturationAdapter newSaturationAdapter() {
         return new SaturationAdapter();
-    }
-
-    class BrightnessAdapter
-            implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setBrightness(v);
-        }
     }
 
     public final BrightnessAdapter newBrightnessAdapter() {
         return new BrightnessAdapter();
     }
 
-    class AlphaAdapter
-            implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setAlpha(v);
-        }
-    }
-
     public final AlphaAdapter newAlphaAdapter() {
         return new AlphaAdapter();
     }
+
+    class ColorAdapter implements ColorBehaviourListener, Serializable {
+
+        public void behaviourUpdated(Color color) {
+            setColor(color);
+        }
+
+    }
+
+    class HueAdapter
+            implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setHue(v);
+        }
+
+    }
+
+    class SaturationAdapter
+            implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setSaturation(v);
+        }
+
+    }
+
+    class BrightnessAdapter
+            implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setBrightness(v);
+        }
+
+    }
+
+    class AlphaAdapter
+            implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setAlpha(v);
+        }
+
+    }
+
 }

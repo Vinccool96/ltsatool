@@ -31,12 +31,16 @@ import java.util.List;
 import java.util.ListIterator;
 
 
-/** The <a href="../../../../../../beans/mouseclick.html">MouseClick</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/mouseclick.html">MouseClick</a>
+ * SceneBean.
  */
 public class MouseClick extends InputBase {
+
     private List _activity_listeners = null;
+
     private String _pressed_event = "pressed";
+
     private String _released_event = "released";
 
 
@@ -46,6 +50,28 @@ public class MouseClick extends InputBase {
 
     public MouseClick(SceneGraph sg) {
         super(sg);
+    }
+
+    public static void mousePressed(List pick_path) {
+        ListIterator i = pick_path.listIterator(pick_path.size());
+        while (i.hasPrevious()) {
+            Object o = i.previous();
+            if (o instanceof MouseClick) {
+                ((MouseClick) o).postMousePressed();
+                return;
+            }
+        }
+    }
+
+    public static void mouseReleased(List pick_path) {
+        ListIterator i = pick_path.listIterator(pick_path.size());
+        while (i.hasPrevious()) {
+            Object o = i.previous();
+            if (o instanceof MouseClick) {
+                ((MouseClick) o).postMouseReleased();
+                return;
+            }
+        }
     }
 
     public String getPressedEvent() {
@@ -94,25 +120,4 @@ public class MouseClick extends InputBase {
         }
     }
 
-    public static void mousePressed(List pick_path) {
-        ListIterator i = pick_path.listIterator(pick_path.size());
-        while (i.hasPrevious()) {
-            Object o = i.previous();
-            if (o instanceof MouseClick) {
-                ((MouseClick) o).postMousePressed();
-                return;
-            }
-        }
-    }
-
-    public static void mouseReleased(List pick_path) {
-        ListIterator i = pick_path.listIterator(pick_path.size());
-        while (i.hasPrevious()) {
-            Object o = i.previous();
-            if (o instanceof MouseClick) {
-                ((MouseClick) o).postMouseReleased();
-                return;
-            }
-        }
-    }
 }

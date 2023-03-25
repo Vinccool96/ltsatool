@@ -28,11 +28,14 @@ import uk.ac.ic.doc.scenebeans.cag.UnionProcessor;
 import java.awt.*;
 
 
-/** The <a href="../../../../../../beans/union.html">Union</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/union.html">Union</a>
+ * SceneBean.
  */
 public class Union extends CAGComposite {
+
     protected CAGProcessor newCAGProcessor(Graphics2D g) {
         return new UnionProcessor(g);
     }
+
 }

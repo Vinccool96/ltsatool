@@ -25,37 +25,43 @@ package uk.ac.ic.doc.scenebeans;
 import java.awt.geom.AffineTransform;
 
 
-/** A Transform scene-graph node applies an affine transformation to a 
- *  child scene-graph.
+/**
+ * A Transform scene-graph node applies an affine transformation to a
+ * child scene-graph.
  */
 public interface Transform extends SceneGraph {
-    /** Returns the transformed graph.
+
+    /**
+     * Returns the transformed graph.
      *
-     *  @return
-     *      The scene graph that is transformed by this node.
+     * @return The scene graph that is transformed by this node.
      */
     SceneGraph getTransformedGraph();
 
-    /** Sets the transformed graph.
+    /**
+     * Sets the transformed graph.
      *
-     *  @param g
-     *      The new transformed graph.
+     * @param g The new transformed graph.
      */
     void setTransformedGraph(SceneGraph g);
 
-    /** Returns the transformation performed by this node.
+    /**
+     * Returns the transformation performed by this node.
      */
     AffineTransform getTransform();
 
-    /** Returns the last transformed scene graph drawn by this node.  This
-     *  is used to optimise the rendering process.  User code should avoid
-     *  calling this.
+    /**
+     * Returns the last transformed scene graph drawn by this node.  This
+     * is used to optimise the rendering process.  User code should avoid
+     * calling this.
      */
     SceneGraph getLastDrawnTransformedGraph();
 
-    /** Returns the last transformation drawn by this node.  This
-     *  is used to optimise the rendering process.  User code should avoid
-     *  calling this.
+    /**
+     * Returns the last transformation drawn by this node.  This
+     * is used to optimise the rendering process.  User code should avoid
+     * calling this.
      */
     AffineTransform getLastDrawnTransform();
+
 }

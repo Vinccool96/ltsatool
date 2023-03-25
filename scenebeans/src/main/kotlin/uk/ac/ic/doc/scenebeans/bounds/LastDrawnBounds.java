@@ -30,24 +30,36 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 
 
-/** A SceneGraphProcessor that calculates the rectangle enclosing the
- *  last rendered view of a SceneGraph.
+/**
+ * A SceneGraphProcessor that calculates the rectangle enclosing the
+ * last rendered view of a SceneGraph.
  */
 public class LastDrawnBounds
         implements SceneGraphProcessor {
+
     private Rectangle2D _bounds = null;
+
     private Graphics2D _graphics;
+
     private AffineTransform _transform;
 
-    /** Calculates the bounding rectangle of last drawn view of the scene graph
-     *  <var>sg</var> as rendered on the graphics context <var>g2</var>.
+    public LastDrawnBounds(Graphics2D graphics) {
+        _graphics = graphics;
+        _transform = new AffineTransform();
+    }
+
+    public LastDrawnBounds(Graphics2D g, AffineTransform t) {
+        _graphics = g;
+        _transform = new AffineTransform(t);
+    }
+
+    /**
+     * Calculates the bounding rectangle of last drawn view of the scene graph
+     * <var>sg</var> as rendered on the graphics context <var>g2</var>.
      *
-     *  @param sg
-     *      The scene graph whose last drawn bounds are calculated.
-     *  @param g2
-     *      The graphics context on which the scene graph is to be rendered.
-     *  @return
-     *      The rectangle enclosing the last drawn view of the scene graph.
+     * @param sg The scene graph whose last drawn bounds are calculated.
+     * @param g2 The graphics context on which the scene graph is to be rendered.
+     * @return The rectangle enclosing the last drawn view of the scene graph.
      */
     public static Rectangle2D getBounds(SceneGraph sg, Graphics2D g2) {
         LastDrawnBounds bounds = new LastDrawnBounds(g2);
@@ -60,16 +72,6 @@ public class LastDrawnBounds
         }
 
         return bounds.getBounds();
-    }
-
-    public LastDrawnBounds(Graphics2D graphics) {
-        _graphics = graphics;
-        _transform = new AffineTransform();
-    }
-
-    public LastDrawnBounds(Graphics2D g, AffineTransform t) {
-        _graphics = g;
-        _transform = new AffineTransform(t);
     }
 
     public Rectangle2D getBounds() {
@@ -115,4 +117,5 @@ public class LastDrawnBounds
             }
         }
     }
+
 }

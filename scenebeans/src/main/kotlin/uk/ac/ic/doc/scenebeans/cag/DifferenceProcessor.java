@@ -28,6 +28,7 @@ import java.awt.geom.Area;
 
 
 public class DifferenceProcessor extends CAGProcessor {
+
     public DifferenceProcessor(Graphics2D g) {
         super(g);
     }
@@ -39,4 +40,5 @@ public class DifferenceProcessor extends CAGProcessor {
     protected void accumulateArea(Area accumulator, Area a) {
         accumulator.exclusiveOr(a);
     }
+
 }

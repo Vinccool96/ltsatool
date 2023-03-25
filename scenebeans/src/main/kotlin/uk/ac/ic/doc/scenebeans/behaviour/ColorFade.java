@@ -29,12 +29,16 @@ import java.awt.*;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../../beans/colorfade.html">ColorFade</a> 
- *  behaviour bean.
+/**
+ * The <a href="../../../../../../../beans/colorfade.html">ColorFade</a>
+ * behaviour bean.
  */
 public class ColorFade extends ColorActivityBase {
+
     private float _from_r, _from_g, _from_b, _from_a;
+
     private float _to_r, _to_g, _to_b, _to_a;
+
     private double _duration, _timeout;
 
 
@@ -113,34 +117,40 @@ public class ColorFade extends ColorActivityBase {
         return (float) (from + (ratio() * (to - from)));
     }
 
-
-    class FromAdapter implements ColorBehaviourListener, Serializable {
-        public void behaviourUpdated(Color v) {
-            setFrom(v);
-        }
-    }
-
     public final ColorBehaviourListener newFromAdapter() {
         return new FromAdapter();
-    }
-
-    class ToAdapter implements ColorBehaviourListener, Serializable {
-        public void behaviourUpdated(Color v) {
-            setTo(v);
-        }
     }
 
     public final ColorBehaviourListener newToAdapter() {
         return new ToAdapter();
     }
 
-    class DurationAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setDuration(v);
-        }
-    }
-
     public final DoubleBehaviourListener newDurationAdapter() {
         return new DurationAdapter();
     }
+
+    class FromAdapter implements ColorBehaviourListener, Serializable {
+
+        public void behaviourUpdated(Color v) {
+            setFrom(v);
+        }
+
+    }
+
+    class ToAdapter implements ColorBehaviourListener, Serializable {
+
+        public void behaviourUpdated(Color v) {
+            setTo(v);
+        }
+
+    }
+
+    class DurationAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setDuration(v);
+        }
+
+    }
+
 }

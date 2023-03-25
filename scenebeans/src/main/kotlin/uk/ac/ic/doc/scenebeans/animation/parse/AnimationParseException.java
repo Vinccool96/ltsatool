@@ -23,21 +23,25 @@
 package uk.ac.ic.doc.scenebeans.animation.parse;
 
 
-/** The exception thrown to indicate an error parsing an XML document into
- *  an {@link uk.ac.ic.doc.scenebeans.animation.Animation}.
+/**
+ * The exception thrown to indicate an error parsing an XML document into
+ * an {@link uk.ac.ic.doc.scenebeans.animation.Animation}.
  */
 public class AnimationParseException extends Exception {
-    /** Constructs the exception with no detail message.
+
+    /**
+     * Constructs the exception with no detail message.
      */
     public AnimationParseException() {
     }
 
-    /** Constructs the exception.
+    /**
+     * Constructs the exception.
      *
-     *  @param msg
-     *      An description of the error that occurred.
+     * @param msg An description of the error that occurred.
      */
     public AnimationParseException(String msg) {
         super(msg);
     }
+
 }

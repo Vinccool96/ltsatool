@@ -29,15 +29,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/** A SequentialActivity that runs multiple sub-activities sequentially.
- *  A ConcurrentActivity is finite - it completes when all its last sub-activity
- *  complete - and can only run activities that are themselves finite.
+/**
+ * A SequentialActivity that runs multiple sub-activities sequentially.
+ * A ConcurrentActivity is finite - it completes when all its last sub-activity
+ * complete - and can only run activities that are themselves finite.
  */
 public class SequentialActivity
         extends CompositeActivity
         implements AnimationListener {
-    private List _activities = new ArrayList();
+
     int _current = 0;
+
+    private List _activities = new ArrayList();
 
     public SequentialActivity() {
         super();
@@ -84,4 +87,5 @@ public class SequentialActivity
             postActivityComplete();
         }
     }
+
 }

@@ -25,37 +25,39 @@ package uk.ac.ic.doc.scenebeans.animation;
 import uk.ac.ic.doc.scenebeans.activity.Activity;
 
 
-/** A Command that resets an {@link Activity}
- *  when it is invoked.
+/**
+ * A Command that resets an {@link Activity}
+ * when it is invoked.
  *
- *  @see Activity#reset
+ * @see Activity#reset
  */
 public class ResetActivityCommand implements Command {
+
     private Activity _activity;
 
 
-    /** Constructs a ResetActivityCommand.
+    /**
+     * Constructs a ResetActivityCommand.
      *
-     *  @param a
-     *      The Activity to reset.
+     * @param a The Activity to reset.
      */
     public ResetActivityCommand(Activity a) {
         _activity = a;
     }
 
-    /** Returns the activity that is reset by this command.
+    /**
+     * Returns the activity that is reset by this command.
      *
-     *  @return
-     *      The activity reset by this command.
+     * @return The activity reset by this command.
      */
     public Activity getActivity() {
         return _activity;
     }
 
-    /** Sets the activity that is reset by this command.
+    /**
+     * Sets the activity that is reset by this command.
      *
-     *  @param a
-     *      The activity reset by this command.
+     * @param a The activity reset by this command.
      */
     public void setActivity(Activity a) {
         _activity = a;
@@ -64,5 +66,6 @@ public class ResetActivityCommand implements Command {
     public void invoke() throws CommandException {
         _activity.reset();
     }
+
 }
 

@@ -31,59 +31,63 @@ import java.util.Iterator;
 import java.util.List;
 
 
-/** Base class for {@link DoubleBehaviour} beans.
- *  Manages the list of behaviour listeners and provides subclasses with 
- *  a method with which they can announce behaviour updates.
+/**
+ * Base class for {@link DoubleBehaviour} beans.
+ * Manages the list of behaviour listeners and provides subclasses with
+ * a method with which they can announce behaviour updates.
  */
 public abstract class DoubleBehaviourBase
         implements DoubleBehaviour, Serializable {
+
     private List _behaviour_listeners;
 
-    /** Constructs a DoubleBehaviourBase.
+    /**
+     * Constructs a DoubleBehaviourBase.
      */
     protected DoubleBehaviourBase() {
         _behaviour_listeners = new ArrayList();
     }
 
-    /** Constructs a DoubleBehaviourBase with a specific list.  This allows
-     *  derived classes to specify the type of list used to hold listener
-     *  references.
+    /**
+     * Constructs a DoubleBehaviourBase with a specific list.  This allows
+     * derived classes to specify the type of list used to hold listener
+     * references.
      *
-     *  @param l
-     *      The list to hold listener references.
+     * @param l The list to hold listener references.
      */
     protected DoubleBehaviourBase(List l) {
         _behaviour_listeners = l;
     }
 
-    /** Adds a listener to the behaviour.
+    /**
+     * Adds a listener to the behaviour.
      *
-     *  @param l
-     *      The listener to add.
+     * @param l The listener to add.
      */
     public synchronized void
     addDoubleBehaviourListener(DoubleBehaviourListener l) {
         _behaviour_listeners.add(l);
     }
 
-    /** Removes a listener from the behaviour.
+    /**
+     * Removes a listener from the behaviour.
      *
-     *  @param l
-     *      The listener to remove.
+     * @param l The listener to remove.
      */
     public synchronized void
     removeDoubleBehaviourListener(DoubleBehaviourListener l) {
         _behaviour_listeners.remove(l);
     }
 
-    /** Announces an update of the behaviour's value to all registered listeners.
+    /**
+     * Announces an update of the behaviour's value to all registered listeners.
      *
-     *  @param v
-     *      The new value of the behaviour.
+     * @param v The new value of the behaviour.
      */
     protected synchronized void postUpdate(double v) {
         for (Iterator i = _behaviour_listeners.iterator(); i.hasNext(); ) {
             ((DoubleBehaviourListener) i.next()).behaviourUpdated(v);
         }
     }
+
 }

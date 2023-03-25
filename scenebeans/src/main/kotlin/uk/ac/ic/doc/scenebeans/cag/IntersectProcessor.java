@@ -28,6 +28,7 @@ import java.awt.geom.Area;
 
 
 public class IntersectProcessor extends CAGProcessor {
+
     public IntersectProcessor(Graphics2D g) {
         super(g);
     }
@@ -39,4 +40,5 @@ public class IntersectProcessor extends CAGProcessor {
     protected void accumulateArea(Area accumulator, Area a) {
         accumulator.intersect(a);
     }
+
 }

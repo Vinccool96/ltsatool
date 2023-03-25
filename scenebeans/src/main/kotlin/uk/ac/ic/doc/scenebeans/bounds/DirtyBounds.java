@@ -29,20 +29,28 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 
-/** A SceneGraphProcessor that calculates the rectangle enclosing the
- *  "dirty" parts of the screen caused by modifying a SceneGraph.
+/**
+ * A SceneGraphProcessor that calculates the rectangle enclosing the
+ * "dirty" parts of the screen caused by modifying a SceneGraph.
  */
 public class DirtyBounds extends Bounds {
-    /** Calculates the bounding rectangle of the dirty parts of the scene graph
-     *  <var>sg</var> when rendered on the graphics context <var>g2</var>.
+
+    public DirtyBounds(Graphics2D g) {
+        super(g);
+    }
+
+    public DirtyBounds(Graphics2D g, AffineTransform t) {
+        super(g, t);
+    }
+
+    /**
+     * Calculates the bounding rectangle of the dirty parts of the scene graph
+     * <var>sg</var> when rendered on the graphics context <var>g2</var>.
      *
-     *  @param sg
-     *      The scene graph of which to calculate the bounds of the dirty
-     *      nodes.
-     *  @param g2
-     *      The graphics context on which the scene graph is to be rendered.
-     *  @return
-     *      The rectangle enclosing the dirty parts of the scene graph.
+     * @param sg The scene graph of which to calculate the bounds of the dirty
+     *           nodes.
+     * @param g2 The graphics context on which the scene graph is to be rendered.
+     * @return The rectangle enclosing the dirty parts of the scene graph.
      */
     public static Rectangle2D getBounds(SceneGraph sg, Graphics2D g2) {
         DirtyBounds bounds = new DirtyBounds(g2);
@@ -55,14 +63,6 @@ public class DirtyBounds extends Bounds {
         }
 
         return bounds.getBounds();
-    }
-
-    public DirtyBounds(Graphics2D g) {
-        super(g);
-    }
-
-    public DirtyBounds(Graphics2D g, AffineTransform t) {
-        super(g, t);
     }
 
     public void process(Primitive sg) {
@@ -120,6 +120,7 @@ public class DirtyBounds extends Bounds {
         sg.accept(bounds);
         addBounds(bounds.getBounds());
     }
+
 }
 
 

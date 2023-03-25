@@ -31,22 +31,34 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Rectangle2D;
 
-/** An AWT Component that can display and animate 
- *  {@link Animation}s.
+/**
+ * An AWT Component that can display and animate
+ * {@link Animation}s.
  */
 public class AnimationCanvas extends Canvas {
+
     private Animation _animation = null; // Animation being displayed
+
     private WindowTransform _root = new WindowTransform();
+
     private RenderingHints _hints = null;
+
     private Image _backbuffer;
+
     private Thread _runner;
+
     private long _frame_delay = 25;
+
     private double _time_warp = 1.0;
+
     private boolean _pause = false, _paused = false;
+
     private boolean _is_timing_adaptive = false;
+
     private boolean _is_update_pending = false;
 
-    /** Constructs an AnimationCanvas.
+    /**
+     * Constructs an AnimationCanvas.
      */
     public AnimationCanvas() {
         enableEvents(AWTEvent.COMPONENT_EVENT_MASK);
@@ -59,19 +71,20 @@ public class AnimationCanvas extends Canvas {
         _runner.start();
     }
 
-    /** Returns the Animation displayed by the canvas.  This allows an
-     *  application to send commands to or register for events from the
-     *  Animation.
-     *  <p><strong>Important:</strong>
-     *  The AnimationCanvas runs animation behaviours in a worker thread,
-     *  concurrently to the AWT dispatcher and any threads spawned by the
-     *  application.  The worker thread and AWT thread serialise access
-     *  to the Animation by synchronizing on the canvas displaying the
-     *  Animation.  Therefore, to avoid errors when invoking commands on
-     *  the animation or modifying the scene graph, code must synchronize
-     *  on the canvas object <em>before</em> calling <code>getAnimation</code>.
-     *  For example:
-     *  <pre>
+    /**
+     * Returns the Animation displayed by the canvas.  This allows an
+     * application to send commands to or register for events from the
+     * Animation.
+     * <p><strong>Important:</strong>
+     * The AnimationCanvas runs animation behaviours in a worker thread,
+     * concurrently to the AWT dispatcher and any threads spawned by the
+     * application.  The worker thread and AWT thread serialise access
+     * to the Animation by synchronizing on the canvas displaying the
+     * Animation.  Therefore, to avoid errors when invoking commands on
+     * the animation or modifying the scene graph, code must synchronize
+     * on the canvas object <em>before</em> calling <code>getAnimation</code>.
+     * For example:
+     * <pre>
      *  AnimationCanvas canvas = ...;
      *  ...
      *  synchronized(canvas) {
@@ -79,16 +92,16 @@ public class AnimationCanvas extends Canvas {
      *  }
      *  </pre>
      *
-     *  @return The Animation displayed by the canvas.
+     * @return The Animation displayed by the canvas.
      */
     public Animation getAnimation() {
         return _animation;
     }
 
-    /** Sets the animation displayed on the canvas.
+    /**
+     * Sets the animation displayed on the canvas.
      *
-     *  @param animation
-     *      The animation to display.
+     * @param animation The animation to display.
      */
     public synchronized void setAnimation(Animation animation) {
         _animation = animation;
@@ -99,144 +112,145 @@ public class AnimationCanvas extends Canvas {
         notifyAll();
     }
 
-    /** Returns the root of the scene graph.  This may not be the
-     *  Animation because the canvas inserts 
-     *  {@link Transform}
-     *  objects into the graph to center and scale the animation.
+    /**
+     * Returns the root of the scene graph.  This may not be the
+     * Animation because the canvas inserts
+     * {@link Transform}
+     * objects into the graph to center and scale the animation.
      */
     public SceneGraph getSceneGraph() {
         return _root;
     }
 
-    /** Returns the number of milliseconds that the animation thread sleeps
-     *  between each frame.  The default is 25 milliseconds, giving a maximum
-     *  frame rate of about 40 fps.
+    /**
+     * Returns the number of milliseconds that the animation thread sleeps
+     * between each frame.  The default is 25 milliseconds, giving a maximum
+     * frame rate of about 40 fps.
      *
-     *  @return
-     *      The duration the animation thread sleeps between each frame in
-     *      milliseconds.
+     * @return The duration the animation thread sleeps between each frame in
+     * milliseconds.
      */
     public synchronized long getFrameDelay() {
         return _frame_delay;
     }
 
-    /** Sets the number of milliseconds that the animation thread sleeps
-     *  between each frame.
+    /**
+     * Sets the number of milliseconds that the animation thread sleeps
+     * between each frame.
      *
-     *  @param msecs
-     *      The duration the animation thread sleeps between each frame in
-     *      milliseconds.
+     * @param msecs The duration the animation thread sleeps between each frame in
+     *              milliseconds.
      */
     public synchronized void setFrameDelay(long msecs) {
         _frame_delay = msecs;
     }
 
-    /** Returns the time warp ratio.  The duration of each frame is multiplied
-     *  by the time warp before being passed to the 
-     *  {@link uk.ac.ic.doc.scenebeans.animation#performActivity} method
-     *  of the animation.  Therefore, setting the time warp property to a value
-     *  less than 1 will slow down the animation -- the animation will see
-     *  each frame as being shorter than real-time -- and setting it to a value
-     *  greater than 1 will speed up the animation -- the animation will see
-     *  each frame as being longer than real-time.  The default time warp is
-     *  1, meaning that the animation runs at wall-clock time.
+    /**
+     * Returns the time warp ratio.  The duration of each frame is multiplied
+     * by the time warp before being passed to the
+     * {@link uk.ac.ic.doc.scenebeans.animation#performActivity} method
+     * of the animation.  Therefore, setting the time warp property to a value
+     * less than 1 will slow down the animation -- the animation will see
+     * each frame as being shorter than real-time -- and setting it to a value
+     * greater than 1 will speed up the animation -- the animation will see
+     * each frame as being longer than real-time.  The default time warp is
+     * 1, meaning that the animation runs at wall-clock time.
      *
-     *  @return
-     *      The time-warp ratio.
+     * @return The time-warp ratio.
      */
     public synchronized double getTimeWarp() {
         return _time_warp;
     }
 
-    /** Sets the time warp ratio.  The duration of each frame is multiplied
-     *  by the time warp before being passed to the 
-     *  {@link uk.ac.ic.doc.scenebeans.animation#performActivity} method
-     *  of the animation.  Therefore, setting the time warp property to a value
-     *  less than 1 will slow down the animation (the animation will see
-     *  each frame as being shorter than real-time) and setting it to a value
-     *  greater than 1 will speed up the animation (the animation will see
-     *  each frame as being longer than real-time).  The default time warp is
-     *  1, meaning that the animation runs at wall-clock time.
-     *  <p>
-     *  <strong>Note:</strong> setting the time warp property to a value other
-     *  than 1 will make the animation run at a different speed than other
-     *  threads or devices that may be involved in the animation.  For example,
-     *  animated images displayed by {@link Sprite}
-     *  beans are animated by threads within the AWT, and sound is played at
-     *  real-time by the audio hardware.  Therefore, changing the time warp
-     *  will make the animation run out of sync with sprites and audio.
+    /**
+     * Sets the time warp ratio.  The duration of each frame is multiplied
+     * by the time warp before being passed to the
+     * {@link uk.ac.ic.doc.scenebeans.animation#performActivity} method
+     * of the animation.  Therefore, setting the time warp property to a value
+     * less than 1 will slow down the animation (the animation will see
+     * each frame as being shorter than real-time) and setting it to a value
+     * greater than 1 will speed up the animation (the animation will see
+     * each frame as being longer than real-time).  The default time warp is
+     * 1, meaning that the animation runs at wall-clock time.
+     * <p>
+     * <strong>Note:</strong> setting the time warp property to a value other
+     * than 1 will make the animation run at a different speed than other
+     * threads or devices that may be involved in the animation.  For example,
+     * animated images displayed by {@link Sprite}
+     * beans are animated by threads within the AWT, and sound is played at
+     * real-time by the audio hardware.  Therefore, changing the time warp
+     * will make the animation run out of sync with sprites and audio.
      *
-     *  @param tw
-     *      The time-warp ratio.
+     * @param tw The time-warp ratio.
      */
     public synchronized void setTimeWarp(double tw) {
         _time_warp = tw;
     }
 
-    /** Returns whether the timing algorithm is adapting to timing variations
-     *  caused by thread scheduling, or is not.  By default it is not, because
-     *  the adaptive timing algorithm does not work very well.  It may be 
-     *  improved in the future, but for now, ignore this property.
+    /**
+     * Returns whether the timing algorithm is adapting to timing variations
+     * caused by thread scheduling, or is not.  By default it is not, because
+     * the adaptive timing algorithm does not work very well.  It may be
+     * improved in the future, but for now, ignore this property.
      *
-     *  @return
-     *    <code>true</code> if timing is adaptive, <code>false</code> otherwise.
+     * @return <code>true</code> if timing is adaptive, <code>false</code> otherwise.
      */
     public boolean isTimingAdaptive() {
         return _is_timing_adaptive;
     }
 
-    /** Sets whether the timing algorithm is adapting to timing variations
-     *  caused by thread scheduling, or is not.  By default it is not, because
-     *  the adaptive timing algorithm does not work very well.  It may be 
-     *  improved in the future, but for now, ignore this property.
+    /**
+     * Sets whether the timing algorithm is adapting to timing variations
+     * caused by thread scheduling, or is not.  By default it is not, because
+     * the adaptive timing algorithm does not work very well.  It may be
+     * improved in the future, but for now, ignore this property.
      *
-     *  @param b
-     *    <code>true</code> if timing is adaptive, <code>false</code> otherwise.
+     * @param b <code>true</code> if timing is adaptive, <code>false</code> otherwise.
      */
     public void setTimingAdaptive(boolean b) {
         _is_timing_adaptive = b;
     }
 
-    /** Returns the RenderingHints used to control the rendering of shapes in
-     *  the scene graph.  Changing this property allows an application to trade
-     *  off visual quality against speed.
+    /**
+     * Returns the RenderingHints used to control the rendering of shapes in
+     * the scene graph.  Changing this property allows an application to trade
+     * off visual quality against speed.
      *
-     *  @return
-     *      The RenderingHints used when rendering the scene graph.
+     * @return The RenderingHints used when rendering the scene graph.
      */
     public RenderingHints getRenderingHints() {
         return _hints;
     }
 
-    /** Sets the RenderingHints used to control the rendering of shapes in
-     *  the scene graph.  Changing this property allows an application to trade
-     *  off visual quality against speed.
+    /**
+     * Sets the RenderingHints used to control the rendering of shapes in
+     * the scene graph.  Changing this property allows an application to trade
+     * off visual quality against speed.
      *
-     *  @param hints
-     *      The RenderingHints used when rendering the scene graph.
+     * @param hints The RenderingHints used when rendering the scene graph.
      */
     public void setRenderingHints(RenderingHints hints) {
         _hints = hints;
         repaint();
     }
 
-    /** Returns whether the animation thread is paused.
+    /**
+     * Returns whether the animation thread is paused.
      *
-     *  @return
-     *      <code>true</code> if the thread is paused, <code>false</code> if
-     *      the thread is running.
+     * @return <code>true</code> if the thread is paused, <code>false</code> if
+     * the thread is running.
      */
     public boolean isPaused() {
         return _paused;
     }
 
-    /** Requests that the animation thread pauses or resumes, but does not 
-     *  wait for it to meet the request.
+    /**
+     * Requests that the animation thread pauses or resumes, but does not
+     * wait for it to meet the request.
      *
-     *  @param pause
-     *      <code>true</code> to pause the animation thread, <code>false</code>
-     *      to resume it.
-     *  @see #waitPaused
+     * @param pause <code>true</code> to pause the animation thread, <code>false</code>
+     *              to resume it.
+     * @see #waitPaused
      */
     public synchronized void setPaused(boolean pause) {
         _pause = pause;
@@ -246,12 +260,13 @@ public class AnimationCanvas extends Canvas {
         }
     }
 
-    /** Pauses the animation thread and waits for the thread to enter the paused
-     *  state.
+    /**
+     * Pauses the animation thread and waits for the thread to enter the paused
+     * state.
      *
-     *  @throw java.lang.InterruptedException
-     *      The calling thread was interrupted while waiting for the animation
-     *      thread to pause.
+     * @throw java.lang.InterruptedException
+     * The calling thread was interrupted while waiting for the animation
+     * thread to pause.
      */
     public synchronized void waitPaused() throws InterruptedException {
         setPaused(true);
@@ -260,23 +275,23 @@ public class AnimationCanvas extends Canvas {
         }
     }
 
-    /** Returns whether the origin of the animation's coordinate space is centered
-     *  within the canvas window or not.
+    /**
+     * Returns whether the origin of the animation's coordinate space is centered
+     * within the canvas window or not.
      *
-     *  @return
-     *      <code>true</code> if the origin is centered in the window, 
-     *      <code>false</code> if it is in the top left-hand corner of the window.
+     * @return <code>true</code> if the origin is centered in the window,
+     * <code>false</code> if it is in the top left-hand corner of the window.
      */
     public boolean isAnimationCentered() {
         return _root.isCentered();
     }
 
-    /** Sets whether the origin of the animation's coordinate space is centered
-     *  within the canvas window or not.
+    /**
+     * Sets whether the origin of the animation's coordinate space is centered
+     * within the canvas window or not.
      *
-     *  @param b
-     *      <code>true</code> if the origin is centered in the window, 
-     *      <code>false</code> if it is in the top left-hand corner of the window.
+     * @param b <code>true</code> if the origin is centered in the window,
+     *          <code>false</code> if it is in the top left-hand corner of the window.
      */
     public synchronized void setAnimationCentered(boolean b) {
         _root.setCentered(b);
@@ -286,33 +301,33 @@ public class AnimationCanvas extends Canvas {
         }
     }
 
-    /** Returns whether the animation is stretched or shrunk to fill the window,
-     *  or displayed at its natural size and, potentially, clipped by the edges
-     *  of the window.  The natural size of the animation is given by its
-     *  {@link Animation#getWidth} and
-     *  {@link Animation#getHeight} methods.
+    /**
+     * Returns whether the animation is stretched or shrunk to fill the window,
+     * or displayed at its natural size and, potentially, clipped by the edges
+     * of the window.  The natural size of the animation is given by its
+     * {@link Animation#getWidth} and
+     * {@link Animation#getHeight} methods.
      *
-     *  @return
-     *      <code>true</code> if the animation is stretched, <code>false</code>
-     *      if it isn't.
-     *  @see #isAnimationAspectFixed
-     *  @see #setAnimationAspectFixed
+     * @return <code>true</code> if the animation is stretched, <code>false</code>
+     * if it isn't.
+     * @see #isAnimationAspectFixed
+     * @see #setAnimationAspectFixed
      */
     public boolean isAnimationStretched() {
         return _root.isStretched();
     }
 
-    /** Sets whether the animation is stretched or shrunk to fill the window,
-     *  or displayed at its natural size and, potentially, clipped by the edges
-     *  of the window.  The natural size of the animation is given by its
-     *  {@link Animation#getWidth} and
-     *  {@link Animation#getHeight} methods.
+    /**
+     * Sets whether the animation is stretched or shrunk to fill the window,
+     * or displayed at its natural size and, potentially, clipped by the edges
+     * of the window.  The natural size of the animation is given by its
+     * {@link Animation#getWidth} and
+     * {@link Animation#getHeight} methods.
      *
-     *  @param b
-     *      <code>true</code> if the animation is stretched, <code>false</code>
-     *      if it isn't.
-     *  @see #isAnimationAspectFixed
-     *  @see #setAnimationAspectFixed
+     * @param b <code>true</code> if the animation is stretched, <code>false</code>
+     *          if it isn't.
+     * @see #isAnimationAspectFixed
+     * @see #setAnimationAspectFixed
      */
     public synchronized void setAnimationStretched(boolean b) {
         _root.setStretched(b);
@@ -322,29 +337,29 @@ public class AnimationCanvas extends Canvas {
         }
     }
 
-    /** Returns whether the aspect ratio of the animation is maintained when
-     *  it is stretched.
+    /**
+     * Returns whether the aspect ratio of the animation is maintained when
+     * it is stretched.
      *
-     *  @return
-     *      <code>true</code> if the aspect ratio is fixed, <code>false</code>
-     *      if the animation is allowed to scale by different amounts in the
-     *      x and y direections when stretched to fit the canvas window.
-     *  @see #isAnimationStretched
-     *  @see #setAnimationStretched
+     * @return <code>true</code> if the aspect ratio is fixed, <code>false</code>
+     * if the animation is allowed to scale by different amounts in the
+     * x and y direections when stretched to fit the canvas window.
+     * @see #isAnimationStretched
+     * @see #setAnimationStretched
      */
     public boolean isAnimationAspectFixed() {
         return _root.isAspectFixed();
     }
 
-    /** Sets whether the aspect ratio of the animation is maintained when
-     *  it is stretched.
+    /**
+     * Sets whether the aspect ratio of the animation is maintained when
+     * it is stretched.
      *
-     *  @param b
-     *      <code>true</code> if the aspect ratio is fixed, <code>false</code>
-     *      if the animation is allowed to scale by different amounts in the
-     *      x and y direections when stretched to fit the canvas window.
-     *  @see #isAnimationStretched
-     *  @see #setAnimationStretched
+     * @param b <code>true</code> if the aspect ratio is fixed, <code>false</code>
+     *          if the animation is allowed to scale by different amounts in the
+     *          x and y direections when stretched to fit the canvas window.
+     * @see #isAnimationStretched
+     * @see #setAnimationStretched
      */
     public synchronized void setAnimationAspectFixed(boolean b) {
         _root.setAspectFixed(b);
@@ -371,7 +386,8 @@ public class AnimationCanvas extends Canvas {
         return true;
     }
 
-    /** Stops the animation thread, but does not wait for it to stop.
+    /**
+     * Stops the animation thread, but does not wait for it to stop.
      */
     public synchronized void stop() {
         if (_runner != null) {
@@ -433,8 +449,9 @@ public class AnimationCanvas extends Canvas {
         }
     }
 
-    /** Paints the scene graph onto the backbuffer and returns the smallest
-     *  rectangle that contains the painted changes.
+    /**
+     * Paints the scene graph onto the backbuffer and returns the smallest
+     * rectangle that contains the painted changes.
      */
     private Rectangle2D paintBackbuffer() {
         Graphics2D g = null;
@@ -478,7 +495,8 @@ public class AnimationCanvas extends Canvas {
         g.drawImage(_backbuffer, 0, 0, null);
     }
 
-    /** Overridden <em>not</em> to clear the front buffer.
+    /**
+     * Overridden <em>not</em> to clear the front buffer.
      */
     public synchronized void update(Graphics g) {
         paint(g);
@@ -525,4 +543,5 @@ public class AnimationCanvas extends Canvas {
 
         super.processComponentEvent(ev);
     }
+
 }

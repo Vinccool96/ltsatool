@@ -1,4 +1,3 @@
-
 package uk.ac.ic.doc.natutil;
 
 
@@ -8,12 +7,17 @@ import java.util.Map;
 
 
 public class MacroExpander {
+
     /*  Special syntax characters for macro expansion.
      */
     private static final int SYNTAX_ESCAPE = '\\';
+
     private static final int SYNTAX_SUBST = '$';
+
     private static final int SYNTAX_BEGIN = '{';
+
     private static final int SYNTAX_END = '}';
+
     private static final int SYNTAX_DEFAULT = '=';
 
     private Map _macro_table = new HashMap();

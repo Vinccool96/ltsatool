@@ -24,15 +24,30 @@ package uk.ac.ic.doc.scenebeans.animation.parse;
 
 //import expr.*;
 
-import gnu.jel.*;
+import gnu.jel.CompilationException;
+import gnu.jel.CompiledExpression;
+import gnu.jel.Evaluator;
+import gnu.jel.Library;
 
 
-/** Parses and evaluates string expressions.
- *  <p>
- *  This class is defined so that the package used to parse expressions can
- *  easily be changed.
+/**
+ * Parses and evaluates string expressions.
+ * <p>
+ * This class is defined so that the package used to parse expressions can
+ * easily be changed.
  */
 public class ExprUtil {
+
+    /**
+     * Constant definition that can be used in expressions
+     */
+    public static double pi = Math.PI;
+
+    /**
+     * Constant definition that can be used in expressions
+     */
+    public static double e = Math.E;
+
     static Library lib = new Library(
             new Class[]{Math.class, ExprUtil.class},
             null);
@@ -40,19 +55,11 @@ public class ExprUtil {
     static {
         try {
             lib.markStateDependent("random", null);
-        } catch (NoSuchMethodException ex) {
+        } catch (CompilationException ex) {
             // Won't happen but if it does...
             throw new NoSuchMethodError("no random method in java.lang.Math!");
         }
     }
-
-    /** Constant definition that can be used in expressions
-     */
-    public static double pi = Math.PI;
-
-    /** Constant definition that can be used in expressions
-     */
-    public static double e = Math.E;
 
     public static double evaluate(String expr_str)
             throws IllegalArgumentException {

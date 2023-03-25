@@ -28,17 +28,24 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../../beans/multitrack.html">MultiTrack</a>
- *  behaviour bean.
+/**
+ * The <a href="../../../../../../../beans/multitrack.html">MultiTrack</a>
+ * behaviour bean.
  */
 public class MultiTrack
         extends PointActivityBase
         implements Serializable {
+
     private double[] _nodes;
+
     private String[] _events;
+
     private double _timeout = 0.0;
+
     private int _current = 0;
+
     private double _spacing = 0.0;
+
     private Point2D _avoid = new Point2D.Double(0.0, 0.0);
 
     public MultiTrack() {
@@ -47,12 +54,12 @@ public class MultiTrack
         _avoid = new Point2D.Double(100000.0, 100000.0);
     }
 
-    public void setAvoid(Point2D p) {
-        _avoid = p;
-    }
-
     public Point2D getAvoid() {
         return _avoid;
+    }
+
+    public void setAvoid(Point2D p) {
+        _avoid = p;
     }
 
     public double getSpacing() {
@@ -180,15 +187,16 @@ public class MultiTrack
         return (_avoid.distanceSq(getValue()) < (_spacing * _spacing));
     }
 
+    public final AvoidAdapter newAvoidAdapter() {
+        return new AvoidAdapter();
+    }
 
     public class AvoidAdapter implements PointBehaviourListener {
+
         public void behaviourUpdated(Point2D v) {
             setAvoid(v);
         }
-    }
 
-    public final AvoidAdapter newAvoidAdapter() {
-        return new AvoidAdapter();
     }
 
 }

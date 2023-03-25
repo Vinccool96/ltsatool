@@ -27,10 +27,12 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 
 
-/** The <a href="../../../../../../beans/polygon.html">Polygon</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/polygon.html">Polygon</a>
+ * SceneBean.
  */
 public class Polygon extends PrimitiveBase {
+
     private float[] _coords;
 
     public Polygon() {
@@ -86,10 +88,6 @@ public class Polygon extends PrimitiveBase {
         return points;
     }
 
-    public Point2D getPoints(int n) {
-        return new Point2D.Float(_coords[2 * n], _coords[2 * n + 1]);
-    }
-
     public void setPoints(Point2D[] points) {
         _coords = new float[points.length * 2];
         for (int i = 0; i < points.length; i++) {
@@ -97,6 +95,10 @@ public class Polygon extends PrimitiveBase {
             _coords[i * 2 + 1] = (float) points[i].getY();
         }
         setDirty(true);
+    }
+
+    public Point2D getPoints(int n) {
+        return new Point2D.Float(_coords[2 * n], _coords[2 * n + 1]);
     }
 
     public void setPoints(int n, Point2D p) {
@@ -123,8 +125,21 @@ public class Polygon extends PrimitiveBase {
         setDirty(true);
     }
 
+    public final XCoord newXCoordAdapter(int index) {
+        return new XCoord(index);
+    }
+
+    public final YCoord newYCoordAdapter(int index) {
+        return new YCoord(index);
+    }
+
+    public final Points newPointsAdapter(int index) {
+        return new Points(index);
+    }
+
     public class XCoord
             implements DoubleBehaviourListener, java.io.Serializable {
+
         int _index;
 
         public XCoord(int index) {
@@ -134,14 +149,12 @@ public class Polygon extends PrimitiveBase {
         public void behaviourUpdated(double v) {
             setXCoord(_index, v);
         }
-    }
 
-    public final XCoord newXCoordAdapter(int index) {
-        return new XCoord(index);
     }
 
     public class YCoord
             implements DoubleBehaviourListener, java.io.Serializable {
+
         int _index;
 
         public YCoord(int index) {
@@ -151,14 +164,12 @@ public class Polygon extends PrimitiveBase {
         public void behaviourUpdated(double v) {
             setYCoord(_index, v);
         }
-    }
 
-    public final YCoord newYCoordAdapter(int index) {
-        return new YCoord(index);
     }
 
     public class Points
             implements PointBehaviourListener, java.io.Serializable {
+
         int _index;
 
         public Points(int index) {
@@ -168,10 +179,8 @@ public class Polygon extends PrimitiveBase {
         public void behaviourUpdated(Point2D v) {
             setPoints(_index, v);
         }
+
     }
 
-    public final Points newPointsAdapter(int index) {
-        return new Points(index);
-    }
 }
 

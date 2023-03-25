@@ -22,14 +22,17 @@
 
 package uk.ac.ic.doc.scenebeans.animation;
 
-/** Command objects implement commands that can be invoked upon an Animation.
- *  Commands take no arguments and return no results.
+/**
+ * Command objects implement commands that can be invoked upon an Animation.
+ * Commands take no arguments and return no results.
  */
 public interface Command {
-    /** Invokes the command.
+
+    /**
+     * Invokes the command.
      *
-     *  @exception CommandException
-     *      An error occurred in executing the command.
+     * @throws CommandException An error occurred in executing the command.
      */
     void invoke() throws CommandException;
+
 }

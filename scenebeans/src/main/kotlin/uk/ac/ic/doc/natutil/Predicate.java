@@ -8,5 +8,7 @@ package uk.ac.ic.doc.natutil;
 
 
 public interface Predicate {
+
     public boolean evaluate(Object o);
+
 }

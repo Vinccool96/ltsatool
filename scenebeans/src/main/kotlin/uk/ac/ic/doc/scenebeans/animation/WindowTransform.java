@@ -29,12 +29,19 @@ import java.awt.geom.AffineTransform;
 
 
 class WindowTransform extends TransformBase {
+
     private double _width = 0.0, _height = 0.0;
+
     private double _child_width = 1.0, _child_height = 1.0;
+
     private double _translate_x = 0.0, _translate_y = 0.0;
+
     private double _scale_x = 1.0, _scale_y = 1.0;
+
     private boolean _is_centered = false;
+
     private boolean _is_stretched = false;
+
     private boolean _is_aspect_fixed = false;
 
 
@@ -122,4 +129,5 @@ class WindowTransform extends TransformBase {
         g.translate(_translate_x, _translate_y);
         g.scale(_scale_x, _scale_y);
     }
+
 }

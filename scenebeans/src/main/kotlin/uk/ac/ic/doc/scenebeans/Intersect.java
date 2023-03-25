@@ -28,11 +28,14 @@ import uk.ac.ic.doc.scenebeans.cag.IntersectProcessor;
 import java.awt.*;
 
 
-/** The <a href="../../../../../../beans/intersect.html">Intersect</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/intersect.html">Intersect</a>
+ * SceneBean.
  */
 public class Intersect extends CAGComposite {
+
     protected CAGProcessor newCAGProcessor(Graphics2D g) {
         return new IntersectProcessor(g);
     }
+
 }

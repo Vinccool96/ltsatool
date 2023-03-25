@@ -25,11 +25,15 @@ package uk.ac.ic.doc.scenebeans.event;
 import java.util.EventListener;
 
 
-/** The interface through which AnimationEvents are announced.
+/**
+ * The interface through which AnimationEvents are announced.
  */
 public interface AnimationListener extends EventListener {
-    /** A source of AnimationEvents calls this method on all registered
-     *  listeners when it announces an event.
+
+    /**
+     * A source of AnimationEvents calls this method on all registered
+     * listeners when it announces an event.
      */
     void animationEvent(AnimationEvent ev);
+
 }

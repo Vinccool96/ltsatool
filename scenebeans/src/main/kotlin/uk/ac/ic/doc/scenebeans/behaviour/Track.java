@@ -26,15 +26,20 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../../beans/track.html">Track</a>
- *  behaviour bean.
+/**
+ * The <a href="../../../../../../../beans/track.html">Track</a>
+ * behaviour bean.
  */
 public class Track
         extends PointActivityBase
         implements Serializable {
+
     private double[] _nodes;
+
     private String[] _events;
+
     private double _timeout = 0.0;
+
     private int _current = 0;
 
     public Track() {
@@ -154,6 +159,7 @@ public class Track
     private boolean hasFinished() {
         return _current >= getPointCount() - 1;
     }
+
 }
 
 

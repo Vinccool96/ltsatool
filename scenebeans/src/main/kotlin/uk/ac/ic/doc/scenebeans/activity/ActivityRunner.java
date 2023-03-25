@@ -23,20 +23,24 @@
 package uk.ac.ic.doc.scenebeans.activity;
 
 
-/** An ActivityRunner is responsible for animating activities.
+/**
+ * An ActivityRunner is responsible for animating activities.
  */
 public interface ActivityRunner {
-    /** Adds an Activity to this runner.  The runner will periodically
-     *  call it's <code>performActivity</code> method.
+
+    /**
+     * Adds an Activity to this runner.  The runner will periodically
+     * call it's <code>performActivity</code> method.
      *
-     *  @exception IllegalArgumentException
-     *      The activity added cannot be handled by this object.  For example,
-     *      some ActivityRunners might only be able to execute finite activities.
+     * @throws IllegalArgumentException The activity added cannot be handled by this object.  For example,
+     *                                  some ActivityRunners might only be able to execute finite activities.
      */
     public void addActivity(Activity a);
 
-    /** Removes an Activity from this runner.  The runner will no longer
-     *  call it's <code>performActivity</code> method.
+    /**
+     * Removes an Activity from this runner.  The runner will no longer
+     * call it's <code>performActivity</code> method.
      */
     public void removeActivity(Activity a);
+
 }

@@ -25,21 +25,24 @@ package uk.ac.ic.doc.scenebeans;
 import java.awt.geom.Point2D;
 
 
-/** A behaviour that encapsulates a changing {@link Point2D} value.
+/**
+ * A behaviour that encapsulates a changing {@link Point2D} value.
  */
 public interface PointBehaviour {
-    /** Add a listener to this behaviour.  The listener will be notified
-     *  whenever the value of the behaviour changes.
+
+    /**
+     * Add a listener to this behaviour.  The listener will be notified
+     * whenever the value of the behaviour changes.
      *
-     *  @param l
-     *      The listener being added to the behaviour.
+     * @param l The listener being added to the behaviour.
      */
     void addPointBehaviourListener(PointBehaviourListener l);
 
-    /** Remove a listener to this behaviour.
+    /**
+     * Remove a listener to this behaviour.
      *
-     *  @param l
-     *      The listener being removed from the behaviour.
+     * @param l The listener being removed from the behaviour.
      */
     void removePointBehaviourListener(PointBehaviourListener l);
+
 }

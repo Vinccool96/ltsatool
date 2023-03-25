@@ -30,22 +30,26 @@ import java.util.Iterator;
 import java.util.List;
 
 
-/** A partial implementation of the
- *  {@link Activity} interface that
- *  manages the relationship between an Activity and its
- *  {@link ActivityRunner}.
- *  The ActivityBase class also provides methods for announcing
- *  {@link AnimationEvent}s and
- *  registering {@link AnimationListener}s
- *  with the activity.
+/**
+ * A partial implementation of the
+ * {@link Activity} interface that
+ * manages the relationship between an Activity and its
+ * {@link ActivityRunner}.
+ * The ActivityBase class also provides methods for announcing
+ * {@link AnimationEvent}s and
+ * registering {@link AnimationListener}s
+ * with the activity.
  */
 public abstract class ActivityBase
         implements Activity {
+
     private ActivityRunner _runner = null;
+
     private List _animation_listeners = null;
 
-    /** Initialises the activity so that it does not have an ActivityRunner
-     *  and has no listeners.
+    /**
+     * Initialises the activity so that it does not have an ActivityRunner
+     * and has no listeners.
      */
     protected ActivityBase() {
     }
@@ -78,11 +82,11 @@ public abstract class ActivityBase
         }
     }
 
-    /** Posts an {@link AnimationEvent} to all
-     *  registered listeners.
+    /**
+     * Posts an {@link AnimationEvent} to all
+     * registered listeners.
      *
-     *  @param event_name
-     *      The name of the ActivityEvent posted.
+     * @param event_name The name of the ActivityEvent posted.
      */
     protected synchronized void postActivityComplete(String event_name) {
         if (_animation_listeners != null) {
@@ -92,4 +96,5 @@ public abstract class ActivityBase
             }
         }
     }
+
 }

@@ -26,10 +26,12 @@ import java.awt.geom.AffineTransform;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../beans/rotate.html">Rotate</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/rotate.html">Rotate</a>
+ * SceneBean.
  */
 public class Rotate extends TransformBase {
+
     private double _theta;
 
     public Rotate() {
@@ -55,14 +57,17 @@ public class Rotate extends TransformBase {
         return AffineTransform.getRotateInstance(_theta);
     }
 
-    public class Angle implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setAngle(v);
-        }
-    }
-
     public final Angle newAngleAdapter() {
         return new Angle();
     }
+
+    public class Angle implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setAngle(v);
+        }
+
+    }
+
 }
 

@@ -26,60 +26,62 @@ import uk.ac.ic.doc.scenebeans.activity.Activity;
 import uk.ac.ic.doc.scenebeans.activity.ActivityRunner;
 
 
-/** A Command that, when invoked, starts an 
- *  {@link Activity} by adding it to an
- *  {@link ActivityRunner}
+/**
+ * A Command that, when invoked, starts an
+ * {@link Activity} by adding it to an
+ * {@link ActivityRunner}
  */
 public class StartActivityCommand implements Command {
+
     private Activity _activity;
+
     private ActivityRunner _runner;
 
-    /** Constructs a StartActivityCommand.
+    /**
+     * Constructs a StartActivityCommand.
      *
-     *  @param a
-     *      The Activity to start.
-     *  @param r
-     *      The ActivityRunner that is to run the Activity.
+     * @param a The Activity to start.
+     * @param r The ActivityRunner that is to run the Activity.
      */
     public StartActivityCommand(Activity a, ActivityRunner r) {
         _activity = a;
         _runner = r;
     }
 
-    /** Returns the activity that is started by this command.
+    /**
+     * Returns the activity that is started by this command.
      *
-     *  @return
-     *      The activity started by this command.
+     * @return The activity started by this command.
      */
     public Activity getActivity() {
         return _activity;
     }
 
-    /** Sets the activity that is started by this command.
+    /**
+     * Sets the activity that is started by this command.
      *
-     *  @param a
-     *      The activity started by this command.
+     * @param a The activity started by this command.
      */
     public void setActivity(Activity a) {
         _activity = a;
     }
 
 
-    /** Returns the ActivityRunner that will manage the activity when it
-     *  is started.
+    /**
+     * Returns the ActivityRunner that will manage the activity when it
+     * is started.
      *
-     *  @return
-     *      The ActivityRunner that will manage the activity.
+     * @return The ActivityRunner that will manage the activity.
      */
     public ActivityRunner getActivityRunner() {
         return _runner;
     }
 
-    /** Sets the ActivityRunner that will manage the activity when it
-     *  is started.
+    /**
+     * Sets the ActivityRunner that will manage the activity when it
+     * is started.
      *
-     *  @param ar
-     *      The ActivityRunner that will manage the activity.
+     * @param ar The ActivityRunner that will manage the activity.
      */
     public void setActivityRunner(ActivityRunner ar) {
         _runner = ar;
@@ -88,5 +90,6 @@ public class StartActivityCommand implements Command {
     public void invoke() throws CommandException {
         _runner.addActivity(_activity);
     }
+
 }
 

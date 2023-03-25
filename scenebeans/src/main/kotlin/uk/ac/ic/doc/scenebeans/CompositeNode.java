@@ -22,78 +22,80 @@
 
 package uk.ac.ic.doc.scenebeans;
 
-/** A CompositeNode is composed of multiple scene graphs that are combined
- *  in some way.  Derived classes might only display a subset of their
- *  subgraphs or combine them into a completely new graph.
+/**
+ * A CompositeNode is composed of multiple scene graphs that are combined
+ * in some way.  Derived classes might only display a subset of their
+ * subgraphs or combine them into a completely new graph.
  */
 public interface CompositeNode extends SceneGraph {
-    /** Returns the number of subgraphs of this composite.
+
+    /**
+     * Returns the number of subgraphs of this composite.
      */
     int getSubgraphCount();
 
-    /** Returns the <var>n</var>'th subgraph. 
-     *  Subgraphs are indexed from zero.
+    /**
+     * Returns the <var>n</var>'th subgraph.
+     * Subgraphs are indexed from zero.
      *
-     *  @exception IndexOutOfBoundsException
-     *      <var>n</var> >= getVisibleSubgraphCount().
+     * @throws IndexOutOfBoundsException <var>n</var> >= getVisibleSubgraphCount().
      */
     SceneGraph getSubgraph(int n);
 
-    /** Returns the number of visible subgraphs of this composite.
+    /**
+     * Returns the number of visible subgraphs of this composite.
      */
     int getVisibleSubgraphCount();
 
-    /** Returns the <var>n</var>'th visible subgraph.
-     *  Subgraphs are indexed from zero.
+    /**
+     * Returns the <var>n</var>'th visible subgraph.
+     * Subgraphs are indexed from zero.
      *
-     *  @exception IndexOutOfBoundsException
-     *      <var>n</var> >= getVisibleSubgraphCount().  
+     * @throws IndexOutOfBoundsException <var>n</var> >= getVisibleSubgraphCount().
      */
     SceneGraph getVisibleSubgraph(int n);
 
-    /** Returns the number of subgraphs that were rendered by the last
-     *  drawing operation.
-     *  This is used to optimise the rendering process.  User code should 
-     *  avoid calling this.
+    /**
+     * Returns the number of subgraphs that were rendered by the last
+     * drawing operation.
+     * This is used to optimise the rendering process.  User code should
+     * avoid calling this.
      */
     int getLastDrawnSubgraphCount();
 
-    /** Returns the <var>n</var>'th subgraph that was rendered by the
-     *  past drawing operation.
-     *  This is used to optimise the rendering process.  User code should 
-     *  avoid calling this.
+    /**
+     * Returns the <var>n</var>'th subgraph that was rendered by the
+     * past drawing operation.
+     * This is used to optimise the rendering process.  User code should
+     * avoid calling this.
      *
-     *  @exception IndexOutOfBoundsException
-     *      <var>n</var> >= getVisibleSubgraphCount().  
+     * @throws IndexOutOfBoundsException <var>n</var> >= getVisibleSubgraphCount().
      */
     SceneGraph getLastDrawnSubgraph(int n);
 
-    /** Adds a sub-graph to the composite.
+    /**
+     * Adds a sub-graph to the composite.
      *
-     *  @param sg
-     *      The scene graph to add to the composite.
-     *
-     *  @exception uk.ac.ic.doc.scenebeans.TooManyChildrenException
-     *      The maximum number of children have already been added to
-     *      this composite.
+     * @param sg The scene graph to add to the composite.
+     * @throws uk.ac.ic.doc.scenebeans.TooManyChildrenException The maximum number of children have already been added to
+     *                                                          this composite.
      */
     void addSubgraph(SceneGraph sg);
 
-    /** Removes a sub-graph.
+    /**
+     * Removes a sub-graph.
      *
-     *  @param sg
-     *      The subgraph to remove.
+     * @param sg The subgraph to remove.
      */
     void removeSubgraph(SceneGraph sg);
 
-    /** Removes a sub-graph by index. 
-     *  Subgraphs are indexed from zero.
+    /**
+     * Removes a sub-graph by index.
+     * Subgraphs are indexed from zero.
      *
-     *  @param n
-     *      The index of the subgraph to remove.
-     *
-     *  @exception IndexOutOfBoundsException
-     *      <var>n</var> >= getVisibleSubgraphCount().  
+     * @param n The index of the subgraph to remove.
+     * @throws IndexOutOfBoundsException <var>n</var> >= getVisibleSubgraphCount().
      */
     void removeSubgraph(int n);
+
 }

@@ -28,16 +28,20 @@ import uk.ac.ic.doc.scenebeans.event.AnimationListener;
 import java.util.Iterator;
 
 
-/** A CompositeActivity that runs multiple sub-activities concurrently.
- *  A ConcurrentActivity is finite - it completes when all its sub-activities
- *  complete - and can only run activities that are themselves finite.
+/**
+ * A CompositeActivity that runs multiple sub-activities concurrently.
+ * A ConcurrentActivity is finite - it completes when all its sub-activities
+ * complete - and can only run activities that are themselves finite.
  */
 public class ConcurrentActivity
         extends CompositeActivity
         implements AnimationListener {
-    private ActivityList _activities = ActivityList.EMPTY;
+
     int _finite_count = 0;
+
     int _complete = 0;
+
+    private ActivityList _activities = ActivityList.EMPTY;
 
     public ConcurrentActivity() {
         super();
@@ -80,4 +84,5 @@ public class ConcurrentActivity
             postActivityComplete();
         }
     }
+
 }

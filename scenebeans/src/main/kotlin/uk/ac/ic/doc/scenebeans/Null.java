@@ -25,11 +25,13 @@ package uk.ac.ic.doc.scenebeans;
 import java.awt.*;
 
 
-/** The <a href="../../../../../../beans/null.html">Null</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/null.html">Null</a>
+ * SceneBean.
  */
 public class Null
         extends SceneGraphBase {
+
     public void draw(Graphics2D g) {
         // don't draw anything.
     }
@@ -37,4 +39,5 @@ public class Null
     public void accept(SceneGraphProcessor p) {
         // don't double-dispatch.
     }
+
 }

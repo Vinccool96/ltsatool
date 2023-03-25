@@ -28,12 +28,14 @@ import uk.ac.ic.doc.scenebeans.activity.FiniteActivityBase;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../../beans/randomtimer.html">RandomTimer</a> 
- *  behaviour bean.
+/**
+ * The <a href="../../../../../../../beans/randomtimer.html">RandomTimer</a>
+ * behaviour bean.
  */
 public class RandomTimer
         extends FiniteActivityBase
         implements Serializable {
+
     private double _min_duration, _max_duration, _timeout;
 
     public RandomTimer() {
@@ -75,23 +77,28 @@ public class RandomTimer
         }
     }
 
-    class MinDuration implements DoubleBehaviourListener {
-        public void behaviourUpdated(double v) {
-            setMinDuration(v);
-        }
-    }
-
     public MinDuration newMinDurationAdapter() {
         return new MinDuration();
-    }
-
-    class MaxDuration implements DoubleBehaviourListener {
-        public void behaviourUpdated(double v) {
-            setMaxDuration(v);
-        }
     }
 
     public MaxDuration newMaxDurationAdapter() {
         return new MaxDuration();
     }
+
+    class MinDuration implements DoubleBehaviourListener {
+
+        public void behaviourUpdated(double v) {
+            setMinDuration(v);
+        }
+
+    }
+
+    class MaxDuration implements DoubleBehaviourListener {
+
+        public void behaviourUpdated(double v) {
+            setMaxDuration(v);
+        }
+
+    }
+
 }

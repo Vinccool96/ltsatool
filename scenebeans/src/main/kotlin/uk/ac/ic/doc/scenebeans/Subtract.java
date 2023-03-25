@@ -28,11 +28,14 @@ import uk.ac.ic.doc.scenebeans.cag.SubtractProcessor;
 import java.awt.*;
 
 
-/** The <a href="../../../../../../beans/subtract.html">Subtract</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/subtract.html">Subtract</a>
+ * SceneBean.
  */
 public class Subtract extends CAGComposite {
+
     protected CAGProcessor newCAGProcessor(Graphics2D g) {
         return new SubtractProcessor(g);
     }
+
 }

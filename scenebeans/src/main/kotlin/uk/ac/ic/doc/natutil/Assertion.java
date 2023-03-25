@@ -8,6 +8,7 @@ package uk.ac.ic.doc.natutil;
 
 
 public class Assertion extends RuntimeException {
+
     public static boolean DEBUG = Boolean.getBoolean("uk.ac.ic.doc.natutil.assert");
 
     private Assertion() {
@@ -23,5 +24,6 @@ public class Assertion extends RuntimeException {
             throw new Assertion(str);
         }
     }
+
 }
 

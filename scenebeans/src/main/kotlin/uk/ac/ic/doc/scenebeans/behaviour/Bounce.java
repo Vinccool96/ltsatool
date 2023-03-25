@@ -27,15 +27,20 @@ import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener;
 import java.io.Serializable;
 
 
-/** The <a href="../../../../../../../beans/bounce.html">Bounce</a> 
- *  behaviour bean.
+/**
+ * The <a href="../../../../../../../beans/bounce.html">Bounce</a>
+ * behaviour bean.
  */
 public class Bounce
         extends DoubleActivityBase
         implements Serializable {
+
     private double _from, _to;
+
     private double _duration;
+
     private double _timeout;
+
     private boolean _is_increasing;
 
 
@@ -112,35 +117,42 @@ public class Bounce
         }
     }
 
-    class FromAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setFrom(v);
-        }
-    }
-
     public final DoubleBehaviourListener newFromAdapter() {
         return new FromAdapter();
-    }
-
-    class ToAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setTo(v);
-        }
     }
 
     public final DoubleBehaviourListener newToAdapter() {
         return new ToAdapter();
     }
 
-    class DurationAdapter implements DoubleBehaviourListener, Serializable {
-        public void behaviourUpdated(double v) {
-            setDuration(v);
-        }
-    }
-
     public final DoubleBehaviourListener newDurationAdapter() {
         return new DurationAdapter();
     }
+
+    class FromAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setFrom(v);
+        }
+
+    }
+
+    class ToAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setTo(v);
+        }
+
+    }
+
+    class DurationAdapter implements DoubleBehaviourListener, Serializable {
+
+        public void behaviourUpdated(double v) {
+            setDuration(v);
+        }
+
+    }
+
 }
 
 

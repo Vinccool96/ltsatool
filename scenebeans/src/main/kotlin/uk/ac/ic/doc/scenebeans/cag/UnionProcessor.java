@@ -28,6 +28,7 @@ import java.awt.geom.Area;
 
 
 public class UnionProcessor extends CAGProcessor {
+
     public UnionProcessor(Graphics2D g) {
         super(g);
     }
@@ -39,4 +40,5 @@ public class UnionProcessor extends CAGProcessor {
     protected void accumulateArea(Area accumulator, Area a) {
         accumulator.add(a);
     }
+
 }

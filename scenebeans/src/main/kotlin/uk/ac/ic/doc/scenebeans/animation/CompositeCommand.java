@@ -28,81 +28,84 @@ import java.util.Iterator;
 import java.util.List;
 
 
-/** A Command that invokes multiple commands when it is, itself, invoked.
+/**
+ * A Command that invokes multiple commands when it is, itself, invoked.
  */
 public class CompositeCommand implements Command {
+
     private List _actions;
 
-    /** Constructs a CompositeCommand.
+    /**
+     * Constructs a CompositeCommand.
      */
     public CompositeCommand() {
         _actions = new ArrayList();
     }
 
-    /** Constructs a CompositeCommand, specifying the list used to hold 
-     *  its Command elements.
+    /**
+     * Constructs a CompositeCommand, specifying the list used to hold
+     * its Command elements.
      *
-     *  @param actions
-     *      The list used to hold the commands invoked by this 
-     *      CompositeCommand.
+     * @param actions The list used to hold the commands invoked by this
+     *                CompositeCommand.
      */
     public CompositeCommand(List actions) {
         _actions = actions;
     }
 
-    /** Adds a command to the CompositeCommand.  The command will be invoked
-     *  after those previously added.
+    /**
+     * Adds a command to the CompositeCommand.  The command will be invoked
+     * after those previously added.
      *
-     *  @param action
-     *      The command to add.
+     * @param action The command to add.
      */
     public void addCommand(Command action) {
         _actions.add(action);
     }
 
-    /** Removes the first occurrence of a command in the composite.
+    /**
+     * Removes the first occurrence of a command in the composite.
      *
-     *  @param action
-     *      The command to remove.
+     * @param action The command to remove.
      */
     public void removeCommand(Command action) {
         _actions.remove(action);
     }
 
-    /** Removes a command by index.
+    /**
+     * Removes a command by index.
      *
-     *  @param action
-     *      The index of the command to remove.  
-     *      Commands are indexed from zero.
+     * @param action The index of the command to remove.
+     *               Commands are indexed from zero.
      */
     public void removeCommand(int n) {
         _actions.remove(n);
     }
 
-    /** Returns the number of commands in this composite.
+    /**
+     * Returns the number of commands in this composite.
      *
-     *  @return
-     *      The number of commands in this composite.
+     * @return The number of commands in this composite.
      */
     public int getCommandCount() {
         return _actions.size();
     }
 
-    /** Returns a List containing all the commands in this CompositeCommand.
+    /**
+     * Returns a List containing all the commands in this CompositeCommand.
      *
-     *  @return
-     *      An immutable list containing all the commands in this 
-     *      CompositeCommand.  A zero-length list is returned if no 
-     *      commands have been added.
+     * @return An immutable list containing all the commands in this
+     * CompositeCommand.  A zero-length list is returned if no
+     * commands have been added.
      */
     public List getCommands() {
         return Collections.unmodifiableList(_actions);
     }
 
-    /** Get a command by index.  Commands are indexed from zero.
+    /**
+     * Get a command by index.  Commands are indexed from zero.
      *
-     *  @param n
-     *      The index of the command.
+     * @param n The index of the command.
      */
     public Command getCommand(int n) {
         return (Command) _actions.get(n);
@@ -113,5 +116,6 @@ public class CompositeCommand implements Command {
             ((Command) i.next()).invoke();
         }
     }
+
 }
 

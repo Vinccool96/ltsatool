@@ -22,14 +22,17 @@
 
 package uk.ac.ic.doc.scenebeans;
 
-/** The interface through which a {@link StringBehaviour}
- *  announces changes to the value that it manages.
+/**
+ * The interface through which a {@link StringBehaviour}
+ * announces changes to the value that it manages.
  */
 public interface StringBehaviourListener extends java.util.EventListener {
-    /** This method is called when the behaviour's value changes.
+
+    /**
+     * This method is called when the behaviour's value changes.
      *
-     *  @param new_value
-     *      The new value of the behaviour.
+     * @param new_value The new value of the behaviour.
      */
     void behaviourUpdated(String new_value);
+
 }

@@ -22,10 +22,12 @@
 
 package uk.ac.ic.doc.scenebeans;
 
-/** The <a href="../../../../../../beans/switch.html">Switch</a>
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/switch.html">Switch</a>
+ * SceneBean.
  */
 public class Switch extends CompositeBase {
+
     private int _current = 0;
 
     public Switch() {
@@ -51,5 +53,6 @@ public class Switch extends CompositeBase {
             throw new IndexOutOfBoundsException("invalid subgraph index");
         }
     }
+
 }
 

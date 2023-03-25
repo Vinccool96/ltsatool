@@ -22,18 +22,26 @@
 
 package uk.ac.ic.doc.scenebeans.activity;
 
-/** An ActivityThread can be executed by a Thread and simulates the
- *  behaviour of a set of {@link Activity}
- *  objects in real-time.
+/**
+ * An ActivityThread can be executed by a Thread and simulates the
+ * behaviour of a set of {@link Activity}
+ * objects in real-time.
  */
 public class ActivityThread
         implements ActivityRunner, Runnable {
+
     Object _perform_lock;
+
     ActivityList _activities = ActivityList.EMPTY;
+
     Object _list_lock = new Object();
+
     long _start;
+
     Thread _thread = null;
+
     boolean _stop = false;
+
     long _sleep = 100;
 
     public ActivityThread() {
@@ -112,5 +120,6 @@ public class ActivityThread
         } catch (InterruptedException ex) {
         }
     }
+
 }
 

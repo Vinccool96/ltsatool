@@ -26,8 +26,62 @@ import java.util.*;
 
 
 class BeanFactory {
+
+    private Map _categories = new HashMap();
+
+    /**
+     * Add a new bean category.
+     */
+    public void addCategory(String name, String prefix, String postfix,
+            boolean capitalise) {
+        if (_categories.get(name) != null) {
+            throw new IllegalArgumentException("category name \"" + name +
+                    "\" already defined");
+        }
+
+        _categories.put(name,
+                new Category(name, prefix, postfix, capitalise));
+    }
+
+    /**
+     * Add a package to a bean category.
+     */
+    public void addPackage(String category, String pkg_name) {
+        getCategory(category).addPackage(pkg_name);
+    }
+
+    /**
+     * Add a package to a bean category.
+     */
+    public void addPackage(String category,
+            ClassLoader loader, String pkg_name) {
+        getCategory(category).addPackage(loader, pkg_name);
+    }
+
+    /**
+     * Allocate a new Bean of the given type in the given category.
+     */
+    public Object newBean(String category, String type)
+            throws ClassNotFoundException,
+            IllegalAccessException, InstantiationException {
+        return getCategory(category).newBean(type);
+    }
+
+    private Category getCategory(String name) {
+        Category c = (Category) _categories.get(name);
+
+        if (c != null) {
+            return c;
+        } else {
+            throw new IllegalArgumentException("no category named \"" +
+                    name + "\"");
+        }
+    }
+
     private static class Package {
+
         private ClassLoader _loader;
+
         private String _package;
 
         public Package(ClassLoader loader, String pkg) {
@@ -47,13 +101,19 @@ class BeanFactory {
                 return null;
             }
         }
+
     }
 
     private static class Category {
+
         private String _name;
+
         private List _packages = new ArrayList();
+
         private String _prefix;
+
         private String _postfix;
+
         private boolean _capitalise;
 
         Category(String name,
@@ -90,54 +150,8 @@ class BeanFactory {
             throw new ClassNotFoundException("no class found for " + _name +
                     " bean of type \"" + type + "\"");
         }
+
     }
 
-    private Map _categories = new HashMap();
-
-    /** Add a new bean category.
-     */
-    public void addCategory(String name, String prefix, String postfix,
-            boolean capitalise) {
-        if (_categories.get(name) != null) {
-            throw new IllegalArgumentException("category name \"" + name +
-                    "\" already defined");
-        }
-
-        _categories.put(name,
-                new Category(name, prefix, postfix, capitalise));
-    }
-
-    /** Add a package to a bean category.
-     */
-    public void addPackage(String category, String pkg_name) {
-        getCategory(category).addPackage(pkg_name);
-    }
-
-    /** Add a package to a bean category.
-     */
-    public void addPackage(String category,
-            ClassLoader loader, String pkg_name) {
-        getCategory(category).addPackage(loader, pkg_name);
-    }
-
-    /** Allocate a new Bean of the given type in the given category.
-     */
-    public Object newBean(String category, String type)
-            throws ClassNotFoundException,
-            IllegalAccessException, InstantiationException {
-        return getCategory(category).newBean(type);
-    }
-
-
-    private Category getCategory(String name) {
-        Category c = (Category) _categories.get(name);
-
-        if (c != null) {
-            return c;
-        } else {
-            throw new IllegalArgumentException("no category named \"" +
-                    name + "\"");
-        }
-    }
 }
 

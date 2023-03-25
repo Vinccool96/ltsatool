@@ -26,14 +26,18 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 
-/** The <a href="../../../../../../beans/text.html">Text</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/text.html">Text</a>
+ * SceneBean.
  */
 public class Text
         extends SceneGraphBase
         implements Primitive {
+
     private String _text;
+
     private GlyphVector _glyphs;
+
     private Shape _last_drawn;
 
     public Text() {
@@ -89,11 +93,17 @@ public class Text
         super.setDirty(b);
     }
 
-    /** The TextAdapter class can also accept values from a DoubleBehaviour,
-     *  allowing Text beans to display numeric values.
+    public StringBehaviourListener newTextAdapter() {
+        return new TextAdapter();
+    }
+
+    /**
+     * The TextAdapter class can also accept values from a DoubleBehaviour,
+     * allowing Text beans to display numeric values.
      */
     class TextAdapter
             implements StringBehaviourListener, DoubleBehaviourListener {
+
         public void behaviourUpdated(String str) {
             setText(str);
         }
@@ -101,9 +111,7 @@ public class Text
         public void behaviourUpdated(double v) {
             setText(Double.toString(v));
         }
+
     }
 
-    public StringBehaviourListener newTextAdapter() {
-        return new TextAdapter();
-    }
 }

@@ -1,5 +1,3 @@
-
-
 package uk.ac.ic.doc.natutil;
 
 
@@ -8,6 +6,7 @@ package uk.ac.ic.doc.natutil;
  * it fails to parse a command line.
  */
 public class CommandLineException extends Exception {
+
     public CommandLineException(String msg) {
         super(msg);
     }
@@ -15,4 +14,5 @@ public class CommandLineException extends Exception {
     public CommandLineException() {
         super();
     }
+
 }

@@ -22,54 +22,59 @@
 
 package uk.ac.ic.doc.scenebeans.activity;
 
-/** The base class of finite activities.
+/**
+ * The base class of finite activities.
  */
 public abstract class FiniteActivityBase extends ActivityBase {
+
     private String _activity_name = null;
 
-    /** Constructs a FiniteActivityBase.
+    /**
+     * Constructs a FiniteActivityBase.
      */
     protected FiniteActivityBase() {
         super();
     }
 
-    /** Returns <code>true</code> indicating that the activity is finite.
+    /**
+     * Returns <code>true</code> indicating that the activity is finite.
      *
-     *  @param return
-     *      <code>true</code>.
+     * @param return <code>true</code>.
      */
     public boolean isFinite() {
         return true;
     }
 
-    /** Returns the name of this activity, that is reported in the
-     *  {@link uk.ac.ic.doc.scenebeans.event.AnimationEvent}s announced
-     *  when the activity completes.
+    /**
+     * Returns the name of this activity, that is reported in the
+     * {@link uk.ac.ic.doc.scenebeans.event.AnimationEvent}s announced
+     * when the activity completes.
      *
-     *  @return
-     *      The name of the activity.
+     * @return The name of the activity.
      */
     public String getActivityName() {
         return _activity_name;
     }
 
-    /** Sets the name of this activity, that is reported in the
-     *  {@link uk.ac.ic.doc.scenebeans.event.AnimationEvent}s announced
-     *  when the activity completes.
+    /**
+     * Sets the name of this activity, that is reported in the
+     * {@link uk.ac.ic.doc.scenebeans.event.AnimationEvent}s announced
+     * when the activity completes.
      *
-     *  @param name
-     *      The name of the activity.
+     * @param name The name of the activity.
      */
     public void setActivityName(String name) {
         _activity_name = name;
     }
 
-    /** Posts an {@link uk.ac.ic.doc.scenebeans.event.AnimationEvent} indicating
-     *  that the activity is complete.  The name of the event is initialised as
-     *  the name of this activity.
+    /**
+     * Posts an {@link uk.ac.ic.doc.scenebeans.event.AnimationEvent} indicating
+     * that the activity is complete.  The name of the event is initialised as
+     * the name of this activity.
      */
     protected synchronized void postActivityComplete() {
         postActivityComplete(_activity_name);
     }
+
 }
 

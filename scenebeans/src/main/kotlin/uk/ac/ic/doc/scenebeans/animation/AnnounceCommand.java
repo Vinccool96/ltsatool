@@ -22,56 +22,58 @@
 
 package uk.ac.ic.doc.scenebeans.animation;
 
-/** A command that causes an {@link Animation}
- *  to announce an {@link uk.ac.ic.doc.scenebeans.event.AnimationEvent}.
+/**
+ * A command that causes an {@link Animation}
+ * to announce an {@link uk.ac.ic.doc.scenebeans.event.AnimationEvent}.
  */
 public class AnnounceCommand implements Command {
+
     private Animation _animation;
+
     private String _event;
 
-    /** Constructs the command.
+    /**
+     * Constructs the command.
      *
-     *  @param animation
-     *      The Animation that will announce the event.
-     *  @param event
-     *      The name of the event that will be announced.
+     * @param animation The Animation that will announce the event.
+     * @param event     The name of the event that will be announced.
      */
     public AnnounceCommand(Animation animation, String event) {
         _animation = animation;
         _event = event;
     }
 
-    /** Returns the animation that will announce the event.
+    /**
+     * Returns the animation that will announce the event.
      *
-     *  @return
-     *      The Animation that will announce the event.
+     * @return The Animation that will announce the event.
      */
     public Animation getAnimation() {
         return _animation;
     }
 
-    /** Sets the animation that will announce the event.
+    /**
+     * Sets the animation that will announce the event.
      *
-     *  @param animation
-     *      The Animation that will announce the event.
+     * @param animation The Animation that will announce the event.
      */
     public void setAnimation(Animation animation) {
         _animation = animation;
     }
 
-    /** Returns the name of the event that will be announced.
+    /**
+     * Returns the name of the event that will be announced.
      *
-     *  @return
-     *      The name of the event that will be announced.
+     * @return The name of the event that will be announced.
      */
     public String getEventName() {
         return _event;
     }
 
-    /** Sets the name of the event that will be announced.
+    /**
+     * Sets the name of the event that will be announced.
      *
-     *  @param event
-     *      The name of the event that will be announced.
+     * @param event The name of the event that will be announced.
      */
     public void setEventName(String event) {
         _event = event;
@@ -80,5 +82,6 @@ public class AnnounceCommand implements Command {
     public void invoke() throws CommandException {
         _animation.announceAnimationEvent(_event);
     }
+
 }
 

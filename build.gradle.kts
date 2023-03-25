@@ -6,8 +6,13 @@ plugins {
 group = "io.github.vinccool96.ltsa"
 version = "1.0-SNAPSHOT"
 
-repositories {
-    mavenCentral()
+allprojects {
+    repositories {
+        mavenCentral()
+        maven {
+            url = uri("https://java.freehep.org/maven2/")
+        }
+    }
 }
 
 dependencies {

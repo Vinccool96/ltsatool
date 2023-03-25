@@ -1,4 +1,3 @@
-
 package uk.ac.ic.doc.natutil;
 
 import java.io.OutputStream;
@@ -7,6 +6,7 @@ import java.lang.reflect.Field;
 
 
 public class CommandLineParser {
+
     /**
      * Prints the command-line options defined by the Object <var>opts</var>
      * to {@link System.err}.

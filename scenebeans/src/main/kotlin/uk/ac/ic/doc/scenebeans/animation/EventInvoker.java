@@ -26,71 +26,73 @@ import uk.ac.ic.doc.scenebeans.event.AnimationEvent;
 import uk.ac.ic.doc.scenebeans.event.AnimationListener;
 
 
-/** An {@link AnimationListener} that invokes a
- *  {@link Command}
- *  when it receives an {@link AnimationEvent}
- *  with a specific name.
+/**
+ * An {@link AnimationListener} that invokes a
+ * {@link Command}
+ * when it receives an {@link AnimationEvent}
+ * with a specific name.
  */
 public class EventInvoker
         implements AnimationListener {
+
     private String _event_name;
+
     private Command _command;
 
-    /** Constructs an EventInvoker.
+    /**
+     * Constructs an EventInvoker.
      *
-     *  @param event_name
-     *      The name of the event that triggers invocation of the command.
-     *  @param command
-     *      The command to be invoked.
+     * @param event_name The name of the event that triggers invocation of the command.
+     * @param command    The command to be invoked.
      */
     public EventInvoker(String event_name, Command command) {
         _event_name = event_name;
         _command = command;
     }
 
-    /** Returns the name of the event that triggers invocation of the command.
+    /**
+     * Returns the name of the event that triggers invocation of the command.
      *
-     *  @return
-     *      The name of the event.
+     * @return The name of the event.
      */
     public String getEventName() {
         return _event_name;
     }
 
-    /** Sets the name of the event that triggers invocation of the command.
+    /**
+     * Sets the name of the event that triggers invocation of the command.
      *
-     *  @param event_name
-     *      The name of the event.
+     * @param event_name The name of the event.
      */
     public void setEventName(String event_name) {
         _event_name = event_name;
     }
 
-    /** Returns the command triggered by the event.
+    /**
+     * Returns the command triggered by the event.
      *
-     *  @return
-     *      The command triggered by the event.
+     * @return The command triggered by the event.
      */
     public Command getCommand() {
         return _command;
     }
 
-    /** Sets the command triggered by the event.
+    /**
+     * Sets the command triggered by the event.
      *
-     *  @param command
-     *      The command triggered by the event.
+     * @param command The command triggered by the event.
      */
     public void setCommand(Command command) {
         _command = command;
     }
 
 
-    /** Invokes the {@link Command} if the
-     *  name of the event is the same as the name passed to the constructor of
-     *  this EventInvoker.
+    /**
+     * Invokes the {@link Command} if the
+     * name of the event is the same as the name passed to the constructor of
+     * this EventInvoker.
      *
-     *  @param ev
-     *      The animation event received by this object.
+     * @param ev The animation event received by this object.
      */
     public void animationEvent(AnimationEvent ev) {
         if (_event_name.equals(ev.getName())) {
@@ -101,5 +103,6 @@ public class EventInvoker
             }
         }
     }
+
 }
 

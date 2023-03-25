@@ -23,38 +23,41 @@
 package uk.ac.ic.doc.scenebeans;
 
 
-/** An implementation of the SceneGraph interface that manages the dirty flag.
+/**
+ * An implementation of the SceneGraph interface that manages the dirty flag.
  */
 public abstract class SceneGraphBase
         implements SceneGraph {
+
     private transient boolean _is_dirty = true;
 
 
-    /** Returns whether this node is "dirty", that is, whether it's visible
-     *  state been modified since it was last rendered. This is used 
-     *  internally to optimise the rendering process and should not be 
-     *  called by user code unless you intend to interact with the renderer in
-     *  some bizarre manner.
+    /**
+     * Returns whether this node is "dirty", that is, whether it's visible
+     * state been modified since it was last rendered. This is used
+     * internally to optimise the rendering process and should not be
+     * called by user code unless you intend to interact with the renderer in
+     * some bizarre manner.
      *
-     *  @return
-     *      <code>true</code> if the node has been modified since it was
-     *      last drawn, <code>false</code> otherwise.
+     * @return <code>true</code> if the node has been modified since it was
+     * last drawn, <code>false</code> otherwise.
      */
     public boolean isDirty() {
         return _is_dirty;
     }
 
 
-    /** Record whether the node is "dirty".  This is used internally to
-     *  optimise the rendering process and should not be called by
-     *  user code unless you intend to interact with the renderer in
-     *  some bizarre manner.
+    /**
+     * Record whether the node is "dirty".  This is used internally to
+     * optimise the rendering process and should not be called by
+     * user code unless you intend to interact with the renderer in
+     * some bizarre manner.
      *
-     *  @param b
-     *      A flag indicating whether the node is dirty (<code>true</code>) or
-     *      clean (<code>false</code>).
+     * @param b A flag indicating whether the node is dirty (<code>true</code>) or
+     *          clean (<code>false</code>).
      */
     public void setDirty(boolean b) {
         _is_dirty = b;
     }
+
 }

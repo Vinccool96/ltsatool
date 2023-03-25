@@ -25,17 +25,21 @@ package uk.ac.ic.doc.scenebeans;
 import java.awt.*;
 
 
-/** The StyleBase provides default implementations of most of the methods
- *  of the {@link Style} interface, including
- *  rendering and double-dispatch.  To implement a concrete style node,
- *  just derive from StyleBase and implement the 
- *  {@link Style#changeStyle} method.
+/**
+ * The StyleBase provides default implementations of most of the methods
+ * of the {@link Style} interface, including
+ * rendering and double-dispatch.  To implement a concrete style node,
+ * just derive from StyleBase and implement the
+ * {@link Style#changeStyle} method.
  */
 public abstract class StyleBase
         extends SceneGraphBase
         implements Style {
+
     private SceneGraph _child;
+
     private transient Change _last_drawn_style = null;
+
     private SceneGraph _last_drawn_child = new Null();
 
     protected StyleBase() {
@@ -46,30 +50,30 @@ public abstract class StyleBase
         _child = (child == null) ? new Null() : child;
     }
 
-    /** Calls back to the {@link SceneGraphProcessor}
-     *  <var>p</var> to be processed as a 
-     *  {@link Style}.
+    /**
+     * Calls back to the {@link SceneGraphProcessor}
+     * <var>p</var> to be processed as a
+     * {@link Style}.
      *
-     *  @param p
-     *      A SceneGraphProcessor that is traversing the scene graph.
+     * @param p A SceneGraphProcessor that is traversing the scene graph.
      */
     public void accept(SceneGraphProcessor p) {
         p.process(this);
     }
 
-    /** Returns the graph to which the style is applied.
+    /**
+     * Returns the graph to which the style is applied.
      *
-     *  @return
-     *      The styled subgraph.
+     * @return The styled subgraph.
      */
     public SceneGraph getStyledGraph() {
         return _child;
     }
 
-    /** Sets the graph to which the style is applied.
+    /**
+     * Sets the graph to which the style is applied.
      *
-     *  @param g
-     *      The styled subgraph.
+     * @param g The styled subgraph.
      */
     public void setStyledGraph(SceneGraph g) {
         if (g == null) {
@@ -80,26 +84,28 @@ public abstract class StyleBase
         setDirty(true);
     }
 
-    /** Returns the style last drawn.
-     *  This is used to optimise the rendering process.  User code should 
-     *  avoid calling this.
+    /**
+     * Returns the style last drawn.
+     * This is used to optimise the rendering process.  User code should
+     * avoid calling this.
      */
     public Change getLastDrawnStyle() {
         return _last_drawn_style;
     }
 
-    /** Returns the styled subgraph last drawn.
-     *  This is used to optimise the rendering process.  User code should 
-     *  avoid calling this.
+    /**
+     * Returns the styled subgraph last drawn.
+     * This is used to optimise the rendering process.  User code should
+     * avoid calling this.
      */
     public SceneGraph getLastDrawnStyledGraph() {
         return _last_drawn_child;
     }
 
-    /** Implements the rendering of this node and its subgraph.
+    /**
+     * Implements the rendering of this node and its subgraph.
      *
-     *  @param g
-     *      The graphics context onto which to draw the scene graph.
+     * @param g The graphics context onto which to draw the scene graph.
      */
     public void draw(Graphics2D g) {
         Change change = changeStyle(g);
@@ -110,4 +116,5 @@ public abstract class StyleBase
         _last_drawn_child = _child;
         setDirty(false);
     }
+
 }

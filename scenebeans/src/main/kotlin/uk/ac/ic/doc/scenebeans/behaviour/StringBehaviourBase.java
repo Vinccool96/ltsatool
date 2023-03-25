@@ -31,59 +31,63 @@ import java.util.Iterator;
 import java.util.List;
 
 
-/** Base class for {@link StringBehaviour} beans.
- *  Manages the list of behaviour listeners and provides subclasses with 
- *  a method with which they can announce behaviour updates.
+/**
+ * Base class for {@link StringBehaviour} beans.
+ * Manages the list of behaviour listeners and provides subclasses with
+ * a method with which they can announce behaviour updates.
  */
 public abstract class StringBehaviourBase
         implements StringBehaviour, Serializable {
+
     private List _behaviour_listeners;
 
-    /** Constructs a StringBehaviourBase.
+    /**
+     * Constructs a StringBehaviourBase.
      */
     protected StringBehaviourBase() {
         _behaviour_listeners = new ArrayList();
     }
 
-    /** Constructs a StringBehaviourBase with a specific list.  This allows
-     *  derived classes to specify the type of list used to hold listener
-     *  references.
+    /**
+     * Constructs a StringBehaviourBase with a specific list.  This allows
+     * derived classes to specify the type of list used to hold listener
+     * references.
      *
-     *  @param l
-     *      The list to hold listener references.
+     * @param l The list to hold listener references.
      */
     protected StringBehaviourBase(List l) {
         _behaviour_listeners = l;
     }
 
-    /** Adds a listener to the behaviour.
+    /**
+     * Adds a listener to the behaviour.
      *
-     *  @param l
-     *      The listener to add.
+     * @param l The listener to add.
      */
     public synchronized void
     addStringBehaviourListener(StringBehaviourListener l) {
         _behaviour_listeners.add(l);
     }
 
-    /** Removes a listener from the behaviour.
+    /**
+     * Removes a listener from the behaviour.
      *
-     *  @param l
-     *      The listener to remove.
+     * @param l The listener to remove.
      */
     public synchronized void
     removeStringBehaviourListener(StringBehaviourListener l) {
         _behaviour_listeners.remove(l);
     }
 
-    /** Announces an update of the behaviour's value to all registered listeners.
+    /**
+     * Announces an update of the behaviour's value to all registered listeners.
      *
-     *  @param v
-     *      The new value of the behaviour.
+     * @param v The new value of the behaviour.
      */
     protected synchronized void postUpdate(String v) {
         for (Iterator i = _behaviour_listeners.iterator(); i.hasNext(); ) {
             ((StringBehaviourListener) i.next()).behaviourUpdated(v);
         }
     }
+
 }

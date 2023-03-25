@@ -22,11 +22,7 @@
 
 package uk.ac.ic.doc.scenebeans.animation.parse;
 
-import com.sun.xml.parser.*;
-import com.sun.xml.tree.XmlDocument;
-import com.sun.xml.tree.XmlDocumentBuilder;
 import org.w3c.dom.*;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import uk.ac.ic.doc.natutil.MacroException;
@@ -35,6 +31,9 @@ import uk.ac.ic.doc.scenebeans.*;
 import uk.ac.ic.doc.scenebeans.activity.*;
 import uk.ac.ic.doc.scenebeans.animation.*;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
@@ -44,55 +43,68 @@ import java.io.PushbackReader;
 import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 import java.util.*;
 
 
-/** An XMLAnimationParser is responsible for translating an XML document
- *  into an {@link Animation}.  It can
- *  load the XML document from a file or URL.
+/**
+ * An XMLAnimationParser is responsible for translating an XML document
+ * into an {@link Animation}.  It can
+ * load the XML document from a file or URL.
  *
- *  @see Animation
+ * @see Animation
  */
 public class XMLAnimationParser {
-    private BeanFactory _factory = new BeanFactory();
-    private Map _symbol_table = new HashMap(); // Indexed by symbol ID
-    private List _behaviour_links = new ArrayList();
-    private List _event_links = new ArrayList();
-    private MacroExpander _macro_table = new MacroExpander();
-    ValueParser _value_parser;
-    private URL _doc_url;
-    private Component _component;
-    private Animation _anim = null; // The animation currently being parsed
 
     private static final String PROPERTY_ACTIVITY_NAME = "activityName";
+
     private static final String PI_TARGET = "scenebeans";
+
     private static final String PI_CODEBASE = "codebase";
+
     private static final String PI_CATEGORY = "category";
+
     private static final String PI_PACKAGE = "package";
 
     /*  Bean categories and packages
      */
     private static final String CATEGORY_SCENE = "scene";
+
     private static final String PKG_SCENE = "uk.ac.ic.doc.scenebeans";
+
     private static final String CATEGORY_BEHAVIOUR = "behaviour";
+
     private static final String PKG_BEHAVIOUR =
             "uk.ac.ic.doc.scenebeans.behaviour";
 
-    private static interface ForallParser {
-        void parse(Element child) throws AnimationParseException;
-    }
+    ValueParser _value_parser;
 
-    /** Constructs an AnimationParser that parses an XML file located
-     *  at <var>doc_url</var> and is to be displayed on the Component
-     *  <var>view</var>.
+    private BeanFactory _factory = new BeanFactory();
+
+    private Map _symbol_table = new HashMap(); // Indexed by symbol ID
+
+    private List _behaviour_links = new ArrayList();
+
+    private List _event_links = new ArrayList();
+
+    private MacroExpander _macro_table = new MacroExpander();
+
+    private URL _doc_url;
+
+    private Component _component;
+
+    private Animation _anim = null; // The animation currently being parsed
+
+    /**
+     * Constructs an AnimationParser that parses an XML file located
+     * at <var>doc_url</var> and is to be displayed on the Component
+     * <var>view</var>.
      *
-     *  @param doc_url
-     *      The URL of the XML document to be parsed.
-     *  @param view
-     *      The Component on which the Animation is to be displayed.
+     * @param doc_url The URL of the XML document to be parsed.
+     * @param view    The Component on which the Animation is to be displayed.
      */
     public XMLAnimationParser(URL doc_url, Component view) {
         _doc_url = doc_url;
@@ -105,133 +117,123 @@ public class XMLAnimationParser {
         _factory.addPackage(CATEGORY_BEHAVIOUR, PKG_BEHAVIOUR);
     }
 
-    /** Constructs an AnimationParser that parses an XML file stored in
-     *  a file and is to be displayed on the Component <var>view</var>.
+    /**
+     * Constructs an AnimationParser that parses an XML file stored in
+     * a file and is to be displayed on the Component <var>view</var>.
      *
-     *  @param file
-     *      The file containing the XML document to be parsed.
-     *  @param view
-     *      The Component on which the Animation is to be displayed.
+     * @param file The file containing the XML document to be parsed.
+     * @param view The Component on which the Animation is to be displayed.
      */
     public XMLAnimationParser(File file, Component view)
             throws MalformedURLException {
         this(file.toURL(), view);
     }
 
-    /** Returns the URL of the XML document being parsed.
+    /**
+     * Returns the URL of the XML document being parsed.
      */
     public URL getDocumentURL() {
         return _doc_url;
     }
 
-    /** Returns the Component on which the parsed Animation is to be displayed.
+    /**
+     * Returns the Component on which the parsed Animation is to be displayed.
      */
     public Component getViewComponent() {
         return _component;
     }
 
-    /** Registers a package in the system class loader to be searched for classes
-     *  of scene-graph node.
-     *  <p>
-     *  Names of scene bean types are translated into class names by capitalising
-     *  their first letter and then searching for a class with that name
-     *  in the packages registered by the <code>addScenePackage</code> functions.
-     *  Packages are searched in order of registration, with the package
-     *  <code>uk.ac.ic.doc.scenebeans</code> being searched first.
-     *  Packages of beans can also be registered within an XML document using
-     *  the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
+    /**
+     * Registers a package in the system class loader to be searched for classes
+     * of scene-graph node.
+     * <p>
+     * Names of scene bean types are translated into class names by capitalising
+     * their first letter and then searching for a class with that name
+     * in the packages registered by the <code>addScenePackage</code> functions.
+     * Packages are searched in order of registration, with the package
+     * <code>uk.ac.ic.doc.scenebeans</code> being searched first.
+     * Packages of beans can also be registered within an XML document using
+     * the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
      *
-     *  @param pkg
-     *      The name of the package containing the SceneBean classes.
+     * @param pkg The name of the package containing the SceneBean classes.
      */
     public void addScenePackage(String pkg) {
         _factory.addPackage(CATEGORY_SCENE, pkg);
     }
 
-    /** Registers a package in the given class loader to be searched for classes
-     *  of scene-graph node.
-     *  <p>
-     *  Names of scene bean types are translated into class names by capitalising
-     *  their first letter and then searching for a class with that name
-     *  in the packages registered by the <code>addScenePackage</code> functions.
-     *  Packages are searched in order of registration, with the package
-     *  <code>uk.ac.ic.doc.scenebeans</code> being searched first.
-     *  Packages of beans can also be registered within an XML document using
-     *  the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
+    /**
+     * Registers a package in the given class loader to be searched for classes
+     * of scene-graph node.
+     * <p>
+     * Names of scene bean types are translated into class names by capitalising
+     * their first letter and then searching for a class with that name
+     * in the packages registered by the <code>addScenePackage</code> functions.
+     * Packages are searched in order of registration, with the package
+     * <code>uk.ac.ic.doc.scenebeans</code> being searched first.
+     * Packages of beans can also be registered within an XML document using
+     * the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
      *
-     *  @param l
-     *      The ClassLoader used to load the package.
-     *  @param pkg
-     *      The name of the package containing the SceneBean classes.
+     * @param l   The ClassLoader used to load the package.
+     * @param pkg The name of the package containing the SceneBean classes.
      */
     public void addScenePackage(ClassLoader l, String pkg) {
         _factory.addPackage(CATEGORY_SCENE, l, pkg);
     }
 
-    /** Registers a package in the given class loader to be searched for classes
-     *  of behaviour bean.
-     *  <p>
-     *  Names of behaviour algorithms are translated into class names by 
-     *  capitalising their first letter and then searching for a class with that
-     *  name in the packages registered by the <code>addScenePackage</code> 
-     *  functions.
-     *  Packages are searched in order of registration, with the package
-     *  <code>uk.ac.ic.doc.scenebeans</code> being searched first.
-     *  Packages of beans can also be registered within an XML document using
-     *  the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
+    /**
+     * Registers a package in the given class loader to be searched for classes
+     * of behaviour bean.
+     * <p>
+     * Names of behaviour algorithms are translated into class names by
+     * capitalising their first letter and then searching for a class with that
+     * name in the packages registered by the <code>addScenePackage</code>
+     * functions.
+     * Packages are searched in order of registration, with the package
+     * <code>uk.ac.ic.doc.scenebeans</code> being searched first.
+     * Packages of beans can also be registered within an XML document using
+     * the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
      *
-     *  @param pkg
-     *      The name of the package containing the SceneBean classes.
+     * @param pkg The name of the package containing the SceneBean classes.
      */
     public void addBehaviourPackage(String pkg) {
         _factory.addPackage(CATEGORY_BEHAVIOUR, pkg);
     }
 
-    /** Registers a package in the system class loader to be searched for classes
-     *  of behaviour bean.
-     *  <p>
-     *  Names of behaviour algorithms are translated into class names by 
-     *  capitalising their first letter and then searching for a class with that
-     *  name in the packages registered by the <code>addScenePackage</code> 
-     *  functions.
-     *  Packages are searched in order of registration, with the package
-     *  <code>uk.ac.ic.doc.scenebeans</code> being searched first.
-     *  Packages of beans can also be registered within an XML document using
-     *  the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
+    /**
+     * Registers a package in the system class loader to be searched for classes
+     * of behaviour bean.
+     * <p>
+     * Names of behaviour algorithms are translated into class names by
+     * capitalising their first letter and then searching for a class with that
+     * name in the packages registered by the <code>addScenePackage</code>
+     * functions.
+     * Packages are searched in order of registration, with the package
+     * <code>uk.ac.ic.doc.scenebeans</code> being searched first.
+     * Packages of beans can also be registered within an XML document using
+     * the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
      *
-     *  @param l
-     *      The ClassLoader used to load the package.
-     *  @param pkg
-     *      The name of the package containing the SceneBean classes.
+     * @param l   The ClassLoader used to load the package.
+     * @param pkg The name of the package containing the SceneBean classes.
      */
     public void addBehaviourPackage(ClassLoader l, String pkg) {
         _factory.addPackage(CATEGORY_BEHAVIOUR, pkg);
     }
 
-
-    /** Parses the data identified by the URL passed to the parser's
-     *  constructor into a DOM document model and then translates that
-     *  document model into a Animation.
+    /**
+     * Parses the data identified by the URL passed to the parser's
+     * constructor into a DOM document model and then translates that
+     * document model into a Animation.
      *
-     *  @exception java.lang.IOException
-     *      An I/O error occurred while reading the XML document.
-     * @exception AnimationParseException
-     *      The XML file contained invalid information.  It may, for example,
-     *      be malformed or contain elements or attributes not understood by
-     *      the parser.
+     * @throws IOException             An I/O error occurred while reading the XML document.
+     * @throws AnimationParseException The XML file contained invalid information.  It may, for example,
+     *                                 be malformed or contain elements or attributes not understood by
+     *                                 the parser.
      */
-    public Animation parseAnimation()
-            throws IOException, AnimationParseException {
+    public Animation parseAnimation() throws IOException, AnimationParseException {
         try {
-            InputSource in = Resolver.createInputSource(_doc_url, false);
-            com.sun.xml.parser.Parser sax_parser =
-                    new com.sun.xml.parser.Parser();
-            XmlDocumentBuilder doc_builder = new XmlDocumentBuilder();
-
-            sax_parser.setDocumentHandler(doc_builder);
-            sax_parser.parse(in);
-
-            XmlDocument doc = doc_builder.getDocument();
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(new File(_doc_url.toURI()));
             doc.getDocumentElement().normalize();
 
             return translateDocument(doc);
@@ -242,9 +244,10 @@ public class XMLAnimationParser {
         } catch (SAXException ex) {
             throw new AnimationParseException("failed to parse XML: " +
                     ex.getMessage());
+        } catch (ParserConfigurationException | URISyntaxException e) {
+            throw new IOException(e);
         }
     }
-
 
     Animation translateDocument(Document doc)
             throws AnimationParseException {
@@ -456,12 +459,6 @@ public class XMLAnimationParser {
         }
     }
 
-
-
-    /*-----------------------------------------------------------------------
-     *  Forall: macro definition and iteration
-     */
-
     void parseForall(Element elt, ForallParser child_parser)
             throws AnimationParseException {
         String var = getRequiredAttribute(elt, Attr.VAR);
@@ -494,8 +491,9 @@ public class XMLAnimationParser {
     }
 
 
+
     /*-----------------------------------------------------------------------
-     *  Behaviour
+     *  Forall: macro definition and iteration
      */
 
     void translateBehaviour(Element elt)
@@ -506,6 +504,11 @@ public class XMLAnimationParser {
             optionalStartActivity(elt, (Activity) behaviour);
         }
     }
+
+
+    /*-----------------------------------------------------------------------
+     *  Behaviour
+     */
 
     void translateSeq(Element elt)
             throws AnimationParseException {
@@ -546,7 +549,6 @@ public class XMLAnimationParser {
         putOptionalSymbol(elt, co);
         return co;
     }
-
 
     void createSubActivities(CompositeActivity ca, Element elt)
             throws AnimationParseException {
@@ -635,10 +637,6 @@ public class XMLAnimationParser {
         }
     }
 
-    /*-----------------------------------------------------------------------
-     *  Commands and events
-     */
-
     void translateCommand(Element elt)
             throws AnimationParseException {
         String name = getRequiredAttribute(elt, Attr.NAME);
@@ -652,6 +650,10 @@ public class XMLAnimationParser {
         _anim.addCommand(name, cmd);
     }
 
+    /*-----------------------------------------------------------------------
+     *  Commands and events
+     */
+
     void translateEvent(Element elt)
             throws AnimationParseException {
         String object_id = getRequiredAttribute(elt, Attr.OBJECT);
@@ -664,7 +666,6 @@ public class XMLAnimationParser {
         BeanUtil.bindEventListener(invoker, bean);
         _event_links.add(new EventLink(bean, object_id, invoker));
     }
-
 
     Command createCompositeCommand(Element elt)
             throws AnimationParseException {
@@ -827,17 +828,17 @@ public class XMLAnimationParser {
         return new AnnounceCommand(_anim, event_name);
     }
 
-
-
-    /*-----------------------------------------------------------------------
-     *  Graphical elements
-     */
-
     void translateDefine(Element elt)
             throws AnimationParseException {
         SceneGraph sg = createDrawNode(elt);
         putOptionalSymbol(elt, sg);
     }
+
+
+
+    /*-----------------------------------------------------------------------
+     *  Graphical elements
+     */
 
     void translateDraw(Element elt)
             throws AnimationParseException {
@@ -1070,7 +1071,6 @@ public class XMLAnimationParser {
         }
     }
 
-
     SceneGraph createPrimitiveNode(Element elt)
             throws AnimationParseException {
         String type = getRequiredAttribute(elt, Attr.TYPE);
@@ -1101,16 +1101,16 @@ public class XMLAnimationParser {
         }
     }
 
+    void initialiseParameters(Object bean, Element bean_elt)
+            throws AnimationParseException {
+        initialiseParameters(bean, BeanUtil.getBeanInfo(bean), bean_elt);
+    }
+
 
     /*-----------------------------------------------------------------------
      *  Methods for processing the "param" and "animate" elements that are
      *  contained in many different elements.
      */
-
-    void initialiseParameters(Object bean, Element bean_elt)
-            throws AnimationParseException {
-        initialiseParameters(bean, BeanUtil.getBeanInfo(bean), bean_elt);
-    }
 
     void initialiseParameters(Object bean, BeanInfo info, Element bean_elt)
             throws AnimationParseException {
@@ -1139,8 +1139,9 @@ public class XMLAnimationParser {
         }
     }
 
-    /** Sets a single parameter of the object 'bean' from the attributes
-     *  of the "param" element 'param_elt'.
+    /**
+     * Sets a single parameter of the object 'bean' from the attributes
+     * of the "param" element 'param_elt'.
      */
     void setParameter(Object bean, BeanInfo info, Element param_elt)
             throws AnimationParseException {
@@ -1165,11 +1166,12 @@ public class XMLAnimationParser {
         }
     }
 
-    /** Binds a behaviour to a parameter so that the parameter's value is
-     *  updated whenever the behaviour is simulated.  A single behaviour
-     *  can update multiple parameters and a single parameter can have
-     *  multiple behaviours, although the effect is undefined if more
-     *  than one of those behaviours is being simulated at the same time.
+    /**
+     * Binds a behaviour to a parameter so that the parameter's value is
+     * updated whenever the behaviour is simulated.  A single behaviour
+     * can update multiple parameters and a single parameter can have
+     * multiple behaviours, although the effect is undefined if more
+     * than one of those behaviours is being simulated at the same time.
      */
     void animateParameter(Object bean, Element anim_elt)
             throws AnimationParseException {
@@ -1238,8 +1240,8 @@ public class XMLAnimationParser {
 
         try {
             Method method = bean_class.getMethod(method_name,
-                    new Class[]{Integer.TYPE});
-            return method.invoke(bean, new Object[]{new Integer(idx)});
+                    Integer.TYPE);
+            return method.invoke(bean, idx);
         } catch (Exception ex) {
             throw new AnimationParseException(
                     "could not create adapter for parameter \"" +
@@ -1253,11 +1255,6 @@ public class XMLAnimationParser {
                 param_name.substring(1) + "Adapter";
     }
 
-
-    /*-----------------------------------------------------------------------
-     *  General utility methods to access parsing state
-     */
-
     void putOptionalSymbol(Element elt, Object bean)
             throws AnimationParseException {
         String symbol = getOptionalAttribute(elt, Attr.ID);
@@ -1267,16 +1264,18 @@ public class XMLAnimationParser {
     }
 
 
-    /** Put a named bean into the symbol table.  This allows an application
-     *  to make its user-interface elements and other objects available as
-     *  behaviours to XML documents.
+    /*-----------------------------------------------------------------------
+     *  General utility methods to access parsing state
+     */
+
+    /**
+     * Put a named bean into the symbol table.  This allows an application
+     * to make its user-interface elements and other objects available as
+     * behaviours to XML documents.
      *
-     *  @param symbol
-     *      The name of the symbol.
-     *  @param bean
-     *      The value of the symbol.
-     * @exception AnimationParseException
-     *      The name of the symbol is already defined in the symbol table.
+     * @param symbol The name of the symbol.
+     * @param bean   The value of the symbol.
+     * @throws AnimationParseException The name of the symbol is already defined in the symbol table.
      */
     public void putSymbol(String symbol, Object bean)
             throws AnimationParseException {
@@ -1288,16 +1287,14 @@ public class XMLAnimationParser {
         _symbol_table.put(symbol, bean);
     }
 
-    /** Looks up an object (scene-graph node or behaviour) in the symbol
-     *  table, indexed by it's XML name (given by the the <code>id</code> tag
-     *  attribute.
+    /**
+     * Looks up an object (scene-graph node or behaviour) in the symbol
+     * table, indexed by it's XML name (given by the the <code>id</code> tag
+     * attribute.
      *
-     *  @param symbol
-     *      The name of the symbol.
-     *  @return
-     *      The value of the symbol.
-     * @exception AnimationParseException
-     *      The symbol is not defined in the symbol table.
+     * @param symbol The name of the symbol.
+     * @return The value of the symbol.
+     * @throws AnimationParseException The symbol is not defined in the symbol table.
      */
     public Object getSymbol(String symbol)
             throws AnimationParseException {
@@ -1309,39 +1306,37 @@ public class XMLAnimationParser {
         }
     }
 
-    /** Returns an immutable view of the symbol table.
+    /**
+     * Returns an immutable view of the symbol table.
      *
-     *  @return
-     *      An immutable map, indexed by string symbol name.
+     * @return An immutable map, indexed by string symbol name.
      */
     public Map getSymbols() {
         return Collections.unmodifiableMap(_symbol_table);
     }
 
-    /** Returns an immutable view of thelinks between behaviours and 
-     *  animated beans.
+    /**
+     * Returns an immutable view of thelinks between behaviours and
+     * animated beans.
      *
-     *  @return
-     *      A Collection of 
-     *      {@link BehaviourLink}
-     *      objects.
+     * @return A Collection of
+     * {@link BehaviourLink}
+     * objects.
      */
     public Collection getBehaviourLinks() {
         return Collections.unmodifiableList(_behaviour_links);
     }
 
-
-    /** Returns an immutable view of the links between event sources and
-     *  commands invoked in response to events from those sources.
+    /**
+     * Returns an immutable view of the links between event sources and
+     * commands invoked in response to events from those sources.
      *
-     *  @return
-     *      A Collection of 
-     *      {@link EventLink} objects.
+     * @return A Collection of
+     * {@link EventLink} objects.
      */
     public Collection getEventLinks() {
         return Collections.unmodifiableList(_event_links);
     }
-
 
     String getRequiredAttribute(Element e, String attr)
             throws AnimationParseException {
@@ -1366,21 +1361,20 @@ public class XMLAnimationParser {
         }
     }
 
-    /** Adds a macro to the parser.  XML attribute values are macro-expanded
-     *  before the parser uses them to translate the document into an Animation.
-     *  Macros allow Animation documents to be parameterised and paramaters 
-     *  to be passed to the parser from user input or the command line.
-     *  <p>
-     *  Macro expansion is <em>textual</em>:  it does not take the syntactic
-     *  structure (such as expression syntax) of the expanded string into 
-     *  account.  Be careful when expanding macros in strings with a syntactic
-     *  structure; you may, for example, need to enclose macros in brackes 
-     *  inside expressions.
+    /**
+     * Adds a macro to the parser.  XML attribute values are macro-expanded
+     * before the parser uses them to translate the document into an Animation.
+     * Macros allow Animation documents to be parameterised and paramaters
+     * to be passed to the parser from user input or the command line.
+     * <p>
+     * Macro expansion is <em>textual</em>:  it does not take the syntactic
+     * structure (such as expression syntax) of the expanded string into
+     * account.  Be careful when expanding macros in strings with a syntactic
+     * structure; you may, for example, need to enclose macros in brackes
+     * inside expressions.
      *
-     *  @param name
-     *      The name of the macro.
-     *  @param value
-     *      The value of the macro.
+     * @param name  The name of the macro.
+     * @param value The value of the macro.
      */
     public void addMacro(String name, String value)
             throws AnimationParseException {
@@ -1391,13 +1385,20 @@ public class XMLAnimationParser {
         }
     }
 
-
-    /** Removes a macro from the parser.
+    /**
+     * Removes a macro from the parser.
      *
-     *  @param name
-     *      The name of the macro to remove.
+     * @param name The name of the macro to remove.
      */
     public void removeMacro(String name) {
         _macro_table.removeMacro(name);
     }
+
+
+    private static interface ForallParser {
+
+        void parse(Element child) throws AnimationParseException;
+
+    }
+
 }

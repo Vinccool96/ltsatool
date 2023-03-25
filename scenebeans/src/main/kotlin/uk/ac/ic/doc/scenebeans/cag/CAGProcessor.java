@@ -31,8 +31,11 @@ import java.awt.geom.Area;
 
 public abstract class CAGProcessor
         implements SceneGraphProcessor {
+
     private Graphics2D _graphics;
+
     private AffineTransform _transform;
+
     private Area _area = null;
 
 
@@ -83,4 +86,5 @@ public abstract class CAGProcessor
 
 
     protected abstract void accumulateArea(Area accumulator, Area a);
+
 }

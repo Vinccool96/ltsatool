@@ -26,10 +26,12 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
 
-/** The <a href="../../../../../../beans/ellipse.html">Ellipse</a> 
- *  SceneBean.
+/**
+ * The <a href="../../../../../../beans/ellipse.html">Ellipse</a>
+ * SceneBean.
  */
 public class Ellipse extends PrimitiveBase {
+
     private double _x_radius, _y_radius;
 
     public Ellipse() {
@@ -65,26 +67,30 @@ public class Ellipse extends PrimitiveBase {
         setDirty(true);
     }
 
-
-    public class XRadius
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setXRadius(v);
-        }
-    }
-
     public final XRadius newXRadiusAdapter() {
         return new XRadius();
-    }
-
-    public class YRadius
-            implements DoubleBehaviourListener, java.io.Serializable {
-        public void behaviourUpdated(double v) {
-            setYRadius(v);
-        }
     }
 
     public final YRadius newYRadiusAdapter() {
         return new YRadius();
     }
+
+    public class XRadius
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setXRadius(v);
+        }
+
+    }
+
+    public class YRadius
+            implements DoubleBehaviourListener, java.io.Serializable {
+
+        public void behaviourUpdated(double v) {
+            setYRadius(v);
+        }
+
+    }
+
 }

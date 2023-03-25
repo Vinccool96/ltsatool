@@ -22,24 +22,27 @@
 
 package uk.ac.ic.doc.scenebeans;
 
-/** An Input scene-graph node marks a subgraph of the scene as being sensitive
- *  to some form of input.  Derived classes define the kind of input and
- *  bean properties define the events that are signalled.
+/**
+ * An Input scene-graph node marks a subgraph of the scene as being sensitive
+ * to some form of input.  Derived classes define the kind of input and
+ * bean properties define the events that are signalled.
  */
 public interface Input extends SceneGraph {
-    /** Returns the subgraph that is sensitive to the type of input
-     *  defined by this bean.
+
+    /**
+     * Returns the subgraph that is sensitive to the type of input
+     * defined by this bean.
      *
-     *  @return
-     *      The sensitive subgraph.
+     * @return The sensitive subgraph.
      */
     SceneGraph getSensitiveGraph();
 
-    /** Sets the subgraph that is sensitive to the type of input
-     *  defined by this bean.
+    /**
+     * Sets the subgraph that is sensitive to the type of input
+     * defined by this bean.
      *
-     *  @param sg
-     *      The sensitive subgraph.
+     * @param sg The sensitive subgraph.
      */
     void setSensitiveGraph(SceneGraph sg);
+
 }
