@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/nasa-graph/ltsatool.nasa-graph.main.iml" filepath="$PROJECT_DIR$/.idea/modules/nasa-graph/ltsatool.nasa-graph.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/scenebeans/ltsatool.scenebeans.main.iml" filepath="$PROJECT_DIR$/.idea/modules/scenebeans/ltsatool.scenebeans.main.iml" />
     </modules>
   </component>
 </project>

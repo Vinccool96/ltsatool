@@ -1,9 +1,8 @@
 plugins {
     kotlin("jvm") version "1.8.20-RC"
-    application
 }
 
-group = "io.github.vinccool96.ltsa"
+group = "uk.ac.ic.doc"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -11,8 +10,6 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":nasa-graph"))
-    implementation(project(":scenebeans"))
     testImplementation(kotlin("test"))
 }
 
@@ -22,8 +19,4 @@ tasks.test {
 
 kotlin {
     jvmToolchain(18)
-}
-
-application {
-    mainClass.set("io.github.vinccool96.ltsa.ltsatool.HPWindow")
 }

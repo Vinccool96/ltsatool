@@ -1,3 +1,3 @@
 rootProject.name = "ltsatool"
-include("nasa-graph")
+include("nasa-graph", "scenebeans")
 
