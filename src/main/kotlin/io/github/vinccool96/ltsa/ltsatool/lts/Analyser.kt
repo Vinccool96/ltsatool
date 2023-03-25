@@ -54,7 +54,6 @@ class Analyser(private var cs: CompositeState, private val output: LTSOutput, pr
 
     private var endSequence = -99999
 
-    // TODO: Rename to errorTrace
     var errorTrace: List<String>? = null
         private set
 
