@@ -6,7 +6,7 @@ import javax.swing.JPanel
 import kotlin.math.abs
 
 class DrawMachine(var mach: CompactState?, var parent: JPanel, var nameFont: Font, var labelFont: Font,
-        protected var displayName: Boolean, protected var newLabelFormat: Boolean, var SEPARATION: Int,
+        protected var displayName: Boolean, protected var realNewLabelFormat: Boolean, var SEPARATION: Int,
         var ARCINC: Int) {
 
     var stateFont = Font("SansSerif", 1, 18)
@@ -51,7 +51,7 @@ class DrawMachine(var mach: CompactState?, var parent: JPanel, var nameFont: Fon
     var labels: Array<Array<String>>? = null
 
     init {
-        if (newLabelFormat) {
+        if (realNewLabelFormat) {
             this.initCompactLabels()
         }
         size = this.computeDimension(mach!!)
@@ -63,8 +63,8 @@ class DrawMachine(var mach: CompactState?, var parent: JPanel, var nameFont: Fon
     }
 
     fun setNewLabelFormat(var1: Boolean) {
-        newLabelFormat = var1
-        if (newLabelFormat) {
+        realNewLabelFormat = var1
+        if (realNewLabelFormat) {
             this.initCompactLabels()
         }
         size = this.computeDimension(mach!!)
@@ -128,7 +128,7 @@ class DrawMachine(var mach: CompactState?, var parent: JPanel, var nameFont: Fon
             Dimension(220 + nameWidth, 50)
         } else {
             var var18: String? = null
-            if (!newLabelFormat) {
+            if (!realNewLabelFormat) {
                 var var19 = var1.states[var1.maxStates - 1]
                 while (var19 != null) {
                     var var5 = var19
@@ -206,10 +206,10 @@ class DrawMachine(var mach: CompactState?, var parent: JPanel, var nameFont: Fon
                     var15 = var15.list
                 }
                 if (var13) {
-                    var24 = if (newLabelFormat) 1 else var10[var11]
+                    var24 = if (realNewLabelFormat) 1 else var10[var11]
                 }
                 if (var14) {
-                    var8 = if (newLabelFormat) 1 else var10[var12]
+                    var8 = if (realNewLabelFormat) 1 else var10[var12]
                 }
                 ++var9
             }
@@ -305,7 +305,7 @@ class DrawMachine(var mach: CompactState?, var parent: JPanel, var nameFont: Fon
                         if (var10[0] != '@') {
                             while (var9 != null) {
                                 ++var7[var9.next + 1]
-                                if (!newLabelFormat) {
+                                if (!realNewLabelFormat) {
                                     drawTransition(var1, var6, var9.next, var10, var7[var9.next + 1],
                                             var6 == lastselected && var9.next == selected, true)
                                 } else if (var7[var9.next + 1] == 1) {
@@ -404,7 +404,7 @@ class DrawMachine(var mach: CompactState?, var parent: JPanel, var nameFont: Fon
             }
             var1.color = Color.white
             var1.fillRect(var16, var17 - var14.maxAscent, var14.stringWidth(var4), var14.height)
-            if (!var6 || (lastaction == null || lastaction != var4) && !newLabelFormat) {
+            if (!var6 || (lastaction == null || lastaction != var4) && !realNewLabelFormat) {
                 var1.color = Color.black
             } else {
                 var1.color = Color.red

@@ -16,7 +16,7 @@ class Gr2PICT private constructor(var1: OutputStream, protected var g: Graphics,
 
     protected var clr: Color = Color.black
 
-    protected var font: Font = Font("Serif", 0, 12)
+    protected var realFont: Font = Font("Serif", 0, 12)
 
     protected var clipr: Rectangle = Rectangle(-30000, -30000, 60000, 60000)
 
@@ -165,7 +165,7 @@ class Gr2PICT private constructor(var1: OutputStream, protected var g: Graphics,
 
     override fun create(): Graphics {
         val var1 = Gr2PICT(os, g, 49)
-        var1.font = font
+        var1.realFont = realFont
         var1.clipr = clipr
         var1.clr = clr
         return var1
@@ -214,13 +214,13 @@ class Gr2PICT private constructor(var1: OutputStream, protected var g: Graphics,
     }
 
     override fun getFont(): Font {
-        return font
+        return realFont
     }
 
     override fun setFont(var1: Font?) {
         if (var1 != null) {
-            font = var1
-            val var2 = font.name
+            realFont = var1
+            val var2 = realFont.name
             val var3 = getQuickDrawFontNum(var2)
             var var4: Int
             if (var3 >= 0) {
@@ -234,7 +234,7 @@ class Gr2PICT private constructor(var1: OutputStream, protected var g: Graphics,
                 emitstring(var2)
             }
             var4 = 0
-            val var5 = font.style
+            val var5 = realFont.style
             if (var5 and 1 != 0) {
                 var4 = var4 or 1
             }
@@ -244,7 +244,7 @@ class Gr2PICT private constructor(var1: OutputStream, protected var g: Graphics,
             emitop(4)
             emitbyte(var4)
             emitop(13)
-            emitword(font.size)
+            emitword(realFont.size)
         }
     }
 

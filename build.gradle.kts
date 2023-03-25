@@ -18,6 +18,7 @@ allprojects {
 dependencies {
     implementation(project(":nasa-graph"))
     implementation(project(":scenebeans"))
+
     testImplementation(kotlin("test"))
 }
 
