@@ -20,9 +20,9 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(18)
 }
 
 application {
-    mainClass.set("MainKt")
+    mainClass.set("io.github.vinccool96.ltsa.ltsatool.HPWindow")
 }
