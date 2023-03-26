@@ -60,11 +60,27 @@ class AnimationCanvas : Canvas() {
      *
      * @return The Animation displayed by the canvas.
      */
+    @set:Synchronized
     var animation: Animation? = null // Animation being displayed
-        private set
+        /**
+         * Sets the animation displayed on the canvas.
+         *
+         * @param animation The animation to display.
+         */
+        set(animation) {
+            field = animation
+            _root.transformedGraph = animation
+            invalidate()
+            repaint()
+            condition.signalAll()
+        }
+
     private val _root = WindowTransform()
+
     private var _hints: RenderingHints? = null
+
     private var _backbuffer: Image? = null
+
     private var _runner: Thread?
     /**
      * Returns the number of milliseconds that the animation thread sleeps
@@ -158,20 +174,6 @@ class AnimationCanvas : Canvas() {
             }
         }
         _runner!!.start()
-    }
-
-    /**
-     * Sets the animation displayed on the canvas.
-     *
-     * @param animation The animation to display.
-     */
-    @Synchronized
-    fun setAnimation(animation: Animation) {
-        this.animation = animation
-        _root.transformedGraph = animation
-        invalidate()
-        repaint()
-        condition.signalAll()
     }
 
     val sceneGraph: SceneGraph

@@ -35,13 +35,13 @@ import uk.ac.ic.doc.scenebeans.activity.FiniteActivityBase
  * a method with which they can announce behaviour updates.
  */
 abstract class DoubleActivityBase : FiniteActivityBase, DoubleBehaviour {
-    private var _behaviour_listeners: MutableList<*>
+    private var _behaviour_listeners: MutableList<DoubleBehaviourListener>
 
     /**
      * Constructs a DoubleActivityBase.
      */
     protected constructor() {
-        _behaviour_listeners = ArrayList<Any?>()
+        _behaviour_listeners = ArrayList()
     }
 
     /**
@@ -51,7 +51,7 @@ abstract class DoubleActivityBase : FiniteActivityBase, DoubleBehaviour {
      *
      * @param l The list to hold listener references.
      */
-    protected constructor(l: MutableList<*>) {
+    protected constructor(l: MutableList<DoubleBehaviourListener>) {
         _behaviour_listeners = l
     }
 
@@ -61,7 +61,7 @@ abstract class DoubleActivityBase : FiniteActivityBase, DoubleBehaviour {
      * @param l The listener to add.
      */
     @Synchronized
-    override fun addDoubleBehaviourListener(l: DoubleBehaviourListener?) {
+    override fun addDoubleBehaviourListener(l: DoubleBehaviourListener) {
         _behaviour_listeners.add(l)
     }
 
@@ -71,7 +71,7 @@ abstract class DoubleActivityBase : FiniteActivityBase, DoubleBehaviour {
      * @param l The listener to remove.
      */
     @Synchronized
-    override fun removeDoubleBehaviourListener(l: DoubleBehaviourListener?) {
+    override fun removeDoubleBehaviourListener(l: DoubleBehaviourListener) {
         _behaviour_listeners.remove(l)
     }
 

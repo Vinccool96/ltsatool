@@ -93,13 +93,13 @@ class ToMove : DoubleActivityBase, Serializable {
 
     internal inner class FromAdapter : DoubleBehaviourListener, Serializable {
         override fun behaviourUpdated(v: Double) {
-            this._from = v
+            from = v
         }
     }
 
     internal inner class ToAdapter : DoubleBehaviourListener, Serializable {
         override fun behaviourUpdated(v: Double) {
-            this._to = v
+            to = v
         }
     }
 

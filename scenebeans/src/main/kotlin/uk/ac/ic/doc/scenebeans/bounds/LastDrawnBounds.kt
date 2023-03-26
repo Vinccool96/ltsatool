@@ -64,7 +64,7 @@ class LastDrawnBounds : SceneGraphProcessor {
     }
 
     override fun process(sg: Input) {
-        sg.sensitiveGraph.accept(this)
+        sg.sensitiveGraph!!.accept(this)
     }
 
     override fun process(sg: Style) {

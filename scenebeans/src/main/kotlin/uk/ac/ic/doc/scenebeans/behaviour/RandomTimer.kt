@@ -70,13 +70,13 @@ class RandomTimer : FiniteActivityBase(), Serializable {
 
     inner class MinDuration : DoubleBehaviourListener {
         override fun behaviourUpdated(v: Double) {
-            this._min_duration = v
+            minDuration = v
         }
     }
 
     inner class MaxDuration : DoubleBehaviourListener {
         override fun behaviourUpdated(v: Double) {
-            this._max_duration = v
+            maxDuration = v
         }
     }
 }

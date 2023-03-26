@@ -35,13 +35,13 @@ import java.io.Serializable
  * a method with which they can announce behaviour updates.
  */
 abstract class PointBehaviourBase : PointBehaviour, Serializable {
-    private var _listeners: MutableList<*>
+    private var _listeners: MutableList<PointBehaviourListener>
 
     /**
      * Constructs a PointBehaviourBase.
      */
     protected constructor() {
-        _listeners = ArrayList<Any?>()
+        _listeners = ArrayList()
     }
 
     /**
@@ -51,7 +51,7 @@ abstract class PointBehaviourBase : PointBehaviour, Serializable {
      *
      * @param l The list to hold listener references.
      */
-    protected constructor(l: MutableList<*>) {
+    protected constructor(l: MutableList<PointBehaviourListener>) {
         _listeners = l
     }
 
@@ -61,7 +61,7 @@ abstract class PointBehaviourBase : PointBehaviour, Serializable {
      * @param l The listener to add.
      */
     @Synchronized
-    override fun addPointBehaviourListener(l: PointBehaviourListener?) {
+    override fun addPointBehaviourListener(l: PointBehaviourListener) {
         _listeners.add(l)
     }
 
@@ -71,7 +71,7 @@ abstract class PointBehaviourBase : PointBehaviour, Serializable {
      * @param l The listener to remove.
      */
     @Synchronized
-    override fun removePointBehaviourListener(l: PointBehaviourListener?) {
+    override fun removePointBehaviourListener(l: PointBehaviourListener) {
         _listeners.remove(l)
     }
 

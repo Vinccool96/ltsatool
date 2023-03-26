@@ -28,12 +28,11 @@ import uk.ac.ic.doc.scenebeans.MouseClick
 import uk.ac.ic.doc.scenebeans.MouseMotion
 import uk.ac.ic.doc.scenebeans.SceneGraph
 import uk.ac.ic.doc.scenebeans.pick.Picker
+import java.awt.*
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.awt.event.MouseMotionListener
 import java.awt.geom.NoninvertibleTransformException
-
-java.awt.*import java.awt.event.MouseEvent
 
 /**
  * A class that dispatches AWT mouse events to

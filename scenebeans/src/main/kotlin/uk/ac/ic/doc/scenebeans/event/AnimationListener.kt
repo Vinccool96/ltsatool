@@ -24,7 +24,8 @@
  */
 package uk.ac.ic.doc.scenebeans.event
 
-java.util.*
+import java.util.*
+
 /**
  * The interface through which AnimationEvents are announced.
  */

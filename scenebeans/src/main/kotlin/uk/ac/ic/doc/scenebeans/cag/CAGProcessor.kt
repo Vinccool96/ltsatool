@@ -48,7 +48,7 @@ abstract class CAGProcessor : SceneGraphProcessor {
         get() = if (_area == null) Area() else _area!!
 
     override fun process(primitive: Primitive) {
-        val primitive_area = Area(primitive.getShape(_graphics))
+        val primitive_area = Area(primitive.getShape(_graphics!!))
         primitive_area.transform(_transform)
         if (_area == null) {
             _area = primitive_area

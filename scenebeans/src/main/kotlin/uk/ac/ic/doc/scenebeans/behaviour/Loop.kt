@@ -88,19 +88,19 @@ class Loop : DoubleActivityBase, Serializable {
 
     internal inner class FromAdapter : DoubleBehaviourListener, Serializable {
         override fun behaviourUpdated(v: Double) {
-            this._from = v
+            this@Loop.from = v
         }
     }
 
     internal inner class ToAdapter : DoubleBehaviourListener, Serializable {
         override fun behaviourUpdated(v: Double) {
-            this._to = v
+            this@Loop.to = v
         }
     }
 
     internal inner class DurationAdapter : DoubleBehaviourListener, Serializable {
         override fun behaviourUpdated(v: Double) {
-            this._duration = v
+            this@Loop.duration = v
         }
     }
 }

@@ -95,9 +95,9 @@ class SceneAnimator : CustomAnimator(), AnimationControl {
                 val var7: Animation = var6.parseAnimation()
                 _canvas.animation = var7
                 buttonControls = var4.inverse()
-                var var8: Iterator<*> = var7.eventNames.iterator()
+                var var8 = var7.eventNames.iterator()
                 while (var8.hasNext()) {
-                    val var9 = var8.next() as String
+                    val var9 = var8.next()
                     buttonControls.remove(var9)
                 }
                 val var11 = Relation()
@@ -228,7 +228,7 @@ class SceneAnimator : CustomAnimator(), AnimationControl {
         override fun action() {
             try {
                 synchronized(this@SceneAnimator._canvas) {
-                    this@SceneAnimator._canvas.animation.invokeCommand(name)
+                    this@SceneAnimator._canvas.animation!!.invokeCommand(name)
                 }
             } catch (var4: CommandException) {
                 println("Animation$var4")

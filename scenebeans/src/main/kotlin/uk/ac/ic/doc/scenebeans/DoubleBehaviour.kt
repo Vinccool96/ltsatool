@@ -34,12 +34,12 @@ interface DoubleBehaviour {
      *
      * @param l The listener being added to the behaviour.
      */
-    fun addDoubleBehaviourListener(l: DoubleBehaviourListener?)
+    fun addDoubleBehaviourListener(l: DoubleBehaviourListener)
 
     /**
      * Remove a listener to this behaviour.
      *
      * @param l The listener being removed from the behaviour.
      */
-    fun removeDoubleBehaviourListener(l: DoubleBehaviourListener?)
+    fun removeDoubleBehaviourListener(l: DoubleBehaviourListener)
 }

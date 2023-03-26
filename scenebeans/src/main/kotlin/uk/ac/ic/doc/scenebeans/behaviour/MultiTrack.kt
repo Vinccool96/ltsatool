@@ -172,7 +172,7 @@ class MultiTrack : PointActivityBase(), Serializable {
 
     inner class AvoidAdapter : PointBehaviourListener {
         override fun behaviourUpdated(v: Point2D) {
-            this._avoid = v
+            avoid = v
         }
     }
 }

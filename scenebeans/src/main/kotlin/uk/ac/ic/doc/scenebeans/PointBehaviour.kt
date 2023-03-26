@@ -36,12 +36,12 @@ interface PointBehaviour {
      *
      * @param l The listener being added to the behaviour.
      */
-    fun addPointBehaviourListener(l: PointBehaviourListener?)
+    fun addPointBehaviourListener(l: PointBehaviourListener)
 
     /**
      * Remove a listener to this behaviour.
      *
      * @param l The listener being removed from the behaviour.
      */
-    fun removePointBehaviourListener(l: PointBehaviourListener?)
+    fun removePointBehaviourListener(l: PointBehaviourListener)
 }

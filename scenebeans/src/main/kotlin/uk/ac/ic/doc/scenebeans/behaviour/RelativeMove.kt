@@ -94,7 +94,7 @@ class RelativeMove : DoubleActivityBase, Serializable {
 
     internal inner class FromAdapter : DoubleBehaviourListener, Serializable {
         override fun behaviourUpdated(v: Double) {
-            this._from = v
+            from = v
         }
     }
 
@@ -106,7 +106,7 @@ class RelativeMove : DoubleActivityBase, Serializable {
 
     internal inner class DeltaAdapter : DoubleBehaviourListener, Serializable {
         override fun behaviourUpdated(v: Double) {
-            this._delta = v
+            delta = v
         }
     }
 }
