@@ -370,6 +370,7 @@ class AnimationCanvas : Canvas() {
         }
     }
 
+    @Suppress("removal")
     @Throws(Throwable::class)
     protected fun finalize() {
         _runner!!.interrupt()
