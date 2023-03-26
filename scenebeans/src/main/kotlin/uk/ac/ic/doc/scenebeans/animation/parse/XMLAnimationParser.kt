@@ -1,102 +1,73 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.animation.parse
 
-
-package uk.ac.ic.doc.scenebeans.animation.parse;
-
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import uk.ac.ic.doc.natutil.MacroException;
-import uk.ac.ic.doc.natutil.MacroExpander;
-import uk.ac.ic.doc.scenebeans.*;
-import uk.ac.ic.doc.scenebeans.activity.*;
-import uk.ac.ic.doc.scenebeans.animation.*;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
-import java.beans.BeanInfo;
-import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.IOException;
-import java.io.PushbackReader;
-import java.io.StringReader;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.List;
-import java.util.*;
-
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.w3c.dom.ProcessingInstruction
+import org.xml.sax.SAXException
+import org.xml.sax.SAXParseException
+import uk.ac.ic.doc.natutil.MacroException
+import uk.ac.ic.doc.natutil.MacroExpander
+import uk.ac.ic.doc.scenebeans.*
+import uk.ac.ic.doc.scenebeans.activity.*
+import uk.ac.ic.doc.scenebeans.animation.*
+import java.awt.*
+import java.beans.BeanInfo
+import java.io.*
+import java.net.MalformedURLException
+import java.net.URISyntaxException
+import java.net.URL
+import java.net.URLClassLoader
+import java.util.*
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.parsers.ParserConfigurationException
 
 /**
  * An XMLAnimationParser is responsible for translating an XML document
- * into an {@link Animation}.  It can
+ * into an [Animation].  It can
  * load the XML document from a file or URL.
  *
  * @see Animation
  */
-public class XMLAnimationParser {
-
-    private static final String PROPERTY_ACTIVITY_NAME = "activityName";
-
-    private static final String PI_TARGET = "scenebeans";
-
-    private static final String PI_CODEBASE = "codebase";
-
-    private static final String PI_CATEGORY = "category";
-
-    private static final String PI_PACKAGE = "package";
-
-    /*  Bean categories and packages
-     */
-    private static final String CATEGORY_SCENE = "scene";
-
-    private static final String PKG_SCENE = "uk.ac.ic.doc.scenebeans";
-
-    private static final String CATEGORY_BEHAVIOUR = "behaviour";
-
-    private static final String PKG_BEHAVIOUR =
-            "uk.ac.ic.doc.scenebeans.behaviour";
-
-    ValueParser _value_parser;
-
-    private BeanFactory _factory = new BeanFactory();
-
-    private Map _symbol_table = new HashMap(); // Indexed by symbol ID
-
-    private List _behaviour_links = new ArrayList();
-
-    private List _event_links = new ArrayList();
-
-    private MacroExpander _macro_table = new MacroExpander();
-
-    private URL _doc_url;
-
-    private Component _component;
-
-    private Animation _anim = null; // The animation currently being parsed
+class XMLAnimationParser(
+        /**
+         * Returns the URL of the XML document being parsed.
+         */
+        val documentURL: URL,
+        /**
+         * Returns the Component on which the parsed Animation is to be displayed.
+         */
+        val viewComponent: Component) {
+    var _value_parser: ValueParser
+    private val _factory = BeanFactory()
+    private val _symbol_table: MutableMap<String, Any> = HashMap() // Indexed by symbol ID
+    private val _behaviour_links: MutableList<BehaviourLink> = ArrayList()
+    private val _event_links: MutableList<EventLink> = ArrayList()
+    private val _macro_table = MacroExpander()
+    private var _anim: Animation? = null // The animation currently being parsed
 
     /**
      * Constructs an AnimationParser that parses an XML file located
@@ -106,15 +77,12 @@ public class XMLAnimationParser {
      * @param doc_url The URL of the XML document to be parsed.
      * @param view    The Component on which the Animation is to be displayed.
      */
-    public XMLAnimationParser(URL doc_url, Component view) {
-        _doc_url = doc_url;
-        _value_parser = new ValueParser(doc_url);
-        _component = view;
-
-        _factory.addCategory(CATEGORY_SCENE, "", "", true);
-        _factory.addPackage(CATEGORY_SCENE, PKG_SCENE);
-        _factory.addCategory(CATEGORY_BEHAVIOUR, "", "", true);
-        _factory.addPackage(CATEGORY_BEHAVIOUR, PKG_BEHAVIOUR);
+    init {
+        _value_parser = ValueParser(documentURL)
+        _factory.addCategory(CATEGORY_SCENE, "", "", true)
+        _factory.addPackage(CATEGORY_SCENE, PKG_SCENE)
+        _factory.addCategory(CATEGORY_BEHAVIOUR, "", "", true)
+        _factory.addPackage(CATEGORY_BEHAVIOUR, PKG_BEHAVIOUR)
     }
 
     /**
@@ -124,99 +92,86 @@ public class XMLAnimationParser {
      * @param file The file containing the XML document to be parsed.
      * @param view The Component on which the Animation is to be displayed.
      */
-    public XMLAnimationParser(File file, Component view)
-            throws MalformedURLException {
-        this(file.toURL(), view);
-    }
-
-    /**
-     * Returns the URL of the XML document being parsed.
-     */
-    public URL getDocumentURL() {
-        return _doc_url;
-    }
-
-    /**
-     * Returns the Component on which the parsed Animation is to be displayed.
-     */
-    public Component getViewComponent() {
-        return _component;
-    }
+    constructor(file: File, view: Component) : this(file.toURL(), view)
 
     /**
      * Registers a package in the system class loader to be searched for classes
      * of scene-graph node.
-     * <p>
+     *
+     *
      * Names of scene bean types are translated into class names by capitalising
      * their first letter and then searching for a class with that name
-     * in the packages registered by the <code>addScenePackage</code> functions.
+     * in the packages registered by the `addScenePackage` functions.
      * Packages are searched in order of registration, with the package
-     * <code>uk.ac.ic.doc.scenebeans</code> being searched first.
+     * `uk.ac.ic.doc.scenebeans` being searched first.
      * Packages of beans can also be registered within an XML document using
-     * the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
+     * the `<?scenebeans...?>` processing instruction.
      *
      * @param pkg The name of the package containing the SceneBean classes.
      */
-    public void addScenePackage(String pkg) {
-        _factory.addPackage(CATEGORY_SCENE, pkg);
+    fun addScenePackage(pkg: String) {
+        _factory.addPackage(CATEGORY_SCENE, pkg)
     }
 
     /**
      * Registers a package in the given class loader to be searched for classes
      * of scene-graph node.
-     * <p>
+     *
+     *
      * Names of scene bean types are translated into class names by capitalising
      * their first letter and then searching for a class with that name
-     * in the packages registered by the <code>addScenePackage</code> functions.
+     * in the packages registered by the `addScenePackage` functions.
      * Packages are searched in order of registration, with the package
-     * <code>uk.ac.ic.doc.scenebeans</code> being searched first.
+     * `uk.ac.ic.doc.scenebeans` being searched first.
      * Packages of beans can also be registered within an XML document using
-     * the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
+     * the `<?scenebeans...?>` processing instruction.
      *
      * @param l   The ClassLoader used to load the package.
      * @param pkg The name of the package containing the SceneBean classes.
      */
-    public void addScenePackage(ClassLoader l, String pkg) {
-        _factory.addPackage(CATEGORY_SCENE, l, pkg);
+    fun addScenePackage(l: ClassLoader, pkg: String) {
+        _factory.addPackage(CATEGORY_SCENE, l, pkg)
     }
 
     /**
      * Registers a package in the given class loader to be searched for classes
      * of behaviour bean.
-     * <p>
+     *
+     *
      * Names of behaviour algorithms are translated into class names by
      * capitalising their first letter and then searching for a class with that
-     * name in the packages registered by the <code>addScenePackage</code>
+     * name in the packages registered by the `addScenePackage`
      * functions.
      * Packages are searched in order of registration, with the package
-     * <code>uk.ac.ic.doc.scenebeans</code> being searched first.
+     * `uk.ac.ic.doc.scenebeans` being searched first.
      * Packages of beans can also be registered within an XML document using
-     * the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
+     * the `<?scenebeans...?>` processing instruction.
      *
      * @param pkg The name of the package containing the SceneBean classes.
      */
-    public void addBehaviourPackage(String pkg) {
-        _factory.addPackage(CATEGORY_BEHAVIOUR, pkg);
+    fun addBehaviourPackage(pkg: String) {
+        _factory.addPackage(CATEGORY_BEHAVIOUR, pkg)
     }
 
     /**
      * Registers a package in the system class loader to be searched for classes
      * of behaviour bean.
-     * <p>
+     *
+     *
      * Names of behaviour algorithms are translated into class names by
      * capitalising their first letter and then searching for a class with that
-     * name in the packages registered by the <code>addScenePackage</code>
+     * name in the packages registered by the `addScenePackage`
      * functions.
      * Packages are searched in order of registration, with the package
-     * <code>uk.ac.ic.doc.scenebeans</code> being searched first.
+     * `uk.ac.ic.doc.scenebeans` being searched first.
      * Packages of beans can also be registered within an XML document using
-     * the <code>&lt;?scenebeans...?&gt;</code> processing instruction.
+     * the `<?scenebeans...?>` processing instruction.
      *
      * @param l   The ClassLoader used to load the package.
      * @param pkg The name of the package containing the SceneBean classes.
      */
-    public void addBehaviourPackage(ClassLoader l, String pkg) {
-        _factory.addPackage(CATEGORY_BEHAVIOUR, pkg);
+    fun addBehaviourPackage(l: ClassLoader?, pkg: String) {
+        _factory.addPackage(CATEGORY_BEHAVIOUR, pkg)
     }
 
     /**
@@ -226,916 +181,754 @@ public class XMLAnimationParser {
      *
      * @throws IOException             An I/O error occurred while reading the XML document.
      * @throws AnimationParseException The XML file contained invalid information.  It may, for example,
-     *                                 be malformed or contain elements or attributes not understood by
-     *                                 the parser.
+     * be malformed or contain elements or attributes not understood by
+     * the parser.
      */
-    public Animation parseAnimation() throws IOException, AnimationParseException {
-        try {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(new File(_doc_url.toURI()));
-            doc.getDocumentElement().normalize();
-
-            return translateDocument(doc);
-        } catch (SAXParseException ex) {
-            throw new AnimationParseException(
-                    ex.getSystemId() + " line  " + ex.getLineNumber() +
-                            ": " + ex.getMessage());
-        } catch (SAXException ex) {
-            throw new AnimationParseException("failed to parse XML: " +
-                    ex.getMessage());
-        } catch (ParserConfigurationException | URISyntaxException e) {
-            throw new IOException(e);
+    @Throws(IOException::class, AnimationParseException::class)
+    fun parseAnimation(): Animation {
+        return try {
+            val dbFactory = DocumentBuilderFactory.newInstance()
+            val dBuilder = dbFactory.newDocumentBuilder()
+            val doc = dBuilder.parse(File(documentURL.toURI()))
+            doc.documentElement.normalize()
+            translateDocument(doc)
+        } catch (ex: SAXParseException) {
+            throw AnimationParseException(ex.systemId + " line  " + ex.lineNumber + ": " + ex.message)
+        } catch (ex: SAXException) {
+            throw AnimationParseException("failed to parse XML: " + ex.message)
+        } catch (e: ParserConfigurationException) {
+            throw IOException(e)
+        } catch (e: URISyntaxException) {
+            throw IOException(e)
         }
     }
 
-    Animation translateDocument(Document doc)
-            throws AnimationParseException {
-        translateProcessingInstructions(doc);
-
-        Element e = doc.getDocumentElement();
-        if (!e.getTagName().equals(Tag.ANIMATION)) {
-            throw new AnimationParseException("invalid document type");
+    @Throws(AnimationParseException::class)
+    fun translateDocument(doc: Document): Animation {
+        translateProcessingInstructions(doc)
+        val e = doc.documentElement
+        if (e.tagName != Tag.ANIMATION) {
+            throw AnimationParseException("invalid document type")
         }
-
-        _anim = new Animation();
-
-        setAnimationDimensions(e, _anim);
-        NodeList nodes = e.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            if (node instanceof Element) {
-                translateElement((Element) node);
+        _anim = Animation()
+        setAnimationDimensions(e, _anim!!)
+        val nodes = e.childNodes
+        for (i in 0 until nodes.length) {
+            val node = nodes.item(i)
+            if (node is Element) {
+                translateElement(node)
             }
         }
 
         /*  Return the Animation to the caller, marking the currently parsed
          *  sprite as null to indicate the end of parsing.
          */
-        Animation anim = _anim;
-        _anim = null;
-        return anim;
+        val anim = _anim as Animation
+        _anim = null
+        return anim
     }
 
-    void translateProcessingInstructions(Document d)
-            throws AnimationParseException {
-        NodeList nodes = d.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            if (node instanceof ProcessingInstruction) {
-                translateProcessingInstruction((ProcessingInstruction) node);
+    @Throws(AnimationParseException::class)
+    fun translateProcessingInstructions(d: Document) {
+        val nodes = d.childNodes
+        for (i in 0 until nodes.length) {
+            val node = nodes.item(i)
+            if (node is ProcessingInstruction) {
+                translateProcessingInstruction(node)
             }
         }
     }
 
-    void translateProcessingInstruction(ProcessingInstruction pi)
-            throws AnimationParseException {
-        if (!pi.getTarget().equals(PI_TARGET)) {
-            return;
+    @Throws(AnimationParseException::class)
+    fun translateProcessingInstruction(pi: ProcessingInstruction) {
+        if (pi.target != PI_TARGET) {
+            return
         }
-
-        String codebase = null, category = null, pkg_name = null;
-
+        var codebase: String? = null
+        var category: String? = null
+        var pkg_name: String? = null
         try {
-            PushbackReader r =
-                    new PushbackReader(new StringReader(pi.getData()));
-
+            val r = PushbackReader(StringReader(pi.data))
             while (trim(r)) {
-                String tag = parseTag(r);
-                String value = parseValue(r);
-
-                if (tag.equals(PI_CODEBASE)) {
-                    codebase = value;
-                } else if (tag.equals(PI_CATEGORY)) {
-                    category = value;
-                } else if (tag.equals(PI_PACKAGE)) {
-                    pkg_name = value;
+                val tag = parseTag(r)
+                val value = parseValue(r)
+                if (tag == PI_CODEBASE) {
+                    codebase = value
+                } else if (tag == PI_CATEGORY) {
+                    category = value
+                } else if (tag == PI_PACKAGE) {
+                    pkg_name = value
                 } else {
-                    throw new AnimationParseException(
-                            "unknown element \"" + tag +
-                                    "\" in processing instruction");
+                    throw AnimationParseException("unknown element \"" + tag + "\" in processing instruction")
                 }
             }
-        } catch (IOException ex) {
-            throw new AnimationParseException(
-                    "failed to parse processing instruction: " + ex.getMessage());
+        } catch (ex: IOException) {
+            throw AnimationParseException("failed to parse processing instruction: " + ex.message)
         }
-
         if (category == null) {
-            throw new AnimationParseException(
-                    "category not specified in processing instruction");
+            throw AnimationParseException("category not specified in processing instruction")
         } else if (pkg_name == null) {
-            throw new AnimationParseException(
-                    "package not specified in processing instruction");
+            throw AnimationParseException("package not specified in processing instruction")
         }
-
         if (codebase == null) {
-            _factory.addPackage(category, pkg_name);
+            _factory.addPackage(category, pkg_name)
         } else {
             try {
-                ClassLoader loader = new URLClassLoader(new URL[]{
-                        new URL(_doc_url, codebase)
-                });
-
-                _factory.addPackage(category, loader, pkg_name);
-            } catch (MalformedURLException ex) {
-                throw new AnimationParseException(
-                        "malformed URL in codebase of processing instruction: " +
-                                ex.getMessage());
+                val loader: ClassLoader = URLClassLoader(arrayOf(URL(documentURL, codebase)))
+                _factory.addPackage(category, loader, pkg_name)
+            } catch (ex: MalformedURLException) {
+                throw AnimationParseException("malformed URL in codebase of processing instruction: " + ex.message)
             }
         }
     }
 
-    private String parseTag(PushbackReader r)
-            throws AnimationParseException, IOException {
-        StringBuffer buf = new StringBuffer();
-        int ch;
-
-        for (; ; ) {
-            ch = r.read();
+    @Throws(AnimationParseException::class, IOException::class)
+    private fun parseTag(r: PushbackReader): String {
+        val buf = StringBuffer()
+        var ch: Int
+        while (true) {
+            ch = r.read()
             if (ch == -1) {
-                throw new AnimationParseException(
-                        "malformed processing instruction");
-            } else if (ch == '=') {
-                return buf.toString();
+                throw AnimationParseException("malformed processing instruction")
+            } else if (ch == '='.code) {
+                return buf.toString()
             } else {
-                buf.append((char) ch);
+                buf.append(ch.toChar())
             }
         }
     }
 
-    private String parseValue(PushbackReader r)
-            throws AnimationParseException, IOException {
-        expect(r, '\"');
-
-        StringBuffer buf = new StringBuffer();
-        int ch;
-        for (; ; ) {
-            ch = r.read();
+    @Throws(AnimationParseException::class, IOException::class)
+    private fun parseValue(r: PushbackReader): String {
+        expect(r, '\"')
+        val buf = StringBuffer()
+        var ch: Int
+        while (true) {
+            ch = r.read()
             if (ch == -1) {
-                throw new AnimationParseException(
-                        "malformed processing instruction");
-            } else if (ch == '\"') {
-                return buf.toString();
+                throw AnimationParseException("malformed processing instruction")
+            } else if (ch == '\"'.code) {
+                return buf.toString()
             } else {
-                buf.append((char) ch);
+                buf.append(ch.toChar())
             }
         }
     }
 
-    private boolean trim(PushbackReader r)
-            throws IOException {
-        int ch;
-
+    @Throws(IOException::class)
+    private fun trim(r: PushbackReader): Boolean {
+        var ch: Int
         do {
-            ch = r.read();
+            ch = r.read()
             if (ch == -1) {
-                return false;
+                return false
             }
-        } while (Character.isWhitespace((char) ch));
-
-        r.unread(ch);
-        return true;
+        } while (Character.isWhitespace(ch.toChar()))
+        r.unread(ch)
+        return true
     }
 
-    private void expect(PushbackReader r, char expected_ch)
-            throws AnimationParseException, IOException {
-        int ch = r.read();
-        if (ch != expected_ch) {
-            throw new AnimationParseException(
-                    "malformed processing exception");
+    @Throws(AnimationParseException::class, IOException::class)
+    private fun expect(r: PushbackReader, expected_ch: Char) {
+        val ch = r.read()
+        if (ch != expected_ch.code) {
+            throw AnimationParseException("malformed processing exception")
         }
     }
 
-    private void setAnimationDimensions(Element e, Animation s)
-            throws AnimationParseException {
+    @Throws(AnimationParseException::class)
+    private fun setAnimationDimensions(e: Element, s: Animation) {
         try {
-            String width_str = getOptionalAttribute(e, Attr.WIDTH);
-            String height_str = getOptionalAttribute(e, Attr.HEIGHT);
-
-            _anim.setWidth(ExprUtil.evaluate(width_str));
-            _anim.setHeight(ExprUtil.evaluate(height_str));
-        } catch (NumberFormatException ex) {
-            throw new AnimationParseException("invalid dimension: " +
-                    ex.getMessage());
+            val width_str = getOptionalAttribute(e, Attr.WIDTH)
+            val height_str = getOptionalAttribute(e, Attr.HEIGHT)
+            _anim!!.width = ExprUtil.evaluate(width_str)
+            _anim!!.height = ExprUtil.evaluate(height_str)
+        } catch (ex: NumberFormatException) {
+            throw AnimationParseException("invalid dimension: " + ex.message)
         }
     }
 
-    void translateElement(Element elt)
-            throws AnimationParseException {
-        String type = elt.getTagName();
-
-        if (type.equals(Tag.BEHAVIOUR)) {
-            translateBehaviour(elt);
-
-        } else if (type.equals(Tag.SEQ)) {
-            translateSeq(elt);
-
-        } else if (type.equals(Tag.CO)) {
-            translateCo(elt);
-
-        } else if (type.equals(Tag.COMMAND)) {
-            translateCommand(elt);
-
-        } else if (type.equals(Tag.EVENT)) {
-            translateEvent(elt);
-
-        } else if (type.equals(Tag.DEFINE)) {
-            translateDefine(elt);
-
-        } else if (type.equals(Tag.DRAW)) {
-            translateDraw(elt);
-
-        } else if (type.equals(Tag.FORALL)) {
-            parseForall(elt, new ForallParser() {
-                public void parse(Element e) throws AnimationParseException {
-                    translateElement(e);
+    @Throws(AnimationParseException::class)
+    fun translateElement(elt: Element) {
+        val type = elt.tagName
+        if (type == Tag.BEHAVIOUR) {
+            translateBehaviour(elt)
+        } else if (type == Tag.SEQ) {
+            translateSeq(elt)
+        } else if (type == Tag.CO) {
+            translateCo(elt)
+        } else if (type == Tag.COMMAND) {
+            translateCommand(elt)
+        } else if (type == Tag.EVENT) {
+            translateEvent(elt)
+        } else if (type == Tag.DEFINE) {
+            translateDefine(elt)
+        } else if (type == Tag.DRAW) {
+            translateDraw(elt)
+        } else if (type == Tag.FORALL) {
+            parseForall(elt, object : ForallParser {
+                @Throws(AnimationParseException::class)
+                override fun parse(e: Element) {
+                    translateElement(e)
                 }
-            });
-
+            })
         } else {
-            throw new AnimationParseException("invalid element \"" +
-                    type + "\"");
+            throw AnimationParseException("invalid element \"" + type + "\"")
         }
     }
 
-    void parseForall(Element elt, ForallParser child_parser)
-            throws AnimationParseException {
-        String var = getRequiredAttribute(elt, Attr.VAR);
-        String values = getRequiredAttribute(elt, Attr.VALUES);
-        String sep = getOptionalAttribute(elt, Attr.SEP);
-
+    @Throws(AnimationParseException::class)
+    fun parseForall(elt: Element, child_parser: ForallParser) {
+        val `var` = getRequiredAttribute(elt, Attr.VAR)
+        val values = getRequiredAttribute(elt, Attr.VALUES)
+        var sep = getOptionalAttribute(elt, Attr.SEP)
         if (sep == null) {
-            sep = " \n\t";
+            sep = " \n\t"
         }
-
-        StringTokenizer tok = new StringTokenizer(values, sep);
+        val tok = StringTokenizer(values, sep)
         while (tok.hasMoreTokens()) {
-            addMacro(var, tok.nextToken());
-
-            NodeList children = elt.getChildNodes();
-            for (int i = 0; i < children.getLength(); i++) {
-                Node child_node = children.item(i);
-                if (child_node instanceof Element) {
-                    Element child_elt = (Element) child_node;
-                    if (child_elt.getTagName().equals(Tag.FORALL)) {
-                        parseForall(child_elt, child_parser);
+            addMacro(`var`, tok.nextToken())
+            val children = elt.childNodes
+            for (i in 0 until children.length) {
+                val child_node = children.item(i)
+                if (child_node is Element) {
+                    val child_elt = child_node
+                    if (child_elt.tagName == Tag.FORALL) {
+                        parseForall(child_elt, child_parser)
                     } else {
-                        child_parser.parse(child_elt);
+                        child_parser.parse(child_elt)
                     }
                 }
             }
-
-            removeMacro(var);
+            removeMacro(`var`)
         }
     }
-
-
 
     /*-----------------------------------------------------------------------
      *  Forall: macro definition and iteration
      */
-
-    void translateBehaviour(Element elt)
-            throws AnimationParseException {
-        Object behaviour = createBehaviour(elt);
-
-        if (behaviour instanceof Activity) {
-            optionalStartActivity(elt, (Activity) behaviour);
+    @Throws(AnimationParseException::class)
+    fun translateBehaviour(elt: Element) {
+        val behaviour = createBehaviour(elt)
+        if (behaviour is Activity) {
+            optionalStartActivity(elt, behaviour)
         }
     }
-
 
     /*-----------------------------------------------------------------------
      *  Behaviour
      */
-
-    void translateSeq(Element elt)
-            throws AnimationParseException {
-        SequentialActivity seq = createSequentialActivity(elt);
-        optionalStartActivity(elt, seq);
+    @Throws(AnimationParseException::class)
+    fun translateSeq(elt: Element) {
+        val seq = createSequentialActivity(elt)
+        optionalStartActivity(elt, seq)
     }
 
-    void translateCo(Element elt)
-            throws AnimationParseException {
-        ConcurrentActivity co = createConcurrentActivity(elt);
-        optionalStartActivity(elt, co);
+    @Throws(AnimationParseException::class)
+    fun translateCo(elt: Element) {
+        val co = createConcurrentActivity(elt)
+        optionalStartActivity(elt, co)
     }
 
-    SequentialActivity createSequentialActivity(Element elt)
-            throws AnimationParseException {
-        SequentialActivity seq = new SequentialActivity();
-
-        String event_name = getOptionalAttribute(elt, Attr.EVENT);
+    @Throws(AnimationParseException::class)
+    fun createSequentialActivity(elt: Element): SequentialActivity {
+        val seq = SequentialActivity()
+        val event_name = getOptionalAttribute(elt, Attr.EVENT)
         if (event_name != null) {
-            seq.setActivityName(event_name);
+            seq.activityName = event_name
         }
-
-        createSubActivities(seq, elt);
-        putOptionalSymbol(elt, seq);
-        return seq;
+        createSubActivities(seq, elt)
+        putOptionalSymbol(elt, seq)
+        return seq
     }
 
-    ConcurrentActivity createConcurrentActivity(Element elt)
-            throws AnimationParseException {
-        ConcurrentActivity co = new ConcurrentActivity();
-
-        String event_name = getOptionalAttribute(elt, Attr.EVENT);
+    @Throws(AnimationParseException::class)
+    fun createConcurrentActivity(elt: Element): ConcurrentActivity {
+        val co = ConcurrentActivity()
+        val event_name = getOptionalAttribute(elt, Attr.EVENT)
         if (event_name != null) {
-            co.setActivityName(event_name);
+            co.activityName = event_name
         }
-
-        createSubActivities(co, elt);
-        putOptionalSymbol(elt, co);
-        return co;
+        createSubActivities(co, elt)
+        putOptionalSymbol(elt, co)
+        return co
     }
 
-    void createSubActivities(CompositeActivity ca, Element elt)
-            throws AnimationParseException {
-        NodeList children = elt.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child_node = children.item(i);
-            if (child_node instanceof Element) {
-                createSubActivity(ca, (Element) child_node);
+    @Throws(AnimationParseException::class)
+    fun createSubActivities(ca: CompositeActivity, elt: Element) {
+        val children = elt.childNodes
+        for (i in 0 until children.length) {
+            val child_node = children.item(i)
+            if (child_node is Element) {
+                createSubActivity(ca, child_node)
             }
         }
     }
 
-    void createSubActivity(final CompositeActivity ca, Element elt)
-            throws AnimationParseException {
-        String elt_type = elt.getTagName();
-
-        if (elt_type.equals(Tag.FORALL)) {
-            parseForall(elt, new ForallParser() {
-                public void parse(Element e) throws AnimationParseException {
-                    createSubActivity(ca, e);
+    @Throws(AnimationParseException::class)
+    fun createSubActivity(ca: CompositeActivity, elt: Element) {
+        val elt_type = elt.tagName
+        if (elt_type == Tag.FORALL) {
+            parseForall(elt, object : ForallParser {
+                @Throws(AnimationParseException::class)
+                override fun parse(e: Element) {
+                    createSubActivity(ca, e)
                 }
-            });
-
-        } else if (elt_type.equals(Tag.BEHAVIOUR)) {
-            Object behaviour = createBehaviour(elt);
-
-            if (behaviour instanceof Activity &&
-                    ((Activity) behaviour).isFinite()) {
-                ca.addActivity((Activity) behaviour);
+            })
+        } else if (elt_type == Tag.BEHAVIOUR) {
+            val behaviour = createBehaviour(elt)
+            if (behaviour is Activity && behaviour.isFinite) {
+                ca.addActivity((behaviour as Activity?)!!)
             } else {
-                throw new AnimationParseException(
-                        elt.getTagName() +
-                                " elements can only contain finite behaviours");
+                throw AnimationParseException(elt.tagName + " elements can only contain finite behaviours")
             }
-
-        } else if (elt_type.equals(Tag.CO)) {
-            ca.addActivity(createConcurrentActivity(elt));
-
-        } else if (elt_type.equals(Tag.SEQ)) {
-            ca.addActivity(createSequentialActivity(elt));
-
+        } else if (elt_type == Tag.CO) {
+            ca.addActivity(createConcurrentActivity(elt))
+        } else if (elt_type == Tag.SEQ) {
+            ca.addActivity(createSequentialActivity(elt))
         } else {
-            throw new AnimationParseException("invalid element " + elt_type);
+            throw AnimationParseException("invalid element $elt_type")
         }
     }
 
-    Object createBehaviour(Element elt)
-            throws AnimationParseException {
-        try {
-            String algorithm = getRequiredAttribute(elt, Attr.ALGORITHM);
-            String event = getOptionalAttribute(elt, Attr.EVENT);
-
-            Object behaviour =
-                    _factory.newBean(CATEGORY_BEHAVIOUR, algorithm);
-            BeanInfo behaviour_info = BeanUtil.getBeanInfo(behaviour);
-
+    @Throws(AnimationParseException::class)
+    fun createBehaviour(elt: Element): Any? {
+        return try {
+            val algorithm = getRequiredAttribute(elt, Attr.ALGORITHM)
+            val event = getOptionalAttribute(elt, Attr.EVENT)
+            val behaviour = _factory.newBean(CATEGORY_BEHAVIOUR, algorithm)
+            val behaviour_info = BeanUtil.getBeanInfo(behaviour)
             if (event != null) {
-                if (behaviour instanceof Activity) {
-                    BeanUtil.setProperty(behaviour, behaviour_info,
-                            PROPERTY_ACTIVITY_NAME, event,
-                            _value_parser);
-
+                if (behaviour is Activity) {
+                    BeanUtil.setProperty(behaviour, behaviour_info, PROPERTY_ACTIVITY_NAME, event, _value_parser)
                 } else {
-                    throw new AnimationParseException(
-                            "only activities report completion events");
+                    throw AnimationParseException("only activities report completion events")
                 }
             }
-
-            initialiseParameters(behaviour, behaviour_info, elt);
-            putOptionalSymbol(elt, behaviour);
-            return behaviour;
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new AnimationParseException("could not create behaviour: " +
-                    ex.getMessage());
+            initialiseParameters(behaviour, behaviour_info, elt)
+            putOptionalSymbol(elt, behaviour)
+            behaviour
+        } catch (ex: RuntimeException) {
+            throw ex
+        } catch (ex: Exception) {
+            throw AnimationParseException("could not create behaviour: " + ex.message)
         }
     }
 
-    void optionalStartActivity(Element elt, Activity a)
-            throws AnimationParseException {
-        String state = getOptionalAttribute(elt, Attr.STATE);
-
-        if ((state != null) && state.equals(Value.STARTED)) {
-            _anim.addActivity(a);
+    @Throws(AnimationParseException::class)
+    fun optionalStartActivity(elt: Element, a: Activity) {
+        val state = getOptionalAttribute(elt, Attr.STATE)
+        if (state != null && state == Value.STARTED) {
+            _anim!!.addActivity(a)
         }
     }
 
-    void translateCommand(Element elt)
-            throws AnimationParseException {
-        String name = getRequiredAttribute(elt, Attr.NAME);
-
-        if (_anim.getCommand(name) != null) {
-            throw new AnimationParseException("a command named \"" + name +
-                    "\" has already been defined");
+    @Throws(AnimationParseException::class)
+    fun translateCommand(elt: Element) {
+        val name = getRequiredAttribute(elt, Attr.NAME)
+        if (_anim!!.getCommand(name) != null) {
+            throw AnimationParseException("a command named \"" + name + "\" has already been defined")
         }
-
-        Command cmd = createCompositeCommand(elt);
-        _anim.addCommand(name, cmd);
+        val cmd = createCompositeCommand(elt)!!
+        _anim!!.addCommand(name, cmd)
     }
 
     /*-----------------------------------------------------------------------
      *  Commands and events
      */
-
-    void translateEvent(Element elt)
-            throws AnimationParseException {
-        String object_id = getRequiredAttribute(elt, Attr.OBJECT);
-        String event_name = getRequiredAttribute(elt, Attr.EVENT);
-
-        Object bean = getSymbol(object_id);
-        Command cmd = createCompositeCommand(elt);
-
-        EventInvoker invoker = new EventInvoker(event_name, cmd);
-        BeanUtil.bindEventListener(invoker, bean);
-        _event_links.add(new EventLink(bean, object_id, invoker));
+    @Throws(AnimationParseException::class)
+    fun translateEvent(elt: Element) {
+        val object_id = getRequiredAttribute(elt, Attr.OBJECT)
+        val event_name = getRequiredAttribute(elt, Attr.EVENT)
+        val bean = getSymbol(object_id)
+        val cmd = createCompositeCommand(elt)
+        val invoker = EventInvoker(event_name, cmd)
+        BeanUtil.bindEventListener(invoker, bean)
+        _event_links.add(EventLink(bean, object_id, invoker))
     }
 
-    Command createCompositeCommand(Element elt)
-            throws AnimationParseException {
-        NodeList sub_cmds = elt.getChildNodes();
-        final CompositeCommand cmd = new CompositeCommand();
-
-        if (sub_cmds.getLength() == 0) {
-            throw new AnimationParseException("empty command body");
+    @Throws(AnimationParseException::class)
+    fun createCompositeCommand(elt: Element): Command? {
+        val sub_cmds = elt.childNodes
+        val cmd = CompositeCommand()
+        if (sub_cmds.length == 0) {
+            throw AnimationParseException("empty command body")
         }
-
-        for (int i = 0; i < sub_cmds.getLength(); i++) {
-            Node child_node = sub_cmds.item(i);
-            if (child_node instanceof Element) {
-                Element child_elt = (Element) child_node;
-                if (child_elt.getTagName().equals(Tag.FORALL)) {
-                    parseForall(child_elt, new ForallParser() {
-                        public void parse(Element e)
-                                throws AnimationParseException {
-                            cmd.addCommand(createSubCommand(e));
+        for (i in 0 until sub_cmds.length) {
+            val child_node = sub_cmds.item(i)
+            if (child_node is Element) {
+                val child_elt = child_node
+                if (child_elt.tagName == Tag.FORALL) {
+                    parseForall(child_elt, object : ForallParser {
+                        @Throws(AnimationParseException::class)
+                        override fun parse(e: Element) {
+                            cmd.addCommand(createSubCommand(e))
                         }
-                    });
+                    })
                 } else {
-                    cmd.addCommand(createSubCommand(child_elt));
+                    cmd.addCommand(createSubCommand(child_elt))
                 }
             }
         }
-
-        if (cmd.getCommandCount() == 1) {
-            return cmd.getCommand(0);
+        return if (cmd.commandCount == 1) {
+            cmd.getCommand(0)
         } else {
-            return cmd;
+            cmd
         }
     }
 
-    Command createSubCommand(Element elt)
-            throws AnimationParseException {
-        String tag = elt.getTagName();
-
-        if (tag.equals(Tag.START)) {
-            return createStartCommand(elt);
-
-        } else if (tag.equals(Tag.STOP)) {
-            return createStopCommand(elt);
-
-        } else if (tag.equals(Tag.RESET)) {
-            return createResetCommand(elt);
-
-        } else if (tag.equals(Tag.SET)) {
-            return createSetCommand(elt);
-
-        } else if (tag.equals(Tag.INVOKE)) {
-            return createInvokeCommand(elt);
-
-        } else if (tag.equals(Tag.ANNOUNCE)) {
-            return createAnnounceCommand(elt);
-
+    @Throws(AnimationParseException::class)
+    fun createSubCommand(elt: Element): Command {
+        val tag = elt.tagName
+        return if (tag == Tag.START) {
+            createStartCommand(elt)
+        } else if (tag == Tag.STOP) {
+            createStopCommand(elt)
+        } else if (tag == Tag.RESET) {
+            createResetCommand(elt)
+        } else if (tag == Tag.SET) {
+            createSetCommand(elt)
+        } else if (tag == Tag.INVOKE) {
+            createInvokeCommand(elt)
+        } else if (tag == Tag.ANNOUNCE) {
+            createAnnounceCommand(elt)
         } else {
-            throw new AnimationParseException("unexpected element type \"" +
-                    tag + "\"");
+            throw AnimationParseException("unexpected element type \"" + tag + "\"")
         }
     }
 
-    Command createStartCommand(Element elt)
-            throws AnimationParseException {
-        String name = getRequiredAttribute(elt, Attr.BEHAVIOUR);
-        Object bean = getSymbol(name);
-
-        if (bean instanceof Activity) {
-            Activity activity = (Activity) bean;
-            ActivityRunner runner = activity.getActivityRunner();
+    @Throws(AnimationParseException::class)
+    fun createStartCommand(elt: Element): Command {
+        val name = getRequiredAttribute(elt, Attr.BEHAVIOUR)
+        val bean = getSymbol(name)
+        return if (bean is Activity) {
+            val activity = bean
+            var runner = activity.activityRunner
             if (runner == null) {
-                runner = _anim;
+                runner = _anim
             }
-
-            return new StartActivityCommand(activity, runner);
-
+            StartActivityCommand(activity, runner)
         } else {
-            throw new AnimationParseException(
-                    "symbol \"" + name + "\" does not refer to an activity");
+            throw AnimationParseException("symbol \"$name\" does not refer to an activity")
         }
     }
 
-    Command createStopCommand(Element elt)
-            throws AnimationParseException {
-        String name = getRequiredAttribute(elt, Attr.BEHAVIOUR);
-        Object bean = getSymbol(name);
-
-        if (bean instanceof Activity) {
-            return new StopActivityCommand((Activity) bean);
-
+    @Throws(AnimationParseException::class)
+    fun createStopCommand(elt: Element): Command {
+        val name = getRequiredAttribute(elt, Attr.BEHAVIOUR)
+        val bean = getSymbol(name)
+        return if (bean is Activity) {
+            StopActivityCommand(bean)
         } else {
-            throw new AnimationParseException(
-                    "symbol \"" + name + "\" does not refer to an activity");
+            throw AnimationParseException("symbol \"$name\" does not refer to an activity")
         }
     }
 
-    Command createResetCommand(Element elt)
-            throws AnimationParseException {
-        String name = getRequiredAttribute(elt, Attr.BEHAVIOUR);
-        Object bean = getSymbol(name);
-
-        if (bean instanceof Activity) {
-            return new ResetActivityCommand((Activity) bean);
-
+    @Throws(AnimationParseException::class)
+    fun createResetCommand(elt: Element): Command {
+        val name = getRequiredAttribute(elt, Attr.BEHAVIOUR)
+        val bean = getSymbol(name)
+        return if (bean is Activity) {
+            ResetActivityCommand(bean)
         } else {
-            throw new AnimationParseException(
-                    "symbol \"" + name + "\" does not refer to an activity");
+            throw AnimationParseException("symbol \"$name\" does not refer to an activity")
         }
     }
 
-    Command createSetCommand(Element elt)
-            throws AnimationParseException {
-        String symbol = getRequiredAttribute(elt, Attr.OBJECT);
-        String param_str = getRequiredAttribute(elt, Attr.PARAM);
-        String value_str = getRequiredAttribute(elt, Attr.VALUE);
-
-        Object bean = getSymbol(symbol);
-        BeanInfo info = BeanUtil.getBeanInfo(bean);
-        PropertyDescriptor pd = BeanUtil.getPropertyDescriptor(info,
-                param_str);
-
-        Object value = _value_parser.newObject(pd.getPropertyType(), value_str);
-        Method set_method = pd.getWriteMethod();
-
-        return new SetParameterCommand(bean, set_method, value);
+    @Throws(AnimationParseException::class)
+    fun createSetCommand(elt: Element): Command {
+        val symbol = getRequiredAttribute(elt, Attr.OBJECT)
+        val param_str = getRequiredAttribute(elt, Attr.PARAM)
+        val value_str = getRequiredAttribute(elt, Attr.VALUE)
+        val bean = getSymbol(symbol)
+        val info = BeanUtil.getBeanInfo(bean)
+        val pd = BeanUtil.getPropertyDescriptor(info, param_str)
+        val value = _value_parser.newObject(pd!!.propertyType, value_str)
+        val set_method = pd.writeMethod
+        return SetParameterCommand(bean, set_method, value)
     }
 
-    Command createInvokeCommand(Element elt)
-            throws AnimationParseException {
-        String cmd_name = getRequiredAttribute(elt, Attr.COMMAND);
-        String obj_name = getOptionalAttribute(elt, Attr.OBJECT);
-
-        Animation anim;
-        if (obj_name == null) {
-            anim = _anim;
+    @Throws(AnimationParseException::class)
+    fun createInvokeCommand(elt: Element): Command {
+        val cmd_name = getRequiredAttribute(elt, Attr.COMMAND)
+        val obj_name = getOptionalAttribute(elt, Attr.OBJECT)
+        val anim: Animation?
+        anim = if (obj_name == null) {
+            _anim
         } else {
-            Object sym = getSymbol(obj_name);
-            if (sym instanceof Animation) {
-                anim = (Animation) sym;
+            val sym = getSymbol(obj_name)
+            if (sym is Animation) {
+                sym
             } else {
-                throw new AnimationParseException(
-                        "symbol \"" + obj_name +
-                                "\" does not refer to an animation");
+                throw AnimationParseException("symbol \"" + obj_name + "\" does not refer to an animation")
             }
         }
-
-        Command cmd = anim.getCommand(cmd_name);
-        if (cmd != null) {
-            return cmd;
-        } else {
-            throw new AnimationParseException(
-                    "command \"" + cmd_name + "\" not supported by animation");
-        }
+        val cmd = anim!!.getCommand(cmd_name)
+        return cmd ?: throw AnimationParseException("command \"$cmd_name\" not supported by animation")
     }
 
-    Command createAnnounceCommand(Element elt)
-            throws AnimationParseException {
-        String event_name = getRequiredAttribute(elt, Attr.EVENT);
-        _anim.addEventName(event_name);
-        return new AnnounceCommand(_anim, event_name);
+    @Throws(AnimationParseException::class)
+    fun createAnnounceCommand(elt: Element): Command {
+        val event_name = getRequiredAttribute(elt, Attr.EVENT)
+        _anim!!.addEventName(event_name)
+        return AnnounceCommand(_anim, event_name)
     }
 
-    void translateDefine(Element elt)
-            throws AnimationParseException {
-        SceneGraph sg = createDrawNode(elt);
-        putOptionalSymbol(elt, sg);
+    @Throws(AnimationParseException::class)
+    fun translateDefine(elt: Element) {
+        val sg = createDrawNode(elt)!!
+        putOptionalSymbol(elt, sg)
     }
-
-
 
     /*-----------------------------------------------------------------------
      *  Graphical elements
      */
-
-    void translateDraw(Element elt)
-            throws AnimationParseException {
-        SceneGraph sg = createDrawNode(elt);
-        putOptionalSymbol(elt, sg);
-        _anim.addSubgraph(sg);
+    @Throws(AnimationParseException::class)
+    fun translateDraw(elt: Element) {
+        val sg = createDrawNode(elt)!!
+        putOptionalSymbol(elt, sg)
+        _anim!!.addSubgraph(sg)
     }
 
-    SceneGraph createDrawNode(Element elt)
-            throws AnimationParseException {
-        return minimise(createChildren(elt));
+    @Throws(AnimationParseException::class)
+    fun createDrawNode(elt: Element): SceneGraph? {
+        return minimise(createChildren(elt))
     }
 
-    SceneGraph createSceneGraph(Element elt)
-            throws AnimationParseException {
-        String elt_type = elt.getTagName();
-        SceneGraph sg = null;
-
-        if (elt_type.equals(Tag.DRAW)) {
-            sg = createDrawNode(elt);
-        } else if (elt_type.equals(Tag.TRANSFORM)) {
-            sg = createTransformNode(elt);
-        } else if (elt_type.equals(Tag.STYLE)) {
-            sg = createStyleNode(elt);
-        } else if (elt_type.equals(Tag.INPUT)) {
-            sg = createInputNode(elt);
-        } else if (elt_type.equals(Tag.COMPOSE)) {
-            sg = createComposeNode(elt);
-        } else if (elt_type.equals(Tag.INST)) {
-            sg = createInstNode(elt);
-        } else if (elt_type.equals(Tag.INCLUDE)) {
-            sg = createIncludeNode(elt);
-        } else if (elt_type.equals(Tag.PRIMITIVE)) {
-            sg = createPrimitiveNode(elt);
+    @Throws(AnimationParseException::class)
+    fun createSceneGraph(elt: Element): SceneGraph? {
+        val elt_type = elt.tagName
+        val sg = if (elt_type == Tag.DRAW) {
+            createDrawNode(elt)
+        } else if (elt_type == Tag.TRANSFORM) {
+            createTransformNode(elt)
+        } else if (elt_type == Tag.STYLE) {
+            createStyleNode(elt)
+        } else if (elt_type == Tag.INPUT) {
+            createInputNode(elt)
+        } else if (elt_type == Tag.COMPOSE) {
+            createComposeNode(elt)
+        } else if (elt_type == Tag.INST) {
+            createInstNode(elt)
+        } else if (elt_type == Tag.INCLUDE) {
+            createIncludeNode(elt)
+        } else if (elt_type == Tag.PRIMITIVE) {
+            createPrimitiveNode(elt)
         } else {
-            throw new AnimationParseException("unknown scene-graph type \"" +
-                    elt_type + "\"");
+            throw AnimationParseException("unknown scene-graph type \"" + elt_type + "\"")
         }
 
         //putOptionalSymbol( elt, sg );
-
-        return sg;
+        return sg
     }
 
-    Layered createChildren(Element elt)
-            throws AnimationParseException {
-        Layered layers = new Layered();
-        createChildren(layers, elt);
-        return layers;
+    @Throws(AnimationParseException::class)
+    fun createChildren(elt: Element): Layered {
+        val layers = Layered()
+        createChildren(layers, elt)
+        return layers
     }
 
-    CompositeNode createChildren(final CompositeNode composite, Element elt)
-            throws AnimationParseException {
-        NodeList nodes = elt.getChildNodes();
-
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            if (node instanceof Element) {
-                Element child = (Element) nodes.item(i);
-                String child_type = child.getTagName();
-
-                if (child_type.equals(Tag.FORALL)) {
-                    parseForall(child, new ForallParser() {
-                        public void parse(Element e)
-                                throws AnimationParseException {
-                            composite.addSubgraph(createSceneGraph(e));
+    @Throws(AnimationParseException::class)
+    fun createChildren(composite: CompositeNode?, elt: Element): CompositeNode? {
+        val nodes = elt.childNodes
+        for (i in 0 until nodes.length) {
+            val node = nodes.item(i)
+            if (node is Element) {
+                val child = nodes.item(i) as Element
+                val child_type = child.tagName
+                if (child_type == Tag.FORALL) {
+                    parseForall(child, object : ForallParser {
+                        @Throws(AnimationParseException::class)
+                        override fun parse(e: Element) {
+                            composite!!.addSubgraph(createSceneGraph(e)!!)
                         }
-                    });
-
-                } else if (!(child_type.equals(Tag.PARAM) ||
-                        child_type.equals(Tag.ANIMATE))) {
-                    composite.addSubgraph(createSceneGraph(child));
+                    })
+                } else if (!(child_type == Tag.PARAM || child_type == Tag.ANIMATE)) {
+                    composite!!.addSubgraph(createSceneGraph(child)!!)
                 }
             }
         }
-
-        if (composite.getSubgraphCount() == 0) {
-            throw new AnimationParseException("no layers in composite");
+        if (composite!!.subgraphCount == 0) {
+            throw AnimationParseException("no layers in composite")
         }
-
-        return composite;
+        return composite
     }
 
-    SceneGraph minimise(CompositeNode composite)
-            throws AnimationParseException {
-        if (composite.getSubgraphCount() == 0) {
-            throw new AnimationParseException("no layers in composite");
-
-        } else if (composite.getSubgraphCount() == 1) {
-            return composite.getSubgraph(0);
-
+    @Throws(AnimationParseException::class)
+    fun minimise(composite: CompositeNode): SceneGraph? {
+        return if (composite.subgraphCount == 0) {
+            throw AnimationParseException("no layers in composite")
+        } else if (composite.subgraphCount == 1) {
+            composite.getSubgraph(0)
         } else {
-            return composite;
+            composite
         }
     }
 
-    SceneGraph createTransformNode(Element elt)
-            throws AnimationParseException {
-        String type = getRequiredAttribute(elt, Attr.TYPE);
-        Transform bean;
-        try {
-            bean = (Transform) newSceneBean(type);
-        } catch (ClassCastException ex) {
-            throw new AnimationParseException(type + " is not a transform node");
+    @Throws(AnimationParseException::class)
+    fun createTransformNode(elt: Element): SceneGraph? {
+        val type = getRequiredAttribute(elt, Attr.TYPE)
+        val bean = try {
+            newSceneBean(type) as Transform?
+        } catch (ex: ClassCastException) {
+            throw AnimationParseException("$type is not a transform node")
         }
-
-        putOptionalSymbol(elt, bean);
-
-        SceneGraph sg = minimise(createChildren(elt));
-        bean.setTransformedGraph(sg);
-        initialiseParameters(bean, BeanUtil.getBeanInfo(bean), elt);
-        return bean;
+        putOptionalSymbol(elt, bean!!)
+        val sg = minimise(createChildren(elt))
+        bean!!.transformedGraph = sg
+        initialiseParameters(bean, BeanUtil.getBeanInfo(bean), elt)
+        return bean
     }
 
-    SceneGraph createStyleNode(Element elt)
-            throws AnimationParseException {
-        String type = getRequiredAttribute(elt, Attr.TYPE);
-        Style bean;
-        try {
-            bean = (Style) newSceneBean(type);
-        } catch (ClassCastException ex) {
-            throw new AnimationParseException(type + " is not a style node");
+    @Throws(AnimationParseException::class)
+    fun createStyleNode(elt: Element): SceneGraph? {
+        val type = getRequiredAttribute(elt, Attr.TYPE)
+        val bean = try {
+            newSceneBean(type) as Style?
+        } catch (ex: ClassCastException) {
+            throw AnimationParseException("$type is not a style node")
         }
-
-        putOptionalSymbol(elt, bean);
-
-        SceneGraph sg = minimise(createChildren(elt));
-        bean.setStyledGraph(sg);
-        initialiseParameters(bean, BeanUtil.getBeanInfo(bean), elt);
-        return bean;
+        putOptionalSymbol(elt, bean!!)
+        val sg = minimise(createChildren(elt))
+        bean!!.styledGraph = sg
+        initialiseParameters(bean, BeanUtil.getBeanInfo(bean), elt)
+        return bean
     }
 
-    SceneGraph createInputNode(Element elt)
-            throws AnimationParseException {
-        String type = getRequiredAttribute(elt, Attr.TYPE);
-        Input bean;
-        try {
-            bean = (Input) newSceneBean(type);
-        } catch (ClassCastException ex) {
-            throw new AnimationParseException(type + " is not an input node");
+    @Throws(AnimationParseException::class)
+    fun createInputNode(elt: Element): SceneGraph? {
+        val type = getRequiredAttribute(elt, Attr.TYPE)
+        val bean = try {
+            newSceneBean(type) as Input?
+        } catch (ex: ClassCastException) {
+            throw AnimationParseException("$type is not an input node")
         }
-
-        putOptionalSymbol(elt, bean);
-
-        SceneGraph sg = minimise(createChildren(elt));
-        bean.setSensitiveGraph(sg);
-        initialiseParameters(bean, BeanUtil.getBeanInfo(bean), elt);
-        return bean;
+        putOptionalSymbol(elt, bean!!)
+        val sg = minimise(createChildren(elt))
+        bean!!.sensitiveGraph = sg
+        initialiseParameters(bean, BeanUtil.getBeanInfo(bean), elt)
+        return bean
     }
 
-    SceneGraph createComposeNode(Element elt)
-            throws AnimationParseException {
-        String type = getRequiredAttribute(elt, Attr.TYPE);
-        CompositeNode comp;
-        try {
-            comp = (CompositeNode) newSceneBean(type);
-        } catch (ClassCastException ex) {
-            throw new AnimationParseException(type + " is not a composite node");
+    @Throws(AnimationParseException::class)
+    fun createComposeNode(elt: Element): SceneGraph? {
+        val type = getRequiredAttribute(elt, Attr.TYPE)
+        val comp = try {
+            newSceneBean(type) as CompositeNode?
+        } catch (ex: ClassCastException) {
+            throw AnimationParseException("$type is not a composite node")
         }
-
-        putOptionalSymbol(elt, comp);
-
-        createChildren(comp, elt);
-        initialiseParameters(comp, BeanUtil.getBeanInfo(comp), elt);
-        return comp;
+        putOptionalSymbol(elt, comp!!)
+        createChildren(comp, elt)
+        initialiseParameters(comp, BeanUtil.getBeanInfo(comp), elt)
+        return comp
     }
 
-    SceneGraph createInstNode(Element elt)
-            throws AnimationParseException {
-        String src = getRequiredAttribute(elt, Attr.OBJECT);
-        Object link = getSymbol(src);
-        if (link instanceof SceneGraph) {
-            return (SceneGraph) link;
+    @Throws(AnimationParseException::class)
+    fun createInstNode(elt: Element): SceneGraph {
+        val src = getRequiredAttribute(elt, Attr.OBJECT)
+        val link = getSymbol(src)
+        return if (link is SceneGraph) {
+            link
         } else {
-            throw new AnimationParseException("link target \"" + src +
-                    "\" does not refer to a " +
-                    "scene-graph node");
+            throw AnimationParseException("link target \"" + src + "\" does not refer to a " + "scene-graph node")
         }
     }
 
-    SceneGraph createIncludeNode(Element elt)
-            throws AnimationParseException {
-        String src_str = getRequiredAttribute(elt, Attr.SRC);
-
-        try {
-            URL inc_url = new URL(_doc_url, src_str);
-
-            XMLAnimationParser inc_parser =
-                    new XMLAnimationParser(inc_url, getViewComponent());
+    @Throws(AnimationParseException::class)
+    fun createIncludeNode(elt: Element): SceneGraph {
+        val src_str = getRequiredAttribute(elt, Attr.SRC)
+        return try {
+            val inc_url = URL(documentURL, src_str)
+            val inc_parser = XMLAnimationParser(inc_url, viewComponent)
 
             /*  Add all macros to the parser
              */
-            NodeList params = elt.getChildNodes();
-            for (int i = 0; i < params.getLength(); i++) {
-                Node node = params.item(i);
-                if (node instanceof Element) {
-                    Element e = (Element) params.item(i);
-
-                    if (!e.getTagName().equals(Tag.PARAM)) {
-                        throw new AnimationParseException(
-                                "only " + Tag.PARAM + " tags are allowed in a " +
-                                        elt.getTagName() + " node");
+            val params = elt.childNodes
+            for (i in 0 until params.length) {
+                val node = params.item(i)
+                if (node is Element) {
+                    val e = params.item(i) as Element
+                    if (e.tagName != Tag.PARAM) {
+                        throw AnimationParseException(
+                                "only " + Tag.PARAM + " tags are allowed in a " + elt.tagName + " node")
                     }
-
-                    String name = getRequiredAttribute(e, Attr.NAME);
-                    String value = getRequiredAttribute(e, Attr.VALUE);
-
-                    inc_parser.addMacro(name, value);
+                    val name = getRequiredAttribute(e, Attr.NAME)
+                    val value = getRequiredAttribute(e, Attr.VALUE)
+                    inc_parser.addMacro(name, value)
                 }
             }
 
             /*  Parse the Animation
              */
-            Animation inc_anim = inc_parser.parseAnimation();
+            val inc_anim = inc_parser.parseAnimation()
 
             /*  Embed the included Animation
-             */
-            _anim.addActivity(inc_anim);
-
-            putOptionalSymbol(elt, inc_anim);
-
-            return inc_anim;
-        } catch (MalformedURLException ex) {
-            throw new AnimationParseException("invalid URL " + src_str +
-                    ": " + ex.getMessage());
-        } catch (IOException ex) {
-            throw new AnimationParseException("failed to include animation "
-                    + src_str + ": " +
-                    ex.getMessage());
+             */_anim!!.addActivity(inc_anim)
+            putOptionalSymbol(elt, inc_anim)
+            inc_anim
+        } catch (ex: MalformedURLException) {
+            throw AnimationParseException("invalid URL " + src_str + ": " + ex.message)
+        } catch (ex: IOException) {
+            throw AnimationParseException("failed to include animation " + src_str + ": " + ex.message)
         }
     }
 
-    SceneGraph createPrimitiveNode(Element elt)
-            throws AnimationParseException {
-        String type = getRequiredAttribute(elt, Attr.TYPE);
-        String drawn = getOptionalAttribute(elt, Attr.DRAWN);
-
-        Object bean = newSceneBean(type);
-        if (!(bean instanceof SceneGraph)) {
-            throw new AnimationParseException("type \"" + type +
-                    "\" is not a SceneGraph class");
-        }
-
-        BeanInfo info = BeanUtil.getBeanInfo(bean);
-
-        initialiseParameters(bean, info, elt);
-
-        putOptionalSymbol(elt, bean);
-
-        return (SceneGraph) bean;
+    @Throws(AnimationParseException::class)
+    fun createPrimitiveNode(elt: Element): SceneGraph {
+        val type = getRequiredAttribute(elt, Attr.TYPE)
+        val drawn = getOptionalAttribute(elt, Attr.DRAWN)
+        val bean = newSceneBean(type) as? SceneGraph ?: throw AnimationParseException(
+                "type \"" + type + "\" is not a SceneGraph class")
+        val info = BeanUtil.getBeanInfo(bean)
+        initialiseParameters(bean, info, elt)
+        putOptionalSymbol(elt, bean)
+        return bean
     }
 
-    Object newSceneBean(String type)
-            throws AnimationParseException {
-        try {
-            return _factory.newBean(CATEGORY_SCENE, type);
-        } catch (Exception ex) {
-            throw new AnimationParseException(
-                    "failed to create scene bean: " + ex.getMessage());
+    @Throws(AnimationParseException::class)
+    fun newSceneBean(type: String): Any? {
+        return try {
+            _factory.newBean(CATEGORY_SCENE, type)
+        } catch (ex: Exception) {
+            throw AnimationParseException("failed to create scene bean: " + ex.message)
         }
     }
 
-    void initialiseParameters(Object bean, Element bean_elt)
-            throws AnimationParseException {
-        initialiseParameters(bean, BeanUtil.getBeanInfo(bean), bean_elt);
+    @Throws(AnimationParseException::class)
+    fun initialiseParameters(bean: Any?, bean_elt: Element) {
+        initialiseParameters(bean, BeanUtil.getBeanInfo(bean), bean_elt)
     }
-
 
     /*-----------------------------------------------------------------------
      *  Methods for processing the "param" and "animate" elements that are
      *  contained in many different elements.
      */
-
-    void initialiseParameters(Object bean, BeanInfo info, Element bean_elt)
-            throws AnimationParseException {
-        NodeList params = bean_elt.getChildNodes();
-        for (int i = 0; i < params.getLength(); i++) {
-            Node node = params.item(i);
-            if (node instanceof Element) {
-                initialiseParameter(bean, info, (Element) node);
+    @Throws(AnimationParseException::class)
+    fun initialiseParameters(bean: Any?, info: BeanInfo?, bean_elt: Element) {
+        val params = bean_elt.childNodes
+        for (i in 0 until params.length) {
+            val node = params.item(i)
+            if (node is Element) {
+                initialiseParameter(bean, info, node)
             }
         }
     }
 
-    void initialiseParameter(final Object bean, final BeanInfo info,
-            final Element param_elt)
-            throws AnimationParseException {
-        if (param_elt.getTagName().equals(Tag.PARAM)) {
-            setParameter(bean, info, param_elt);
-        } else if (param_elt.getTagName().equals(Tag.ANIMATE)) {
-            animateParameter(bean, param_elt);
-        } else if (param_elt.getTagName().equals(Tag.FORALL)) {
-            parseForall(param_elt, new ForallParser() {
-                public void parse(Element e) throws AnimationParseException {
-                    initialiseParameter(bean, info, e);
+    @Throws(AnimationParseException::class)
+    fun initialiseParameter(bean: Any?, info: BeanInfo?, param_elt: Element) {
+        if (param_elt.tagName == Tag.PARAM) {
+            setParameter(bean, info, param_elt)
+        } else if (param_elt.tagName == Tag.ANIMATE) {
+            animateParameter(bean, param_elt)
+        } else if (param_elt.tagName == Tag.FORALL) {
+            parseForall(param_elt, object : ForallParser {
+                @Throws(AnimationParseException::class)
+                override fun parse(e: Element) {
+                    initialiseParameter(bean, info, e)
                 }
-            });
+            })
         }
     }
 
@@ -1143,26 +936,21 @@ public class XMLAnimationParser {
      * Sets a single parameter of the object 'bean' from the attributes
      * of the "param" element 'param_elt'.
      */
-    void setParameter(Object bean, BeanInfo info, Element param_elt)
-            throws AnimationParseException {
-        String param_name = getRequiredAttribute(param_elt, Attr.NAME);
-        String index_str = getOptionalAttribute(param_elt, Attr.INDEX);
-        String value_str = getRequiredAttribute(param_elt, Attr.VALUE);
-
+    @Throws(AnimationParseException::class)
+    fun setParameter(bean: Any?, info: BeanInfo?, param_elt: Element) {
+        val param_name = getRequiredAttribute(param_elt, Attr.NAME)
+        val index_str = getOptionalAttribute(param_elt, Attr.INDEX)
+        val value_str = getRequiredAttribute(param_elt, Attr.VALUE)
         if (index_str == null) {
-            BeanUtil.setProperty(bean, info, param_name, value_str,
-                    _value_parser);
+            BeanUtil.setProperty(bean, info, param_name, value_str, _value_parser)
         } else {
-            int index;
-            try {
-                index = (int) Math.floor(ExprUtil.evaluate(index_str));
-            } catch (IllegalArgumentException ex) {
-                throw new AnimationParseException("invalid property index: " +
-                        ex.getMessage());
+            val index: Int
+            index = try {
+                Math.floor(ExprUtil.evaluate(index_str)).toInt()
+            } catch (ex: IllegalArgumentException) {
+                throw AnimationParseException("invalid property index: " + ex.message)
             }
-
-            BeanUtil.setIndexedProperty(bean, info, param_name, index,
-                    value_str, _value_parser);
+            BeanUtil.setIndexedProperty(bean, info, param_name, index, value_str, _value_parser)
         }
     }
 
@@ -1173,98 +961,74 @@ public class XMLAnimationParser {
      * multiple behaviours, although the effect is undefined if more
      * than one of those behaviours is being simulated at the same time.
      */
-    void animateParameter(Object bean, Element anim_elt)
-            throws AnimationParseException {
-        String param_name = getRequiredAttribute(anim_elt, Attr.PARAM);
-        String index_str = getOptionalAttribute(anim_elt, Attr.INDEX);
-        String behaviour_id = getRequiredAttribute(anim_elt, Attr.BEHAVIOUR);
-        String facet_id = getOptionalAttribute(anim_elt, Attr.FACET);
-        Object behaviour;
-        Object facet;
-        Object behaviour_listener;
-
+    @Throws(AnimationParseException::class)
+    fun animateParameter(bean: Any?, anim_elt: Element) {
+        val param_name = getRequiredAttribute(anim_elt, Attr.PARAM)
+        val index_str = getOptionalAttribute(anim_elt, Attr.INDEX)
+        val behaviour_id = getRequiredAttribute(anim_elt, Attr.BEHAVIOUR)
+        var facet_id = getOptionalAttribute(anim_elt, Attr.FACET)
+        val behaviour: Any?
+        val facet: Any?
+        val behaviour_listener: Any
         if (index_str == null) {
-            behaviour_listener = newBehaviourAdapter(bean, param_name);
+            behaviour_listener = newBehaviourAdapter(bean, param_name)
         } else {
-            int index;
-            try {
-                index = Integer.parseInt(index_str);
-            } catch (NumberFormatException ex) {
-                throw new AnimationParseException("invalid property index: " +
-                        ex.getMessage());
+            val index: Int
+            index = try {
+                index_str.toInt()
+            } catch (ex: NumberFormatException) {
+                throw AnimationParseException("invalid property index: " + ex.message)
             }
-
-            behaviour_listener =
-                    newIndexedBehaviourAdapter(bean, param_name, index);
+            behaviour_listener = newIndexedBehaviourAdapter(bean, param_name, index)
         }
-
-        behaviour = getSymbol(behaviour_id);
+        behaviour = getSymbol(behaviour_id)
         if (facet_id != null) {
-            facet_id += "Facet";
-            facet = BeanUtil.getProperty(behaviour, facet_id);
+            facet_id += "Facet"
+            facet = BeanUtil.getProperty(behaviour, facet_id)
         } else {
-            facet = behaviour;
+            facet = behaviour
         }
-
-        BeanUtil.bindEventListener(behaviour_listener, facet);
-
-        _behaviour_links.add(new BehaviourLink(behaviour, behaviour_id,
-                facet, facet_id,
-                bean, behaviour_listener,
-                param_name));
+        BeanUtil.bindEventListener(behaviour_listener, facet)
+        _behaviour_links.add(
+                BehaviourLink(behaviour, behaviour_id, facet, facet_id, bean, behaviour_listener, param_name))
     }
 
-    Object newBehaviourAdapter(Object bean, String param_name)
-            throws AnimationParseException {
-        Class bean_class = bean.getClass();
-        String method_name = adapterMethodName(param_name);
-
-        try {
-            Method method = bean_class.getMethod(method_name, new Class[0]);
-            return method.invoke(bean, new Object[0]);
-        } catch (Exception ex) {
-            throw new AnimationParseException(
-                    "could not create adapter for parameter \"" +
-                            param_name + "\": " + ex.getMessage());
+    @Throws(AnimationParseException::class)
+    fun newBehaviourAdapter(bean: Any?, param_name: String): Any {
+        val bean_class: Class<*> = bean!!.javaClass
+        val method_name = adapterMethodName(param_name)
+        return try {
+            val method = bean_class.getMethod(method_name, *arrayOfNulls(0))
+            method.invoke(bean, *arrayOfNulls(0))
+        } catch (ex: Exception) {
+            throw AnimationParseException(
+                    "could not create adapter for parameter \"" + param_name + "\": " + ex.message)
         }
     }
 
-    Object newIndexedBehaviourAdapter(Object bean,
-            String param_name,
-            int idx)
-            throws AnimationParseException {
-        Class bean_class = bean.getClass();
-        String method_name =
-                "new" + Character.toUpperCase(param_name.charAt(0)) +
-                        param_name.substring(1) + "Adapter";
-
-        try {
-            Method method = bean_class.getMethod(method_name,
-                    Integer.TYPE);
-            return method.invoke(bean, idx);
-        } catch (Exception ex) {
-            throw new AnimationParseException(
-                    "could not create adapter for parameter \"" +
-                            param_name + "\": " + ex.getMessage());
+    @Throws(AnimationParseException::class)
+    fun newIndexedBehaviourAdapter(bean: Any?, param_name: String, idx: Int): Any {
+        val bean_class: Class<*> = bean!!.javaClass
+        val method_name = "new" + param_name[0].uppercaseChar() + param_name.substring(1) + "Adapter"
+        return try {
+            val method = bean_class.getMethod(method_name, Integer.TYPE)
+            method.invoke(bean, idx)
+        } catch (ex: Exception) {
+            throw AnimationParseException(
+                    "could not create adapter for parameter \"" + param_name + "\": " + ex.message)
         }
     }
 
-    String adapterMethodName(String param_name)
-            throws AnimationParseException {
-        return "new" + Character.toUpperCase(param_name.charAt(0)) +
-                param_name.substring(1) + "Adapter";
+    @Throws(AnimationParseException::class)
+    fun adapterMethodName(param_name: String): String {
+        return "new" + param_name[0].uppercaseChar() + param_name.substring(1) + "Adapter"
     }
 
-    void putOptionalSymbol(Element elt, Object bean)
-            throws AnimationParseException {
-        String symbol = getOptionalAttribute(elt, Attr.ID);
-        if (symbol != null) {
-            putSymbol(symbol, bean);
-        }
-    }
-
-
-    /*-----------------------------------------------------------------------
+    @Throws(AnimationParseException::class)
+    fun putOptionalSymbol(elt: Element, bean: Any) {
+        val symbol = getOptionalAttribute(elt, Attr.ID)
+        symbol?.let { putSymbol(it, bean) }
+    }/*-----------------------------------------------------------------------
      *  General utility methods to access parsing state
      */
 
@@ -1277,87 +1041,79 @@ public class XMLAnimationParser {
      * @param bean   The value of the symbol.
      * @throws AnimationParseException The name of the symbol is already defined in the symbol table.
      */
-    public void putSymbol(String symbol, Object bean)
-            throws AnimationParseException {
+    @Throws(AnimationParseException::class)
+    fun putSymbol(symbol: String, bean: Any) {
         if (_symbol_table.containsKey(symbol)) {
-            throw new AnimationParseException(
-                    "duplicate definition of symbol \"" + symbol + "\"");
+            throw AnimationParseException("duplicate definition of symbol \"$symbol\"")
         }
-
-        _symbol_table.put(symbol, bean);
+        _symbol_table[symbol] = bean
     }
 
     /**
      * Looks up an object (scene-graph node or behaviour) in the symbol
-     * table, indexed by it's XML name (given by the the <code>id</code> tag
+     * table, indexed by it's XML name (given by the the `id` tag
      * attribute.
      *
      * @param symbol The name of the symbol.
      * @return The value of the symbol.
      * @throws AnimationParseException The symbol is not defined in the symbol table.
      */
-    public Object getSymbol(String symbol)
-            throws AnimationParseException {
-        if (_symbol_table.containsKey(symbol)) {
-            return _symbol_table.get(symbol);
+    @Throws(AnimationParseException::class)
+    fun getSymbol(symbol: String): Any? {
+        return if (_symbol_table.containsKey(symbol)) {
+            _symbol_table[symbol]
         } else {
-            throw new AnimationParseException(
-                    "symbol \"" + symbol + "\" has not been defined");
+            throw AnimationParseException("symbol \"$symbol\" has not been defined")
         }
     }
 
-    /**
-     * Returns an immutable view of the symbol table.
-     *
-     * @return An immutable map, indexed by string symbol name.
-     */
-    public Map getSymbols() {
-        return Collections.unmodifiableMap(_symbol_table);
-    }
+    val symbols: Map<*, *>
+        /**
+         * Returns an immutable view of the symbol table.
+         *
+         * @return An immutable map, indexed by string symbol name.
+         */
+        get() = Collections.unmodifiableMap(_symbol_table)
+    val behaviourLinks: Collection<*>
+        /**
+         * Returns an immutable view of thelinks between behaviours and
+         * animated beans.
+         *
+         * @return A Collection of
+         * [BehaviourLink]
+         * objects.
+         */
+        get() = Collections.unmodifiableList(_behaviour_links)
+    val eventLinks: Collection<*>
+        /**
+         * Returns an immutable view of the links between event sources and
+         * commands invoked in response to events from those sources.
+         *
+         * @return A Collection of
+         * [EventLink] objects.
+         */
+        get() = Collections.unmodifiableList(_event_links)
 
-    /**
-     * Returns an immutable view of thelinks between behaviours and
-     * animated beans.
-     *
-     * @return A Collection of
-     * {@link BehaviourLink}
-     * objects.
-     */
-    public Collection getBehaviourLinks() {
-        return Collections.unmodifiableList(_behaviour_links);
-    }
-
-    /**
-     * Returns an immutable view of the links between event sources and
-     * commands invoked in response to events from those sources.
-     *
-     * @return A Collection of
-     * {@link EventLink} objects.
-     */
-    public Collection getEventLinks() {
-        return Collections.unmodifiableList(_event_links);
-    }
-
-    String getRequiredAttribute(Element e, String attr)
-            throws AnimationParseException {
-        try {
-            String s = XMLUtil.getRequiredAttribute(e, attr);
-            return _macro_table.expandMacros(s);
-        } catch (MacroException ex) {
-            throw new AnimationParseException(ex.getMessage());
+    @Throws(AnimationParseException::class)
+    fun getRequiredAttribute(e: Element, attr: String?): String {
+        return try {
+            val s = XMLUtil.getRequiredAttribute(e, attr)
+            _macro_table.expandMacros(s)
+        } catch (ex: MacroException) {
+            throw AnimationParseException(ex.message)
         }
     }
 
-    String getOptionalAttribute(Element e, String attr)
-            throws AnimationParseException {
-        try {
-            String s = XMLUtil.getOptionalAttribute(e, attr);
+    @Throws(AnimationParseException::class)
+    fun getOptionalAttribute(e: Element, attr: String?): String? {
+        return try {
+            var s = XMLUtil.getOptionalAttribute(e, attr)
             if (s != null) {
-                s = _macro_table.expandMacros(s);
+                s = _macro_table.expandMacros(s)
             }
-            return s;
-        } catch (MacroException ex) {
-            throw new AnimationParseException(ex.getMessage());
+            s
+        } catch (ex: MacroException) {
+            throw AnimationParseException(ex.message)
         }
     }
 
@@ -1366,8 +1122,9 @@ public class XMLAnimationParser {
      * before the parser uses them to translate the document into an Animation.
      * Macros allow Animation documents to be parameterised and paramaters
      * to be passed to the parser from user input or the command line.
-     * <p>
-     * Macro expansion is <em>textual</em>:  it does not take the syntactic
+     *
+     *
+     * Macro expansion is *textual*:  it does not take the syntactic
      * structure (such as expression syntax) of the expanded string into
      * account.  Be careful when expanding macros in strings with a syntactic
      * structure; you may, for example, need to enclose macros in brackes
@@ -1376,12 +1133,12 @@ public class XMLAnimationParser {
      * @param name  The name of the macro.
      * @param value The value of the macro.
      */
-    public void addMacro(String name, String value)
-            throws AnimationParseException {
+    @Throws(AnimationParseException::class)
+    fun addMacro(name: String, value: String) {
         try {
-            _macro_table.addMacro(name, value);
-        } catch (MacroException ex) {
-            throw new AnimationParseException(ex.getMessage());
+            _macro_table.addMacro(name!!, value)
+        } catch (ex: MacroException) {
+            throw AnimationParseException(ex.message)
         }
     }
 
@@ -1390,15 +1147,27 @@ public class XMLAnimationParser {
      *
      * @param name The name of the macro to remove.
      */
-    public void removeMacro(String name) {
-        _macro_table.removeMacro(name);
+    fun removeMacro(name: String?) {
+        _macro_table.removeMacro(name)
     }
 
-
-    private static interface ForallParser {
-
-        void parse(Element child) throws AnimationParseException;
-
+    interface ForallParser {
+        @Throws(AnimationParseException::class)
+        fun parse(child: Element)
     }
 
+    companion object {
+        private const val PROPERTY_ACTIVITY_NAME = "activityName"
+        private const val PI_TARGET = "scenebeans"
+        private const val PI_CODEBASE = "codebase"
+        private const val PI_CATEGORY = "category"
+        private const val PI_PACKAGE = "package"
+
+        /*  Bean categories and packages
+     */
+        private const val CATEGORY_SCENE = "scene"
+        private const val PKG_SCENE = "uk.ac.ic.doc.scenebeans"
+        private const val CATEGORY_BEHAVIOUR = "behaviour"
+        private const val PKG_BEHAVIOUR = "uk.ac.ic.doc.scenebeans.behaviour"
+    }
 }

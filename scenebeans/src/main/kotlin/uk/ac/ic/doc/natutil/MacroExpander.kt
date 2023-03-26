@@ -1,139 +1,86 @@
-package uk.ac.ic.doc.natutil;
+package uk.ac.ic.doc.natutil
 
+import java.io.*
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-
-
-public class MacroExpander {
-
-    /*  Special syntax characters for macro expansion.
-     */
-    private static final int SYNTAX_ESCAPE = '\\';
-
-    private static final int SYNTAX_SUBST = '$';
-
-    private static final int SYNTAX_BEGIN = '{';
-
-    private static final int SYNTAX_END = '}';
-
-    private static final int SYNTAX_DEFAULT = '=';
-
-    private Map _macro_table = new HashMap();
-
-
-    public MacroExpander() {
-    }
+class MacroExpander {
+    private val _macro_table = HashMap<String, String>()
 
     /*  Adds a macro definition.
      */
-    public void addMacro(String name, String value)
-            throws MacroException {
+    @Throws(MacroException::class)
+    fun addMacro(name: String, value: String) {
         if (_macro_table.containsKey(name)) {
-            throw new MacroException("macro \"" + name + "\" already defined");
+            throw MacroException("macro \"$name\" already defined")
         }
-
-        _macro_table.put(name, value);
+        _macro_table[name] = value
     }
-
 
     /*  Removes a macro definition.
      */
-    public void removeMacro(String name) {
-        _macro_table.remove(name);
+    fun removeMacro(name: String?) {
+        _macro_table.remove(name)
     }
-
 
     /*  Expands macros in a string.
      */
-    public String expandMacros(String s)
-            throws MacroException {
-        StringReader r = new StringReader(s);
-        StringWriter w = new StringWriter();
-
-        expandMacros(r, w);
-        return w.toString();
+    @Throws(MacroException::class)
+    fun expandMacros(s: String?): String {
+        val r = StringReader(s)
+        val w = StringWriter()
+        expandMacros(r, w)
+        return w.toString()
     }
-
 
     /*  Expands macros in the characters read from the Reader <var>in</var> and
      *  writes the result to the Writer <var>out</var>.
      */
-    public void expandMacros(Reader in, Writer out)
-            throws MacroException {
-        int ch;
-
+    @Throws(MacroException::class)
+    fun expandMacros(`in`: Reader, out: Writer) {
+        var ch: Int
         try {
-            while ((ch = readMacroChar(in)) != -1) {
-                switch (ch) {
-                    case -SYNTAX_SUBST:
-                        expandNextMacro(in, out);
-                        break;
-
-                    case -SYNTAX_BEGIN:
-                    case -SYNTAX_END:
-                    case -SYNTAX_DEFAULT:
-                        out.write(-ch);
-                        break;
-
-                    default:
-                        out.write(ch);
-                        break;
+            while (readMacroChar(`in`).also { ch = it } != -1) {
+                when (ch) {
+                    -SYNTAX_SUBST -> expandNextMacro(`in`, out)
+                    -SYNTAX_BEGIN, -SYNTAX_END, -SYNTAX_DEFAULT -> out.write(-ch)
+                    else -> out.write(ch)
                 }
             }
-        } catch (IOException ex) {
-            throw new MacroException(
-                    "I/O exception while reading input: " + ex.getMessage());
+        } catch (ex: IOException) {
+            throw MacroException("I/O exception while reading input: " + ex.message)
         }
     }
 
-    private void expandNextMacro(Reader in, Writer out)
-            throws IOException, MacroException {
-        if (in.read() != SYNTAX_BEGIN) {
-            throw new MacroException("syntax error in macro: " +
-                    SYNTAX_BEGIN + " expected");
+    @Throws(IOException::class, MacroException::class)
+    private fun expandNextMacro(`in`: Reader, out: Writer) {
+        if (`in`.read() != SYNTAX_BEGIN) {
+            throw MacroException("syntax error in macro: " + SYNTAX_BEGIN + " expected")
         }
-
-        String name = null;
-        String default_value = null;
-        String value;
-        StringBuffer buf = new StringBuffer();
-        int ch;
-
-        while ((ch = readMacroChar(in)) != -SYNTAX_END) {
-            switch (ch) {
-                case -SYNTAX_SUBST:
-                case -SYNTAX_BEGIN:
-                    throw new MacroException("syntax error in macro: \"" + (-ch)
-                            + "\" character not expected");
-
-                case -SYNTAX_DEFAULT:
-                    name = buf.toString();
-                    buf.setLength(0);
-                    break;
-
-                default:
-                    buf.append((char) ch);
+        var name: String? = null
+        var default_value: String? = null
+        var value: String?
+        val buf = StringBuffer()
+        var ch: Int
+        while (readMacroChar(`in`).also { ch = it } != -SYNTAX_END) {
+            when (ch) {
+                -SYNTAX_SUBST, -SYNTAX_BEGIN -> throw MacroException(
+                        "syntax error in macro: \"" + -ch + "\" character not expected")
+                -SYNTAX_DEFAULT -> {
+                    name = buf.toString()
+                    buf.setLength(0)
+                }
+                else -> buf.append(ch.toChar())
             }
         }
-
         if (name == null) {
-            name = buf.toString();
+            name = buf.toString()
         } else {
-            default_value = buf.toString();
+            default_value = buf.toString()
         }
-
-        value = (String) _macro_table.get(name);
+        value = _macro_table[name] as String?
         if (value == null) {
-            if (default_value != null) {
-                value = default_value;
-            } else {
-                throw new MacroException("macro \"" + name + "\" not defined");
-            }
+            value = default_value ?: throw MacroException("macro \"$name\" not defined")
         }
-
-        out.write(value);
+        out.write(value)
     }
 
     /*  Reads the next character from the stream, handling escapes as
@@ -143,31 +90,22 @@ public class MacroExpander {
      *  that was discovered in the stream.  The negative of SYNTAX_ESCAPE
      *  is never returned.
      */
-    private int readMacroChar(Reader in)
-            throws IOException, MacroException {
-        int ch = in.read();
-
-        switch (ch) {
-            case SYNTAX_ESCAPE:
-                ch = in.read();
+    @Throws(IOException::class, MacroException::class)
+    private fun readMacroChar(`in`: Reader): Int {
+        var ch = `in`.read()
+        return when (ch) {
+            SYNTAX_ESCAPE -> {
+                ch = `in`.read()
                 if (ch == -1) {
-                    throw new MacroException("premature end of input");
+                    throw MacroException("premature end of input")
                 } else {
-                    return ch;
+                    ch
                 }
-
-            case SYNTAX_SUBST:
-            case SYNTAX_BEGIN:
-            case SYNTAX_END:
-            case SYNTAX_DEFAULT:
-                return -ch;
-
-            default:
-                return ch;
+            }
+            SYNTAX_SUBST, SYNTAX_BEGIN, SYNTAX_END, SYNTAX_DEFAULT -> -ch
+            else -> ch
         }
-    }
-    
-    /*  Uncomment for interactive test program
+    } /*  Uncomment for interactive test program
 
     public static void main( String[] args ) {
         try {
@@ -195,4 +133,14 @@ public class MacroExpander {
     }
     
     */
+
+    companion object {
+        /*  Special syntax characters for macro expansion.
+     */
+        private const val SYNTAX_ESCAPE = '\\'.code
+        private const val SYNTAX_SUBST = '$'.code
+        private const val SYNTAX_BEGIN = '{'.code
+        private const val SYNTAX_END = '}'.code
+        private const val SYNTAX_DEFAULT = '='.code
+    }
 }

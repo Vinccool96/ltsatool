@@ -1,74 +1,51 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.animation.parse
 
-
-package uk.ac.ic.doc.scenebeans.animation.parse;
-
-class Attr {
-
-    static final String WIDTH = "width";
-
-    static final String HEIGHT = "height";
-
-    static final String ID = "id";
-
-    static final String ALGORITHM = "algorithm";
-
-    static final String NAME = "name";
-
-    static final String INDEX = "index";
-
-    static final String VALUE = "value";
-
-    static final String OBJECT = "object";
-
-    static final String PARAM = "param";
-
-    static final String EVENT = "event";
-
-    static final String BEHAVIOUR = "behaviour";
-
-    static final String FACET = "facet";
-
-    static final String RUNNER = "runner";
-
-    static final String COMMAND = "command";
-
-    static final String SRC = "src";
-
-    static final String TYPE = "type";
-
-    static final String DRAWN = "drawn";
-
-    static final String X = "x";
-
-    static final String Y = "y";
-
-    static final String VAR = "var";
-
-    static final String SEP = "sep";
-
-    static final String VALUES = "values";
-
-    static final String STATE = "state";
-
+internal object Attr {
+    const val WIDTH = "width"
+    const val HEIGHT = "height"
+    const val ID = "id"
+    const val ALGORITHM = "algorithm"
+    const val NAME = "name"
+    const val INDEX = "index"
+    const val VALUE = "value"
+    const val OBJECT = "object"
+    const val PARAM = "param"
+    const val EVENT = "event"
+    const val BEHAVIOUR = "behaviour"
+    const val FACET = "facet"
+    const val RUNNER = "runner"
+    const val COMMAND = "command"
+    const val SRC = "src"
+    const val TYPE = "type"
+    const val DRAWN = "drawn"
+    const val X = "x"
+    const val Y = "y"
+    const val VAR = "var"
+    const val SEP = "sep"
+    const val VALUES = "values"
+    const val STATE = "state"
 }
-

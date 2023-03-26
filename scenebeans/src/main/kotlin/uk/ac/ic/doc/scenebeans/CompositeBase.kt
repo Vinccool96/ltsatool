@@ -1,56 +1,49 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import java.awt.*;
-import java.util.ArrayList;
-
+import java.awt.Graphics2D
 
 /**
  * The CompositeBase provides default implementations of most of the methods
- * of the {@link CompositeNode} interface, including
+ * of the [CompositeNode] interface, including
  * rendering and double-dispatch.  To implement a concrete composite node,
  * just derive from CompositeBase and override the
- * <code>getVisibleSubgraphCount</code> and <code>getVisibleSubgraph</code>
+ * `getVisibleSubgraphCount` and `getVisibleSubgraph`
  * methods.
  */
-public abstract class CompositeBase
-        extends SceneGraphBase
-        implements CompositeNode {
+abstract class CompositeBase protected constructor() : SceneGraphBase(), CompositeNode {
+    private val _nodes = ArrayList<SceneGraph>()
 
-    private ArrayList _nodes = new ArrayList();
-
-    private transient ArrayList _last_drawn_nodes = new ArrayList();
-
-    protected CompositeBase() {
-    }
-
-    /**
-     * Returns the number of subgraphs of this composite.
-     */
-    public int getSubgraphCount() {
-        return _nodes.size();
-    }
+    @Transient
+    private val _last_drawn_nodes = ArrayList<SceneGraph>()
+    override val subgraphCount: Int
+        /**
+         * Returns the number of subgraphs of this composite.
+         */
+        get() = _nodes.size
 
     /**
      * Returns the <var>n</var>'th subgraph.
@@ -58,35 +51,33 @@ public abstract class CompositeBase
      *
      * @throws IndexOutOfBoundsException <var>n</var> >= getVisibleSubgraphCount().
      */
-    public SceneGraph getSubgraph(int n) {
-        return (SceneGraph) _nodes.get(n);
+    override fun getSubgraph(n: Int): SceneGraph? {
+        return _nodes[n] as SceneGraph
     }
 
-    /**
-     * Returns getSubgraphCount().  By default, all subgraphs are visible.
-     * Override this in derived classes for which this is not the case.
-     */
-    public int getVisibleSubgraphCount() {
-        return getSubgraphCount();
-    }
+    override val visibleSubgraphCount: Int
+        /**
+         * Returns getSubgraphCount().  By default, all subgraphs are visible.
+         * Override this in derived classes for which this is not the case.
+         */
+        get() = subgraphCount
 
     /**
      * Returns getSubgraph(n).  By default, all subgraphs are visible.
      * Override this in derived classes for which this is no the case.
      */
-    public SceneGraph getVisibleSubgraph(int n) {
-        return getSubgraph(n);
+    override fun getVisibleSubgraph(n: Int): SceneGraph? {
+        return getSubgraph(n)
     }
 
-    /**
-     * Returns the number of subgraphs that were rendered by the last
-     * drawing operation.
-     * This is used to optimise the rendering process.  User code should
-     * avoid calling this.
-     */
-    public int getLastDrawnSubgraphCount() {
-        return _last_drawn_nodes.size();
-    }
+    override val lastDrawnSubgraphCount: Int
+        /**
+         * Returns the number of subgraphs that were rendered by the last
+         * drawing operation.
+         * This is used to optimise the rendering process.  User code should
+         * avoid calling this.
+         */
+        get() = _last_drawn_nodes.size
 
     /**
      * Returns the <var>n</var>'th subgraph that was rendered by the
@@ -96,30 +87,30 @@ public abstract class CompositeBase
      *
      * @throws IndexOutOfBoundsException <var>n</var> >= getVisibleSubgraphCount().
      */
-    public SceneGraph getLastDrawnSubgraph(int n) {
-        return (SceneGraph) _last_drawn_nodes.get(n);
+    override fun getLastDrawnSubgraph(n: Int): SceneGraph? {
+        return _last_drawn_nodes[n] as SceneGraph
     }
 
     /**
-     * Calls back to the {@link SceneGraphProcessor}
+     * Calls back to the [SceneGraphProcessor]
      * <var>p</var> to be processed as a
-     * {@link CompositeNode}.
+     * [CompositeNode].
      *
      * @param p A SceneGraphProcessor that is traversing the scene graph.
      */
-    public void accept(SceneGraphProcessor p) {
-        p.process(this);
+    override fun accept(p: SceneGraphProcessor) {
+        p.process(this)
     }
 
     /**
      * Adds a sub-graph to the composite.
      *
      * @throws uk.ac.ic.doc.scenebeans.TooManyChildrenException The maximum number of children have already been added to
-     *                                                          this composite.
+     * this composite.
      */
-    public void addSubgraph(SceneGraph g) {
-        _nodes.add(g);
-        setDirty(true);
+    override fun addSubgraph(g: SceneGraph) {
+        _nodes.add(g)
+        isDirty = true
     }
 
     /**
@@ -127,9 +118,9 @@ public abstract class CompositeBase
      *
      * @param sg The subgraph to remove.
      */
-    public void removeSubgraph(SceneGraph g) {
-        _nodes.remove(g);
-        setDirty(true);
+    override fun removeSubgraph(g: SceneGraph) {
+        _nodes.remove(g)
+        isDirty = true
     }
 
     /**
@@ -139,9 +130,9 @@ public abstract class CompositeBase
      * @param n The index of the subgraph to remove.
      * @throws IndexOutOfBoundsException <var>n</var> >= getVisibleSubgraphCount().
      */
-    public void removeSubgraph(int n) {
-        _nodes.remove(n);
-        setDirty(true);
+    override fun removeSubgraph(n: Int) {
+        _nodes.removeAt(n)
+        isDirty = true
     }
 
     /**
@@ -149,14 +140,13 @@ public abstract class CompositeBase
      *
      * @param g The graphics context onto which to draw the scene graph.
      */
-    public void draw(Graphics2D g) {
-        _last_drawn_nodes.clear();
-        for (int i = getVisibleSubgraphCount() - 1; i >= 0; i--) {
-            SceneGraph sg = getVisibleSubgraph(i);
-            sg.draw(g);
-            _last_drawn_nodes.add(sg);
+    override fun draw(g: Graphics2D) {
+        _last_drawn_nodes.clear()
+        for (i in visibleSubgraphCount - 1 downTo 0) {
+            val sg = getVisibleSubgraph(i)!!
+            sg.draw(g)
+            _last_drawn_nodes.add(sg)
         }
-        setDirty(false);
+        isDirty = false
     }
-
 }

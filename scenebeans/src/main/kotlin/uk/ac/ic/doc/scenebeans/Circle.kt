@@ -1,70 +1,66 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import java.awt.*;
-import java.awt.geom.Ellipse2D;
+import java.awt.Graphics2D
+import java.awt.Shape
+import java.awt.geom.Ellipse2D
+import java.io.Serializable
 
 /**
- * The <a href="../../../../../../beans/circle.html">Circle</a> SceneBean.
+ * The [Circle](../../../../../../beans/circle.html) SceneBean.
  */
-public class Circle extends PrimitiveBase {
+class Circle : PrimitiveBase {
+    private var _radius: Double
 
-    private double _radius;
-
-    public Circle() {
-        _radius = 1.0;
+    constructor() {
+        _radius = 1.0
     }
 
-    public Circle(double r) {
-        _radius = r;
+    constructor(r: Double) {
+        _radius = r
     }
 
-    public Shape getShape(Graphics2D g) {
-        return new Ellipse2D.Double(-_radius, -_radius,
-                _radius * 2, _radius * 2);
+    override fun getShape(g: Graphics2D): Shape {
+        return Ellipse2D.Double(-_radius, -_radius, _radius * 2, _radius * 2)
     }
 
-    public double getRadius() {
-        return _radius;
-    }
-
-    public void setRadius(double r) {
-        _radius = r;
-        setDirty(true);
-    }
-
-    public final Radius newRadiusAdapter() {
-        return new Radius();
-    }
-
-    public class Radius
-            implements DoubleBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(double r) {
-            setRadius(r);
+    var radius: Double
+        get() = _radius
+        set(r) {
+            _radius = r
+            isDirty = true
         }
 
+    fun newRadiusAdapter(): Radius {
+        return Radius()
     }
 
+    inner class Radius : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(new_value: Double) {
+            radius = new_value
+        }
+    }
 }

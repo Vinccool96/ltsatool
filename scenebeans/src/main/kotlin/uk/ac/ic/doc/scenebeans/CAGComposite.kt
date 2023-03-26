@@ -1,127 +1,112 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import uk.ac.ic.doc.scenebeans.cag.CAGDirty;
-import uk.ac.ic.doc.scenebeans.cag.CAGProcessor;
-import uk.ac.ic.doc.scenebeans.cag.CAGSetDirty;
-
-import java.awt.*;
-import java.awt.geom.Area;
-import java.util.ArrayList;
-import java.util.List;
-
+import uk.ac.ic.doc.scenebeans.cag.CAGDirty
+import uk.ac.ic.doc.scenebeans.cag.CAGProcessor
+import uk.ac.ic.doc.scenebeans.cag.CAGSetDirty
+import java.awt.Graphics2D
+import java.awt.Shape
+import java.awt.geom.Area
 
 /**
- * A {@link CompositeNode} that composes its subgraphs by
+ * A [CompositeNode] that composes its subgraphs by
  * Constructive Area Geometry.  Derived classes use various CAG operators.
- * <p>
+ *
+ *
  * This class is a bit of a wierd hack.  It supports the CompositeNode
  * interface, so that the XML parser and other graph builders can
  * modify the graphs to be composed, but acts like a Primitive to any
- * operation implemented as a {@link SceneGraphProcessor}.
+ * operation implemented as a [SceneGraphProcessor].
  */
-public abstract class CAGComposite
-        extends PrimitiveBase
-        implements CompositeNode {
-
-    private Area _area;
-
-    private List _args = new ArrayList();
-
-
-    public void draw(Graphics2D g) {
-        super.draw(g);
-        CAGSetDirty.setChildrenDirty(this, false);
+abstract class CAGComposite : PrimitiveBase(), CompositeNode {
+    private var _area: Area? = null
+    private val _args = ArrayList<SceneGraph>()
+    override fun draw(g: Graphics2D) {
+        super.draw(g)
+        CAGSetDirty.setChildrenDirty(this, false)
     }
 
     /*   Primitive interface
      */
-
-    public Shape getShape(Graphics2D g) {
-        if (_area == null || isDirty()) {
-            _area = calculateArea(g);
+    override fun getShape(g: Graphics2D): Shape? {
+        if (_area == null || isDirty) {
+            _area = calculateArea(g)
         }
-        return _area;
+        return _area
     }
 
-    public boolean isDirty() {
-        return super.isDirty() || CAGDirty.areChildrenDirty(this);
-    }
-
-    /*  CompositeNode interface
-     */
-
-    public int getSubgraphCount() {
-        return _args.size();
-    }
-
-    public SceneGraph getSubgraph(int n) {
-        return (SceneGraph) _args.get(n);
-    }
-
-    public int getVisibleSubgraphCount() {
-        return 0;
-    }
-
-    public SceneGraph getVisibleSubgraph(int n) {
-        throw new IndexOutOfBoundsException("subgraph index out of range");
-    }
-
-    public int getLastDrawnSubgraphCount() {
-        return 0;
-    }
-
-    public SceneGraph getLastDrawnSubgraph(int n) {
-        throw new IndexOutOfBoundsException("last-drawn subgraph index " +
-                "out of range");
-    }
-
-    public void addSubgraph(SceneGraph g) {
-        _args.add(g);
-        setDirty(true);
-    }
-
-    public void removeSubgraph(SceneGraph g) {
-        _args.remove(g);
-        setDirty(true);
-    }
-
-    public void removeSubgraph(int n) {
-        _args.remove(n);
-        setDirty(true);
-    }
-
-    private Area calculateArea(Graphics2D g) {
-        CAGProcessor p = newCAGProcessor(g);
-
-        for (int i = 0; i < getSubgraphCount(); i++) {
-            getSubgraph(i).accept(p);
+    override var isDirty: Boolean
+        get() = super.isDirty || CAGDirty.areChildrenDirty(this)
+        set(isDirty) {
+            super.isDirty = isDirty
         }
+    override val subgraphCount: Int
+        /*  CompositeNode interface
+     */ get() = _args.size
 
-        return p.getArea();
+    override fun getSubgraph(n: Int): SceneGraph? {
+        return _args[n]
     }
 
-    protected abstract CAGProcessor newCAGProcessor(Graphics2D g);
+    override val visibleSubgraphCount: Int
+        get() = 0
 
+    override fun getVisibleSubgraph(n: Int): SceneGraph? {
+        throw IndexOutOfBoundsException("subgraph index out of range")
+    }
+
+    override val lastDrawnSubgraphCount: Int
+        get() = 0
+
+    override fun getLastDrawnSubgraph(n: Int): SceneGraph? {
+        throw IndexOutOfBoundsException("last-drawn subgraph index " + "out of range")
+    }
+
+    override fun addSubgraph(g: SceneGraph) {
+        _args.add(g)
+        isDirty = true
+    }
+
+    override fun removeSubgraph(g: SceneGraph) {
+        _args.remove(g)
+        isDirty = true
+    }
+
+    override fun removeSubgraph(n: Int) {
+        _args.removeAt(n)
+        isDirty = true
+    }
+
+    private fun calculateArea(g: Graphics2D): Area? {
+        val p = newCAGProcessor(g)
+        for (i in 0 until subgraphCount) {
+            getSubgraph(i)!!.accept(p)
+        }
+        return p.area
+    }
+
+    protected abstract fun newCAGProcessor(g: Graphics2D?): CAGProcessor
 }

@@ -1,93 +1,81 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.animation.parse
 
-
-package uk.ac.ic.doc.scenebeans.animation.parse;
+import gnu.jel.CompilationException
+import gnu.jel.Evaluator
+import gnu.jel.Library
 
 //import expr.*;
-
-import gnu.jel.CompilationException;
-import gnu.jel.CompiledExpression;
-import gnu.jel.Evaluator;
-import gnu.jel.Library;
-
-
 /**
  * Parses and evaluates string expressions.
- * <p>
+ *
+ *
  * This class is defined so that the package used to parse expressions can
  * easily be changed.
  */
-public class ExprUtil {
+object ExprUtil {
+    /**
+     * Constant definition that can be used in expressions
+     */
+    var pi = Math.PI
 
     /**
      * Constant definition that can be used in expressions
      */
-    public static double pi = Math.PI;
+    var e = Math.E
+    var lib = Library(arrayOf(Math::class.java, ExprUtil::class.java), null)
 
-    /**
-     * Constant definition that can be used in expressions
-     */
-    public static double e = Math.E;
-
-    static Library lib = new Library(
-            new Class[]{Math.class, ExprUtil.class},
-            null);
-
-    static {
+    init {
         try {
-            lib.markStateDependent("random", null);
-        } catch (CompilationException ex) {
-            // Won't happen but if it does...
-            throw new NoSuchMethodError("no random method in java.lang.Math!");
+            lib.markStateDependent("random", null)
+        } catch (ex: CompilationException) { // Won't happen but if it does...
+            throw NoSuchMethodError("no random method in java.lang.Math!")
         }
     }
 
-    public static double evaluate(String expr_str)
-            throws IllegalArgumentException {
-        try {
-            CompiledExpression expr = Evaluator.compile(expr_str, lib);
+    @Throws(IllegalArgumentException::class)
+    fun evaluate(expr_str: String?): Double {
+        return try {
+            val expr = Evaluator.compile(expr_str, lib)
             try {
-                Object result = expr.evaluate(null);
+                val result = expr.evaluate(null)
                 if (result == null) {
-                    throw new IllegalArgumentException("void expression");
-                } else if (result instanceof Number) {
-                    return ((Number) result).doubleValue();
+                    throw IllegalArgumentException("void expression")
+                } else if (result is Number) {
+                    result.toDouble()
                 } else {
-                    throw new IllegalArgumentException("not a number");
+                    throw IllegalArgumentException("not a number")
                 }
-            } catch (Throwable thr) {
-                throw new IllegalArgumentException(
-                        "couldn't evaluate expression " + expr_str + ": " +
-                                thr.getMessage());
+            } catch (thr: Throwable) {
+                throw IllegalArgumentException("couldn't evaluate expression " + expr_str + ": " + thr.message)
             }
-        } catch (CompilationException ex) {
-            throw new IllegalArgumentException(
-                    "couldn't compile expression " + expr_str + ": " +
-                            ex.getMessage());
+        } catch (ex: CompilationException) {
+            throw IllegalArgumentException("couldn't compile expression " + expr_str + ": " + ex.message)
         }
-    }
-    
-    
-    /*
+    } /*
     public static double evaluate( String expr_str ) 
         throws IllegalArgumentException
     {

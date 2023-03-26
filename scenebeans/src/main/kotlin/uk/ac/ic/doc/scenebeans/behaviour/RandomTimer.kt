@@ -1,104 +1,82 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.behaviour
 
-
-package uk.ac.ic.doc.scenebeans.behaviour;
-
-import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener;
-import uk.ac.ic.doc.scenebeans.activity.FiniteActivityBase;
-
-import java.io.Serializable;
-
+import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener
+import uk.ac.ic.doc.scenebeans.activity.FiniteActivityBase
+import java.io.Serializable
 
 /**
- * The <a href="../../../../../../../beans/randomtimer.html">RandomTimer</a>
+ * The [RandomTimer](../../../../../../../beans/randomtimer.html)
  * behaviour bean.
  */
-public class RandomTimer
-        extends FiniteActivityBase
-        implements Serializable {
+class RandomTimer : FiniteActivityBase(), Serializable {
+    var minDuration: Double
+    var maxDuration: Double
+    private var _timeout = 1.0
 
-    private double _min_duration, _max_duration, _timeout;
-
-    public RandomTimer() {
-        _min_duration = _max_duration = _timeout = 1.0;
+    init {
+        maxDuration = _timeout
+        minDuration = maxDuration
     }
 
-    public double getMinDuration() {
-        return _min_duration;
+    override val isFinite: Boolean
+        get() = true
+
+    override fun reset() {
+        val delta = maxDuration - minDuration
+        _timeout = minDuration + delta * Math.random()
     }
 
-    public void setMinDuration(double v) {
-        _min_duration = v;
-    }
-
-    public double getMaxDuration() {
-        return _max_duration;
-    }
-
-    public void setMaxDuration(double v) {
-        _max_duration = v;
-    }
-
-    public boolean isFinite() {
-        return true;
-    }
-
-    public void reset() {
-        double delta = _max_duration - _min_duration;
-        _timeout = _min_duration + (delta * Math.random());
-    }
-
-    public void performActivity(double t) {
+    override fun performActivity(t: Double) {
         if (_timeout > 0.0) {
-            _timeout -= t;
+            _timeout -= t
             if (_timeout <= 0.0) {
-                _timeout = 0.0;
-                postActivityComplete();
+                _timeout = 0.0
+                postActivityComplete()
             }
         }
     }
 
-    public MinDuration newMinDurationAdapter() {
-        return new MinDuration();
+    fun newMinDurationAdapter(): MinDuration {
+        return MinDuration()
     }
 
-    public MaxDuration newMaxDurationAdapter() {
-        return new MaxDuration();
+    fun newMaxDurationAdapter(): MaxDuration {
+        return MaxDuration()
     }
 
-    class MinDuration implements DoubleBehaviourListener {
-
-        public void behaviourUpdated(double v) {
-            setMinDuration(v);
+    inner class MinDuration : DoubleBehaviourListener {
+        override fun behaviourUpdated(v: Double) {
+            this._min_duration = v
         }
-
     }
 
-    class MaxDuration implements DoubleBehaviourListener {
-
-        public void behaviourUpdated(double v) {
-            setMaxDuration(v);
+    inner class MaxDuration : DoubleBehaviourListener {
+        override fun behaviourUpdated(v: Double) {
+            this._max_duration = v
         }
-
     }
-
 }

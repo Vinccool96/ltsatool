@@ -1,121 +1,114 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.bounds
 
-
-package uk.ac.ic.doc.scenebeans.bounds;
-
-import uk.ac.ic.doc.scenebeans.*;
-
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Rectangle2D;
-
+import uk.ac.ic.doc.scenebeans.*
+import java.awt.Graphics2D
+import java.awt.geom.AffineTransform
+import java.awt.geom.GeneralPath
+import java.awt.geom.Rectangle2D
 
 /**
  * A SceneGraphProcessor that calculates the rectangle enclosing the
  * last rendered view of a SceneGraph.
  */
-public class LastDrawnBounds
-        implements SceneGraphProcessor {
+class LastDrawnBounds : SceneGraphProcessor {
+    var bounds: Rectangle2D? = null
+        private set
+    private var _graphics: Graphics2D?
+    private var _transform: AffineTransform
 
-    private Rectangle2D _bounds = null;
-
-    private Graphics2D _graphics;
-
-    private AffineTransform _transform;
-
-    public LastDrawnBounds(Graphics2D graphics) {
-        _graphics = graphics;
-        _transform = new AffineTransform();
+    constructor(graphics: Graphics2D?) {
+        _graphics = graphics
+        _transform = AffineTransform()
     }
 
-    public LastDrawnBounds(Graphics2D g, AffineTransform t) {
-        _graphics = g;
-        _transform = new AffineTransform(t);
+    constructor(g: Graphics2D?, t: AffineTransform?) {
+        _graphics = g
+        _transform = AffineTransform(t)
     }
 
-    /**
-     * Calculates the bounding rectangle of last drawn view of the scene graph
-     * <var>sg</var> as rendered on the graphics context <var>g2</var>.
-     *
-     * @param sg The scene graph whose last drawn bounds are calculated.
-     * @param g2 The graphics context on which the scene graph is to be rendered.
-     * @return The rectangle enclosing the last drawn view of the scene graph.
-     */
-    public static Rectangle2D getBounds(SceneGraph sg, Graphics2D g2) {
-        LastDrawnBounds bounds = new LastDrawnBounds(g2);
-        try {
-            sg.accept(bounds);
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
-
-        return bounds.getBounds();
+    override fun process(sg: Primitive) {
+        val path = GeneralPath(sg.lastDrawnShape)
+        path.transform(_transform)
+        addBounds(path.bounds2D)
     }
 
-    public Rectangle2D getBounds() {
-        return _bounds;
+    override fun process(sg: Transform) {
+        val old_transform = AffineTransform(_transform)
+        _transform.concatenate(sg.lastDrawnTransform)
+        sg.lastDrawnTransformedGraph.accept(this)
+        _transform = old_transform
     }
 
-    public void process(Primitive sg) {
-        GeneralPath path = new GeneralPath(sg.getLastDrawnShape());
-        path.transform(_transform);
-        addBounds(path.getBounds2D());
+    override fun process(sg: Input) {
+        sg.sensitiveGraph.accept(this)
     }
 
-    public void process(Transform sg) {
-        AffineTransform old_transform = new AffineTransform(_transform);
-        _transform.concatenate(sg.getLastDrawnTransform());
-        sg.getLastDrawnTransformedGraph().accept(this);
-        _transform = old_transform;
+    override fun process(sg: Style) {
+        val change = sg.lastDrawnStyle
+        change!!.reapplyStyle(_graphics)
+        sg.lastDrawnStyledGraph.accept(this)
+        change.restoreStyle(_graphics)
     }
 
-    public void process(Input sg) {
-        sg.getSensitiveGraph().accept(this);
-    }
-
-    public void process(Style sg) {
-        Style.Change change = sg.getLastDrawnStyle();
-        change.reapplyStyle(_graphics);
-        sg.getLastDrawnStyledGraph().accept(this);
-        change.restoreStyle(_graphics);
-    }
-
-    public void process(CompositeNode sg) {
-        for (int i = 0; i < sg.getLastDrawnSubgraphCount(); i++) {
-            sg.getLastDrawnSubgraph(i).accept(this);
+    override fun process(sg: CompositeNode) {
+        for (i in 0 until sg.lastDrawnSubgraphCount) {
+            sg.getLastDrawnSubgraph(i)!!.accept(this)
         }
     }
 
-    protected void addBounds(Rectangle2D r) {
+    protected fun addBounds(r: Rectangle2D?) {
         if (r != null) {
-            if (_bounds == null) {
-                _bounds = r;
+            if (bounds == null) {
+                bounds = r
             } else {
-                _bounds.add(r);
+                bounds!!.add(r)
             }
         }
     }
 
+    companion object {
+        /**
+         * Calculates the bounding rectangle of last drawn view of the scene graph
+         * <var>sg</var> as rendered on the graphics context <var>g2</var>.
+         *
+         * @param sg The scene graph whose last drawn bounds are calculated.
+         * @param g2 The graphics context on which the scene graph is to be rendered.
+         * @return The rectangle enclosing the last drawn view of the scene graph.
+         */
+        fun getBounds(sg: SceneGraph, g2: Graphics2D?): Rectangle2D? {
+            val bounds = LastDrawnBounds(g2)
+            try {
+                sg.accept(bounds)
+            } catch (ex: RuntimeException) {
+                throw ex
+            } catch (ex: Exception) {
+                throw RuntimeException(ex.message)
+            }
+            return bounds.bounds
+        }
+    }
 }

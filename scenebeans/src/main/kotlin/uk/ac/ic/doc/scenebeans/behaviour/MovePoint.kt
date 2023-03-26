@@ -1,164 +1,138 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.behaviour
 
-
-package uk.ac.ic.doc.scenebeans.behaviour;
-
-import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener;
-import uk.ac.ic.doc.scenebeans.PointBehaviourListener;
-
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-
+import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener
+import uk.ac.ic.doc.scenebeans.PointBehaviourListener
+import java.awt.geom.Point2D
+import java.io.Serializable
 
 /**
- * The <a href="../../../../../../../beans/movepoint.html">MovePoint</a>
+ * The [MovePoint](../../../../../../../beans/movepoint.html)
  * behaviour bean.
  */
-public class MovePoint
-        extends PointActivityBase
-        implements Serializable {
+class MovePoint : PointActivityBase, Serializable {
+    private var _from: Point2D
+    private var _to: Point2D
+    private var _x_len = 0.0
+    private var _y_len = 0.0
+    private var _duration: Double
+    private var _timeout: Double
 
-    private Point2D _from, _to;
-
-    private double _x_len, _y_len;
-
-    private double _duration, _timeout;
-
-    public MovePoint() {
-        _from = new Point2D.Double(0.0, 0.0);
-        _to = new Point2D.Double(0.0, 0.0);
-        _duration = _timeout = 1.0;
-        setDistances();
+    constructor() {
+        _from = Point2D.Double(0.0, 0.0)
+        _to = Point2D.Double(0.0, 0.0)
+        _timeout = 1.0
+        _duration = _timeout
+        setDistances()
     }
 
-    public MovePoint(Point2D from, Point2D to, double t) {
-        _from = from;
-        _to = to;
-        _duration = _timeout = t;
-        setDistances();
+    constructor(from: Point2D, to: Point2D, t: Double) {
+        _from = from
+        _to = to
+        _timeout = t
+        _duration = _timeout
+        setDistances()
     }
 
-    public Point2D getFrom() {
-        return _from;
+    var from: Point2D
+        get() = _from
+        set(p) {
+            _from = p
+            setDistances()
+        }
+    var to: Point2D
+        get() = _to
+        set(p) {
+            _to = p
+            setDistances()
+        }
+    var duration: Double
+        get() = _duration
+        set(v) {
+            _timeout = v
+            _duration = _timeout
+        }
+    val value: Point2D
+        get() {
+            val ratio = 1.0 - _timeout / _duration
+            val x = _from.x + ratio * _x_len
+            val y = _from.y + ratio * _y_len
+            return Point2D.Double(x, y)
+        }
+    override val isFinite: Boolean
+        get() = true
+
+    override fun reset() {
+        _timeout = _duration
+        postUpdate(value)
     }
 
-    public void setFrom(Point2D p) {
-        _from = p;
-        setDistances();
-    }
-
-    public Point2D getTo() {
-        return _to;
-    }
-
-    public void setTo(Point2D p) {
-        _to = p;
-        setDistances();
-    }
-
-    public double getDuration() {
-        return _duration;
-    }
-
-    public void setDuration(double v) {
-        _duration = _timeout = v;
-    }
-
-    public Point2D getValue() {
-        double ratio = (1.0 - (_timeout / _duration));
-
-        double x = _from.getX() + (ratio * _x_len);
-        double y = _from.getY() + (ratio * _y_len);
-
-        return new Point2D.Double(x, y);
-    }
-
-    public boolean isFinite() {
-        return true;
-    }
-
-    public void reset() {
-        _timeout = _duration;
-        postUpdate(getValue());
-    }
-
-    public void performActivity(double t) {
+    override fun performActivity(t: Double) {
         if (_timeout > 0.0) {
-            _timeout -= t;
+            _timeout -= t
             if (_timeout <= 0.0) {
-                _timeout = 0.0;
-
-                postActivityComplete();
+                _timeout = 0.0
+                postActivityComplete()
             }
-
-            postUpdate(getValue());
+            postUpdate(value)
         }
     }
 
-    private void setDistances() {
-        _x_len = _to.getX() - _from.getX();
-        _y_len = _to.getY() - _from.getY();
+    private fun setDistances() {
+        _x_len = _to.x - _from.x
+        _y_len = _to.y - _from.y
     }
 
-    public final PointBehaviourListener newFromAdapter() {
-        return new FromAdapter();
+    fun newFromAdapter(): PointBehaviourListener {
+        return FromAdapter()
     }
 
-    public final PointBehaviourListener newToAdapter() {
-        return new ToAdapter();
+    fun newToAdapter(): PointBehaviourListener {
+        return ToAdapter()
     }
 
-    public final DoubleBehaviourListener newDurationAdapter() {
-        return new DurationAdapter();
+    fun newDurationAdapter(): DoubleBehaviourListener {
+        return DurationAdapter()
     }
 
-    class FromAdapter implements PointBehaviourListener, Serializable {
-
-        public void behaviourUpdated(Point2D v) {
-            setFrom(v);
+    internal inner class FromAdapter : PointBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Point2D) {
+            from = v
         }
-
     }
 
-    class ToAdapter implements PointBehaviourListener, Serializable {
-
-        public void behaviourUpdated(Point2D v) {
-            setTo(v);
+    internal inner class ToAdapter : PointBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Point2D) {
+            to = v
         }
-
     }
 
-    class DurationAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setDuration(v);
+    internal inner class DurationAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            duration = v
         }
-
     }
-
 }
-
-
-
-
-
-

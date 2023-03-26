@@ -1,191 +1,163 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import java.awt.*;
-import java.io.Serializable;
-
+import java.awt.Color
+import java.awt.Graphics2D
+import java.awt.Paint
+import java.io.Serializable
 
 /**
  * The HSBAColor SceneBean is currently experimental and will be fully supported
  * in a later release.
  */
-public class HSBAColor extends StyleBase {
+class HSBAColor : StyleBase {
+    private var _h = 0f
+    private var _s = 0f
+    private var _b = 0f
+    private var _a = 0f
 
-    private float _h, _s, _b, _a;
-
-    public HSBAColor() {
-        _h = _s = _b = (float) 0.5;
-        _a = (float) 1.0;
+    constructor() {
+        _b = 0.5.toFloat()
+        _s = _b
+        _h = _s
+        _a = 1.0.toFloat()
     }
 
-    public HSBAColor(double h, double s, double b, double a, SceneGraph sg) {
-        super(sg);
-        _h = (float) h;
-        _s = (float) s;
-        _b = (float) b;
-        _a = (float) a;
+    constructor(h: Double, s: Double, b: Double, a: Double, sg: SceneGraph?) : super(sg) {
+        _h = h.toFloat()
+        _s = s.toFloat()
+        _b = b.toFloat()
+        _a = a.toFloat()
     }
 
-    public HSBAColor(Color color, SceneGraph g) {
-        super(g);
-        setColor(color);
+    constructor(color: Color, g: SceneGraph?) : super(g) {
+        this.color = color
     }
 
-    public Color getColor() {
-        int rgb = Color.HSBtoRGB(_h, _s, _b);
-        int a = (((int) (_a * 255.0))) << 24;
-        return new Color(rgb | a, true);
-    }
+    var color: Color
+        get() {
+            val rgb = Color.HSBtoRGB(_h, _s, _b)
+            val a = (_a * 255.0).toInt() shl 24
+            return Color(rgb or a, true)
+        }
+        set(color) {
+            val hsb = Color.RGBtoHSB(color.red, color.blue, color.green, null)
+            _h = hsb[0]
+            _s = hsb[1]
+            _b = hsb[2]
+            _a = color.alpha.toFloat() / 255.0f
+            isDirty = true
+        }
+    var hue: Double
+        get() = _h.toDouble()
+        set(h) {
+            _h = h.toFloat()
+            isDirty = true
+        }
+    var saturation: Double
+        get() = _s.toDouble()
+        set(s) {
+            _s = s.toFloat()
+            isDirty = true
+        }
+    var brightness: Double
+        get() = _b.toDouble()
+        set(b) {
+            _b = b.toFloat()
+            isDirty = true
+        }
+    var alpha: Double
+        get() = _a.toDouble()
+        set(a) {
+            _a = a.toFloat()
+            isDirty = true
+        }
 
-    public void setColor(Color color) {
-        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getBlue(),
-                color.getGreen(), null);
-
-        _h = hsb[0];
-        _s = hsb[1];
-        _b = hsb[2];
-
-        _a = (float) (color.getAlpha()) / 255.0f;
-
-        setDirty(true);
-    }
-
-    public double getHue() {
-        return _h;
-    }
-
-    public void setHue(double h) {
-        _h = (float) h;
-        setDirty(true);
-    }
-
-    public double getSaturation() {
-        return _s;
-    }
-
-    public void setSaturation(double s) {
-        _s = (float) s;
-        setDirty(true);
-    }
-
-    public double getBrightness() {
-        return _b;
-    }
-
-    public void setBrightness(double b) {
-        _b = (float) b;
-        setDirty(true);
-    }
-
-    public double getAlpha() {
-        return _a;
-    }
-
-    public void setAlpha(double a) {
-        _a = (float) a;
-        setDirty(true);
-    }
-
-    public Change changeStyle(final Graphics2D g) {
-        final Paint old_paint = g.getPaint();
-        final Paint new_paint = getColor();
-
-        g.setPaint(getColor());
-
-        return new Change() {
-            public void restoreStyle(Graphics2D g) {
-                g.setPaint(old_paint);
+    override fun changeStyle(g: Graphics2D?): Style.Change {
+        val old_paint = g!!.paint
+        val new_paint: Paint = color
+        g.paint = color
+        return object : Style.Change {
+            override fun restoreStyle(g: Graphics2D?) {
+                g!!.paint = old_paint
             }
 
-            public void reapplyStyle(Graphics2D g) {
-                g.setPaint(new_paint);
+            override fun reapplyStyle(g: Graphics2D?) {
+                g!!.paint = new_paint
             }
-        };
-    }
-
-    public final ColorAdapter newColorAdapter() {
-        return new ColorAdapter();
-    }
-
-    public final HueAdapter newHueAdapter() {
-        return new HueAdapter();
-    }
-
-    public final SaturationAdapter newSaturationAdapter() {
-        return new SaturationAdapter();
-    }
-
-    public final BrightnessAdapter newBrightnessAdapter() {
-        return new BrightnessAdapter();
-    }
-
-    public final AlphaAdapter newAlphaAdapter() {
-        return new AlphaAdapter();
-    }
-
-    class ColorAdapter implements ColorBehaviourListener, Serializable {
-
-        public void behaviourUpdated(Color color) {
-            setColor(color);
         }
-
     }
 
-    class HueAdapter
-            implements DoubleBehaviourListener, Serializable {
+    fun newColorAdapter(): ColorAdapter {
+        return ColorAdapter()
+    }
 
-        public void behaviourUpdated(double v) {
-            setHue(v);
+    fun newHueAdapter(): HueAdapter {
+        return HueAdapter()
+    }
+
+    fun newSaturationAdapter(): SaturationAdapter {
+        return SaturationAdapter()
+    }
+
+    fun newBrightnessAdapter(): BrightnessAdapter {
+        return BrightnessAdapter()
+    }
+
+    fun newAlphaAdapter(): AlphaAdapter {
+        return AlphaAdapter()
+    }
+
+    inner class ColorAdapter : ColorBehaviourListener, Serializable {
+        override fun behaviourUpdated(color: Color) {
+            this@HSBAColor.color = color
         }
-
     }
 
-    class SaturationAdapter
-            implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setSaturation(v);
+    inner class HueAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            hue = v
         }
-
     }
 
-    class BrightnessAdapter
-            implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setBrightness(v);
+    inner class SaturationAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            saturation = v
         }
-
     }
 
-    class AlphaAdapter
-            implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setAlpha(v);
+    inner class BrightnessAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            brightness = v
         }
-
     }
 
+    inner class AlphaAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            alpha = v
+        }
+    }
 }

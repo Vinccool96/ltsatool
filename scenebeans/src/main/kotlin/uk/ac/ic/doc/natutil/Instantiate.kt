@@ -1,37 +1,26 @@
 /**
  * The Regent Distributed Programming Environment
- * <p>
+ *
+ *
  * by Nat Pryce, 1998
  */
+package uk.ac.ic.doc.natutil
 
-package uk.ac.ic.doc.natutil;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.lang.reflect.InvocationTargetException
 
 /**
  * Functions to instantiate objects from parameters supplied as Strings.
  *
- * @deprecated Use instances of uk.ac.ic.doc.natutil.StringParser instead.
  */
-public class Instantiate {
-
-    private static Map _parsers = new HashMap();
-
-    static Parser getParser(Class c) {
-        synchronized (_parsers) {
-            return (Parser) _parsers.get(c);
-        }
+@Deprecated("Use instances of uk.ac.ic.doc.natutil.StringParser instead.")
+object Instantiate {
+    private val _parsers = HashMap<Class<*>, Parser>()
+    fun getParser(c: Class<*>?): Parser? {
+        synchronized(_parsers) { return _parsers[c] }
     }
 
-    public static void addParser(Class c, Parser p) {
-        synchronized (_parsers) {
-            _parsers.put(c, p);
-        }
+    fun addParser(c: Class<*>, p: Parser) {
+        synchronized(_parsers) { _parsers.put(c, p) }
     }
 
     /**
@@ -42,65 +31,55 @@ public class Instantiate {
      * @param s The string representation of the instance to be created.
      * @return An instance of class <var>c</var>.  If <var>c</var> represents
      * a primitive type the appropriate wrapper class from the
-     * <code>java.lang</code> package is instantiated and returned.
+     * `java.lang` package is instantiated and returned.
      * @throws IllegalArgumentException The string value is of the wrong format to instantiate class
-     *                                  <var>c</var>.
+     * <var>c</var>.
      */
-    public static Object newObject(Class c, String s)
-            throws IllegalArgumentException {
-        Parser parser = getParser(c);
-
-        if (parser != null) {
-            return parser.parse(s);
-        } else if (c == Boolean.TYPE || c == Boolean.class) {
-            return Boolean.valueOf(s);
-        } else if (c == Byte.TYPE || c == Byte.class) {
-            return Byte.valueOf(s);
-        } else if (c == Short.TYPE || c == Short.class) {
-            return Short.valueOf(s);
-        } else if (c == Integer.TYPE || c == Integer.class) {
-            return Integer.valueOf(s);
-        } else if (c == Long.TYPE || c == Long.class) {
-            return Long.valueOf(s);
-        } else if (c == Float.TYPE || c == Float.class) {
-            return Float.valueOf(s);
-        } else if (c == Double.TYPE || c == Double.class) {
-            return Double.valueOf(s);
-        } else if (c == Character.TYPE || c == Character.class) {
-            if (s.length() != 1) {
-                throw new IllegalArgumentException(
-                        "too many characters - one is enough!");
+    @Throws(IllegalArgumentException::class)
+    fun newObject(c: Class<*>, s: String): Any {
+        val parser = getParser(c)
+        return parser?.parse(s) ?: if (c == java.lang.Boolean.TYPE || c == Boolean::class.java) {
+            java.lang.Boolean.valueOf(s)
+        } else if (c == java.lang.Byte.TYPE || c == Byte::class.java) {
+            java.lang.Byte.valueOf(s)
+        } else if (c == java.lang.Short.TYPE || c == Short::class.java) {
+            s.toShort()
+        } else if (c == Integer.TYPE || c == Int::class.java) {
+            Integer.valueOf(s)
+        } else if (c == java.lang.Long.TYPE || c == Long::class.java) {
+            java.lang.Long.valueOf(s)
+        } else if (c == java.lang.Float.TYPE || c == Float::class.java) {
+            java.lang.Float.valueOf(s)
+        } else if (c == java.lang.Double.TYPE || c == Double::class.java) {
+            java.lang.Double.valueOf(s)
+        } else if (c == Character.TYPE || c == Char::class.java) {
+            if (s.length != 1) {
+                throw IllegalArgumentException("too many characters - one is enough!")
             } else {
-                return new Character(s.charAt(0));
+                s[0]
             }
-        } else if (c == String.class) {
-            return s;
+        } else if (c == String::class.java) {
+            s
         } else {
-            Constructor[] ctors = c.getConstructors();
-
-            for (int i = 0; i < ctors.length; i++) {
-                Class[] ptypes = ctors[i].getParameterTypes();
-
-                if (ptypes.length == 1) {
-                    try {
-                        Object arg = newObject(ptypes[i], s);
-                        return ctors[i].newInstance(new Object[]{arg});
-                    } catch (InstantiationException ex) {
-                        continue;
-                    } catch (IllegalAccessException ex) {
-                        continue;
-                    } catch (IllegalArgumentException ex) {
-                        continue;
-                    } catch (InvocationTargetException ex) {
-                        continue;
+            val ctors = c.constructors
+            for (i in ctors.indices) {
+                val ptypes = ctors[i].parameterTypes
+                if (ptypes.size == 1) {
+                    return try {
+                        val arg = newObject(ptypes[i], s)
+                        ctors[i].newInstance(*arrayOf(arg))
+                    } catch (ex: InstantiationException) {
+                        continue
+                    } catch (ex: IllegalAccessException) {
+                        continue
+                    } catch (ex: IllegalArgumentException) {
+                        continue
+                    } catch (ex: InvocationTargetException) {
+                        continue
                     }
                 }
             }
-
-            // Cannot construct object of given class
-            throw new IllegalArgumentException(
-                    "cannot convert \"" + s + "\" to instance of class " +
-                            c.getName());
+            throw IllegalArgumentException("cannot convert \"" + s + "\" to instance of class " + c.name)
         }
     }
 
@@ -108,36 +87,30 @@ public class Instantiate {
      * Instantiates an object of class <var>c</var> using strings in
      * <var>args</var> as the parameters of the constructor.
      */
-    public static Object newObject(Class c, List args)
-            throws IllegalArgumentException {
-        Constructor[] ctors = c.getConstructors();
-
-        for (int i = 0; i < ctors.length; i++) {
-            Class[] ptypes = ctors[i].getParameterTypes();
-
-            if (ptypes.length == args.size()) {
-                try {
-                    Object[] params = new Object[ptypes.length];
-
-                    for (int j = 0; j < params.length; j++) {
-                        params[j] = newObject(ptypes[j], (String) args.get(j));
+    @Throws(IllegalArgumentException::class)
+    fun newObject(c: Class<*>, args: List<*>): Any {
+        val ctors = c.constructors
+        for (i in ctors.indices) {
+            val ptypes = ctors[i].parameterTypes
+            if (ptypes.size == args.size) {
+                return try {
+                    val params = arrayOfNulls<Any>(ptypes.size)
+                    for (j in params.indices) {
+                        params[j] = newObject(ptypes[j], args[j] as String)
                     }
-
-                    return ctors[i].newInstance(params);
-                } catch (InstantiationException ex) {
-                    continue;
-                } catch (IllegalAccessException ex) {
-                    continue;
-                } catch (IllegalArgumentException ex) {
-                    continue;
-                } catch (InvocationTargetException ex) {
-                    continue;
+                    ctors[i].newInstance(*params)
+                } catch (ex: InstantiationException) {
+                    continue
+                } catch (ex: IllegalAccessException) {
+                    continue
+                } catch (ex: IllegalArgumentException) {
+                    continue
+                } catch (ex: InvocationTargetException) {
+                    continue
                 }
             }
         }
-
-        throw new IllegalArgumentException(
-                "failed to find a suitable constructor of class " + c.getName());
+        throw IllegalArgumentException("failed to find a suitable constructor of class " + c.name)
     }
 
     /**
@@ -145,10 +118,8 @@ public class Instantiate {
      * to parse strings for classes that cannot be instantiated by the
      * default algorithm.
      */
-    public interface Parser {
-
-        Object parse(String str_value) throws IllegalArgumentException;
-
+    interface Parser {
+        @Throws(IllegalArgumentException::class)
+        fun parse(str_value: String?): Any
     }
-
 }

@@ -1,52 +1,47 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.behaviour
 
-
-package uk.ac.ic.doc.scenebeans.behaviour;
-
-import uk.ac.ic.doc.scenebeans.PointBehaviour;
-import uk.ac.ic.doc.scenebeans.PointBehaviourListener;
-
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import uk.ac.ic.doc.scenebeans.PointBehaviour
+import uk.ac.ic.doc.scenebeans.PointBehaviourListener
+import java.awt.geom.Point2D
+import java.io.Serializable
 
 /**
- * Base class for {@link PointBehaviour} beans.
+ * Base class for [PointBehaviour] beans.
  * Manages the list of behaviour listeners and provides subclasses with
  * a method with which they can announce behaviour updates.
  */
-public abstract class PointBehaviourBase
-        implements PointBehaviour, Serializable {
-
-    private List _listeners;
+abstract class PointBehaviourBase : PointBehaviour, Serializable {
+    private var _listeners: MutableList<*>
 
     /**
      * Constructs a PointBehaviourBase.
      */
-    protected PointBehaviourBase() {
-        _listeners = new ArrayList();
+    protected constructor() {
+        _listeners = ArrayList<Any?>()
     }
 
     /**
@@ -56,8 +51,8 @@ public abstract class PointBehaviourBase
      *
      * @param l The list to hold listener references.
      */
-    protected PointBehaviourBase(List l) {
-        _listeners = l;
+    protected constructor(l: MutableList<*>) {
+        _listeners = l
     }
 
     /**
@@ -65,9 +60,9 @@ public abstract class PointBehaviourBase
      *
      * @param l The listener to add.
      */
-    public synchronized void
-    addPointBehaviourListener(PointBehaviourListener l) {
-        _listeners.add(l);
+    @Synchronized
+    override fun addPointBehaviourListener(l: PointBehaviourListener?) {
+        _listeners.add(l)
     }
 
     /**
@@ -75,9 +70,9 @@ public abstract class PointBehaviourBase
      *
      * @param l The listener to remove.
      */
-    public synchronized void
-    removePointBehaviourListener(PointBehaviourListener l) {
-        _listeners.remove(l);
+    @Synchronized
+    override fun removePointBehaviourListener(l: PointBehaviourListener?) {
+        _listeners.remove(l)
     }
 
     /**
@@ -85,10 +80,11 @@ public abstract class PointBehaviourBase
      *
      * @param v The new value of the behaviour.
      */
-    protected synchronized void postUpdate(Point2D v) {
-        for (Iterator i = _listeners.iterator(); i.hasNext(); ) {
-            ((PointBehaviourListener) i.next()).behaviourUpdated(v);
+    @Synchronized
+    protected open fun postUpdate(v: Point2D) {
+        val i: Iterator<*> = _listeners.iterator()
+        while (i.hasNext()) {
+            (i.next() as PointBehaviourListener).behaviourUpdated(v)
         }
     }
-
 }

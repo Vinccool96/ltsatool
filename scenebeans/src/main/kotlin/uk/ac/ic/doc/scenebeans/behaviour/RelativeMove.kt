@@ -1,144 +1,112 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.behaviour
 
-
-package uk.ac.ic.doc.scenebeans.behaviour;
-
-import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener;
-
-import java.io.Serializable;
-
+import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener
+import java.io.Serializable
 
 /**
- * The <a href="../../../../../../../beans/relmove.html">RelativeMove</a>
+ * The [RelativeMove](../../../../../../../beans/relmove.html)
  * behaviour bean.
  */
-public class RelativeMove
-        extends DoubleActivityBase
-        implements Serializable {
+class RelativeMove : DoubleActivityBase, Serializable {
+    var from: Double
+    var delta: Double
+    private var _duration: Double
+    private var _timeout: Double
 
-    private double _from, _delta;
-
-    private double _duration, _timeout;
-
-    public RelativeMove() {
-        _from = 0.0;
-        _delta = 0.0;
-        _duration = _timeout = 1.0;
+    constructor() {
+        from = 0.0
+        delta = 0.0
+        _timeout = 1.0
+        _duration = _timeout
     }
 
-    public RelativeMove(double from, double delta, double t) {
-        _delta = delta;
-        _from = from;
-        _duration = _timeout = t;
+    constructor(from: Double, delta: Double, t: Double) {
+        this.delta = delta
+        this.from = from
+        _timeout = t
+        _duration = _timeout
     }
 
-    public double getFrom() {
-        return _from;
+    var duration: Double
+        get() = _duration
+        set(v) {
+            _timeout = v
+            _duration = _timeout
+        }
+    val value: Double
+        get() = from + (1.0 - _timeout / _duration) * delta
+    override val isFinite: Boolean
+        get() = true
+
+    override fun reset() {
+        _timeout = _duration
+        postUpdate(value)
     }
 
-    public void setFrom(double v) {
-        _from = v;
-    }
-
-    public double getDelta() {
-        return _delta;
-    }
-
-    public void setDelta(double v) {
-        _delta = v;
-    }
-
-    public double getDuration() {
-        return _duration;
-    }
-
-    public void setDuration(double v) {
-        _duration = _timeout = v;
-    }
-
-    public double getValue() {
-        return _from + ((1.0 - (_timeout / _duration)) * _delta);
-    }
-
-    public boolean isFinite() {
-        return true;
-    }
-
-    public void reset() {
-        _timeout = _duration;
-        postUpdate(getValue());
-    }
-
-    public void performActivity(double t) {
+    override fun performActivity(t: Double) {
         if (_timeout > 0.0) {
-            _timeout -= t;
+            _timeout -= t
             if (_timeout <= 0.0) {
-                _timeout = 0.0;
-                _from = _from + _delta; //update at end of move
-                _delta = 0;           //clear delta
-                postActivityComplete();
+                _timeout = 0.0
+                from = from + delta //update at end of move
+                delta = 0.0 //clear delta
+                postActivityComplete()
             }
-
-            postUpdate(getValue());
+            postUpdate(value)
         }
     }
 
-    public final DoubleBehaviourListener newFromAdapter() {
-        return new FromAdapter();
+    fun newFromAdapter(): DoubleBehaviourListener {
+        return FromAdapter()
     }
 
-    public final DoubleBehaviourListener newDurationAdapter() {
-        return new DurationAdapter();
+    fun newDurationAdapter(): DoubleBehaviourListener {
+        return DurationAdapter()
     }
 
-    public final DoubleBehaviourListener newDeltaAdapter() {
-        return new DeltaAdapter();
+    fun newDeltaAdapter(): DoubleBehaviourListener {
+        return DeltaAdapter()
     }
 
-    class FromAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setFrom(v);
+    internal inner class FromAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            this._from = v
         }
-
     }
 
-    class DurationAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setDuration(v);
+    internal inner class DurationAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            duration = v
         }
-
     }
 
-    class DeltaAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setDelta(v);
+    internal inner class DeltaAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            this._delta = v
         }
-
     }
-
 }
-
-
-

@@ -1,40 +1,36 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.animation
 
-
-package uk.ac.ic.doc.scenebeans.animation;
-
-import java.lang.reflect.Method;
-
+import java.lang.reflect.Method
 
 /**
  * A Command that sets a property of a JavaBean to some, fixed, value.
  */
-public class SetParameterCommand implements Command {
-
-    private Object _bean;
-
-    private Method _set_method;
-
-    private Object[] _set_args;
+class SetParameterCommand(private val _bean: Any?, private val _set_method: Method, value: Any) : Command {
+    private val _set_args: Array<Any>
 
     /**
      * Constructs a SetParameterCommand.
@@ -43,10 +39,8 @@ public class SetParameterCommand implements Command {
      * @param setter The method to be called to set the property.
      * @param value  The new value of the property.
      */
-    public SetParameterCommand(Object bean, Method setter, Object value) {
-        _bean = bean;
-        _set_method = setter;
-        _set_args = new Object[]{value};
+    init {
+        _set_args = arrayOf(value)
     }
 
     /**
@@ -54,13 +48,12 @@ public class SetParameterCommand implements Command {
      *
      * @throws CommandException An error occurred when calling the setter method.
      */
-    public void invoke() throws CommandException {
+    @Throws(CommandException::class)
+    override fun invoke() {
         try {
-            _set_method.invoke(_bean, _set_args);
-        } catch (Exception ex) {
-            throw new CommandException("failed to set parameter: " +
-                    ex.getMessage());
+            _set_method.invoke(_bean, *_set_args)
+        } catch (ex: Exception) {
+            throw CommandException("failed to set parameter: " + ex.message)
         }
     }
-
 }

@@ -1,158 +1,116 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.behaviour
 
-
-package uk.ac.ic.doc.scenebeans.behaviour;
-
-import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener;
-
-import java.io.Serializable;
-
+import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener
+import java.io.Serializable
 
 /**
- * The <a href="../../../../../../../beans/bounce.html">Bounce</a>
+ * The [Bounce](../../../../../../../beans/bounce.html)
  * behaviour bean.
  */
-public class Bounce
-        extends DoubleActivityBase
-        implements Serializable {
+class Bounce : DoubleActivityBase, Serializable {
+    var from: Double
+    var to: Double
+    var duration: Double
+    private var _timeout: Double
+    private var _is_increasing: Boolean
 
-    private double _from, _to;
-
-    private double _duration;
-
-    private double _timeout;
-
-    private boolean _is_increasing;
-
-
-    public Bounce() {
-        _from = _to = _duration = _timeout = 0.0;
-        _is_increasing = true;
+    constructor() {
+        _timeout = 0.0
+        duration = _timeout
+        to = duration
+        from = to
+        _is_increasing = true
     }
 
-    public Bounce(double from, double to, double duration) {
-        _from = from;
-        _to = to;
-        _duration = duration;
-        _timeout = 0.0;
-        _is_increasing = true;
+    constructor(from: Double, to: Double, duration: Double) {
+        this.from = from
+        this.to = to
+        this.duration = duration
+        _timeout = 0.0
+        _is_increasing = true
     }
 
-    public double getFrom() {
-        return _from;
+    val value: Double
+        get() = from + ratio() * (to - from)
+    override val isFinite: Boolean
+        get() = false
+
+    override fun reset() {
+        _timeout = 0.0
+        postUpdate(value)
     }
 
-    public void setFrom(double f) {
-        _from = f;
-    }
-
-    public double getTo() {
-        return _to;
-    }
-
-    public void setTo(double t) {
-        _to = t;
-    }
-
-    public double getDuration() {
-        return _duration;
-    }
-
-    public void setDuration(double t) {
-        _duration = t;
-    }
-
-    public double getValue() {
-        return _from + (ratio() * (_to - _from));
-    }
-
-    public boolean isFinite() {
-        return false;
-    }
-
-    public void reset() {
-        _timeout = 0.0;
-        postUpdate(getValue());
-    }
-
-    public void performActivity(double t) {
-        _timeout += t;
-
-        while (_timeout >= _duration) {
-            _timeout -= _duration;
-            _is_increasing = !_is_increasing;
-
+    override fun performActivity(t: Double) {
+        _timeout += t
+        while (_timeout >= duration) {
+            _timeout -= duration
+            _is_increasing = !_is_increasing
             if (_is_increasing) {
-                postActivityComplete();
+                postActivityComplete()
             }
         }
-
-        postUpdate(getValue());
+        postUpdate(value)
     }
 
-    private final double ratio() {
-        if (_is_increasing) {
-            return _timeout / _duration;
+    private fun ratio(): Double {
+        return if (_is_increasing) {
+            _timeout / duration
         } else {
-            return 1.0 - (_timeout / _duration);
+            1.0 - _timeout / duration
         }
     }
 
-    public final DoubleBehaviourListener newFromAdapter() {
-        return new FromAdapter();
+    fun newFromAdapter(): DoubleBehaviourListener {
+        return FromAdapter()
     }
 
-    public final DoubleBehaviourListener newToAdapter() {
-        return new ToAdapter();
+    fun newToAdapter(): DoubleBehaviourListener {
+        return ToAdapter()
     }
 
-    public final DoubleBehaviourListener newDurationAdapter() {
-        return new DurationAdapter();
+    fun newDurationAdapter(): DoubleBehaviourListener {
+        return DurationAdapter()
     }
 
-    class FromAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setFrom(v);
+    internal inner class FromAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            this@Bounce.from = v
         }
-
     }
 
-    class ToAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setTo(v);
+    internal inner class ToAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            this@Bounce.to = v
         }
-
     }
 
-    class DurationAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setDuration(v);
+    internal inner class DurationAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            this@Bounce.duration = v
         }
-
     }
-
 }
-
-

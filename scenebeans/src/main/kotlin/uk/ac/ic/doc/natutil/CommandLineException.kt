@@ -1,18 +1,11 @@
-package uk.ac.ic.doc.natutil;
-
+package uk.ac.ic.doc.natutil
 
 /**
- * The exception thrown by the {@link CommandLineParser} class when
+ * The exception thrown by the [CommandLineParser] class when
  * it fails to parse a command line.
  */
-public class CommandLineException extends Exception {
+class CommandLineException(msg: String?) : Exception(msg) {
 
-    public CommandLineException(String msg) {
-        super(msg);
-    }
-
-    public CommandLineException() {
-        super();
-    }
+    constructor() : this(null)
 
 }

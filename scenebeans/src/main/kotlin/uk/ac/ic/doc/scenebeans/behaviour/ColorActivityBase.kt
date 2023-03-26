@@ -1,56 +1,49 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.behaviour
 
-
-package uk.ac.ic.doc.scenebeans.behaviour;
-
-import uk.ac.ic.doc.scenebeans.ColorBehaviour;
-import uk.ac.ic.doc.scenebeans.ColorBehaviourListener;
-import uk.ac.ic.doc.scenebeans.activity.Activity;
-import uk.ac.ic.doc.scenebeans.activity.FiniteActivityBase;
-
-import java.awt.*;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import uk.ac.ic.doc.scenebeans.ColorBehaviour
+import uk.ac.ic.doc.scenebeans.ColorBehaviourListener
+import uk.ac.ic.doc.scenebeans.activity.FiniteActivityBase
+import java.awt.*
+import java.io.Serializable
 
 /**
- * Base class for {@link ColorBehaviour} beans that
- * are also {@link Activity} objects.
+ * Base class for [ColorBehaviour] beans that
+ * are also [Activity] objects.
  * Manages the list of behaviour listeners and provides subclasses with
  * a method with which they can announce behaviour updates.
  */
-public abstract class ColorActivityBase
-        extends FiniteActivityBase
-        implements ColorBehaviour, Serializable {
-
-    private List _listeners;
+abstract class ColorActivityBase : FiniteActivityBase, ColorBehaviour, Serializable {
+    private var _listeners: MutableList<ColorBehaviourListener>
 
     /**
      * Constructs a ColorActivityBase.
      */
-    protected ColorActivityBase() {
-        _listeners = new ArrayList();
+    protected constructor() {
+        _listeners = ArrayList()
     }
 
     /**
@@ -60,8 +53,8 @@ public abstract class ColorActivityBase
      *
      * @param l The list to hold listener references.
      */
-    protected ColorActivityBase(List l) {
-        _listeners = l;
+    protected constructor(l: MutableList<ColorBehaviourListener>) {
+        _listeners = l
     }
 
     /**
@@ -69,9 +62,9 @@ public abstract class ColorActivityBase
      *
      * @param l The listener to add.
      */
-    public synchronized void
-    addColorBehaviourListener(ColorBehaviourListener l) {
-        _listeners.add(l);
+    @Synchronized
+    override fun addColorBehaviourListener(l: ColorBehaviourListener) {
+        _listeners.add(l)
     }
 
     /**
@@ -79,9 +72,9 @@ public abstract class ColorActivityBase
      *
      * @param l The listener to remove.
      */
-    public synchronized void
-    removeColorBehaviourListener(ColorBehaviourListener l) {
-        _listeners.remove(l);
+    @Synchronized
+    override fun removeColorBehaviourListener(l: ColorBehaviourListener) {
+        _listeners.remove(l)
     }
 
     /**
@@ -89,11 +82,11 @@ public abstract class ColorActivityBase
      *
      * @param v The new value of the behaviour.
      */
-    protected synchronized void postUpdate(Color v) {
-        for (Iterator i = _listeners.iterator(); i.hasNext(); ) {
-            ((ColorBehaviourListener) i.next()).behaviourUpdated(v);
+    @Synchronized
+    protected fun postUpdate(v: Color) {
+        val i: Iterator<*> = _listeners.iterator()
+        while (i.hasNext()) {
+            (i.next() as ColorBehaviourListener).behaviourUpdated(v)
         }
     }
-
 }
-

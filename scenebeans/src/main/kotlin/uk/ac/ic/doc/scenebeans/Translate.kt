@@ -1,120 +1,100 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-
+import java.awt.geom.AffineTransform
+import java.awt.geom.Point2D
+import java.io.Serializable
 
 /**
- * The <a href="../../../../../../beans/translate.html">Translate</a>
+ * The [Translate](../../../../../../beans/translate.html)
  * SceneBean.
  */
-public class Translate extends TransformBase {
+class Translate : TransformBase {
+    private var _x: Double
+    private var _y: Double
 
-    private double _x, _y;
-
-    public Translate() {
-        super();
-        _x = 0.0;
-        _y = 0.0;
+    constructor() : super() {
+        _x = 0.0
+        _y = 0.0
     }
 
-    public Translate(double x, double y, SceneGraph g) {
-        super(g);
-        _x = x;
-        _y = y;
+    constructor(x: Double, y: Double, g: SceneGraph?) : super(g) {
+        _x = x
+        _y = y
     }
 
-    public Point2D getTranslation() {
-        return new Point2D.Double(_x, _y);
-    }
-
-    public void setTranslation(Point2D p) {
-        _x = p.getX();
-        _y = p.getY();
-    }
-
-    public double getX() {
-        return _x;
-    }
-
-    public void setX(double x) {
-        _x = x;
-        setDirty(true);
-    }
-
-    public double getY() {
-        return _y;
-    }
-
-    public void setY(double y) {
-        _y = y;
-        setDirty(true);
-    }
-
-    public AffineTransform getTransform() {
-        return AffineTransform.getTranslateInstance(_x, _y);
-    }
-
-    public final TranslationAdapter newTranslationAdapter() {
-        return new TranslationAdapter();
-    }
-
-    public final XAdapter newXAdapter() {
-        return new XAdapter();
-    }
-
-    public final YAdapter newYAdapter() {
-        return new YAdapter();
-    }
-
-    public class TranslationAdapter
-            implements PointBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(Point2D p) {
-            setX(p.getX());
-            setY(p.getY());
+    var translation: Point2D
+        get() = Point2D.Double(_x, _y)
+        set(p) {
+            _x = p.x
+            _y = p.y
         }
-
-    }
-
-    public class XAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(double v) {
-            setX(v);
+    var x: Double
+        get() = _x
+        set(x) {
+            _x = x
+            isDirty = true
         }
-
-    }
-
-    public class YAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(double v) {
-            setY(v);
+    var y: Double
+        get() = _y
+        set(y) {
+            _y = y
+            isDirty = true
         }
+    override val transform: AffineTransform
+        get() = AffineTransform.getTranslateInstance(_x, _y)
 
+    fun newTranslationAdapter(): TranslationAdapter {
+        return TranslationAdapter()
     }
 
+    fun newXAdapter(): XAdapter {
+        return XAdapter()
+    }
+
+    fun newYAdapter(): YAdapter {
+        return YAdapter()
+    }
+
+    inner class TranslationAdapter : PointBehaviourListener, Serializable {
+        override fun behaviourUpdated(p: Point2D) {
+            x = p.x
+            y = p.y
+        }
+    }
+
+    inner class XAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            x = v
+        }
+    }
+
+    inner class YAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            y = v
+        }
+    }
 }

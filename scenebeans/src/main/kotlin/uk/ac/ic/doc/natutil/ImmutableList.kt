@@ -1,38 +1,14 @@
 /**
  * The Regent Distributed Programming Environment
- * <p>
+ *
+ *
  * by Nat Pryce, 1998
  */
+package uk.ac.ic.doc.natutil
 
-package uk.ac.ic.doc.natutil;
+import java.util.*
 
-import java.util.Enumeration;
-
-
-public abstract class ImmutableList {
-
-    /**
-     * The empty list.  Variables of type ImmutableList should be
-     * initialised to this value to create new empty lists.
-     */
-    public static final ImmutableList EMPTY = new ImmutableList() {
-        public ImmutableList removeIf(Predicate p) {
-            return this;
-        }
-
-        public ImmutableList remove(Object o) {
-            return this;
-        }
-
-        public void forAll(Procedure proc) {
-            return;
-        }
-
-        public ImmutableList map(Function fn) {
-            return this;
-        }
-    };
-
+abstract class ImmutableList {
     /**
      * Adds an element to the head of the list, returning the new list.
      *
@@ -40,8 +16,8 @@ public abstract class ImmutableList {
      * @return The list consisting of the element <var>o</var> followed by
      * this list.
      */
-    public final ImmutableList add(Object o) {
-        return new Node(o, this);
+    fun add(o: Any): ImmutableList {
+        return Node(o, this)
     }
 
     /**
@@ -51,100 +27,117 @@ public abstract class ImmutableList {
      * @param o The object to be removed from the list.
      * @return A list consisting of this list with object <var>o</var> removed.
      */
-    public abstract ImmutableList remove(Object o);
+    abstract fun remove(o: Any): ImmutableList
 
     /**
      * Removes all elements for which the predicate <var>p</var> returns
      * true, resulting in a new list which is returned to the caller.
      *
-     * @param p A predicate that returns <code>true</code> if the element is
-     *          to be removed from the list, and <code>false</code> otherwise.
+     * @param p A predicate that returns `true` if the element is
+     * to be removed from the list, and `false` otherwise.
      * @return A list consisting of this list with all elements for which the
      * predicate <var>p</var> returned true removed.
      */
-    public abstract ImmutableList removeIf(Predicate p);
+    abstract fun removeIf(p: Predicate): ImmutableList
 
     /**
      * Applies the procedure <var>proc</var> to all elements in the list.
      */
-    public abstract void forAll(Procedure proc);
+    abstract fun forAll(proc: Procedure)
 
     /**
      * Creates a new list whose elements are the result of applying function
      * <var>fn</var> to the elements of this list.
      */
-    public abstract ImmutableList map(Function fn);
+    abstract fun map(fn: Function): ImmutableList
 
     /**
      * Returns a "standard" enumeration over the elements of the list.
      */
-    public Enumeration elements() {
-        return new Enumeration() {
-            private ImmutableList _current = ImmutableList.this;
-
-            public boolean hasMoreElements() {
-                return _current != EMPTY;
+    fun elements(): Enumeration<*> {
+        return object : Enumeration<Any?> {
+            private var _current = this@ImmutableList
+            override fun hasMoreElements(): Boolean {
+                return _current !== EMPTY
             }
 
-            public Object nextElement() {
-                Object result = ((Node) _current)._element;
-                _current = ((Node) _current)._next;
-                return result;
+            override fun nextElement(): Any {
+                val result = (_current as Node)._element
+                _current = (_current as Node)._next
+                return result
             }
-        };
+        }
     }
 
-    static class Node extends ImmutableList {
+    internal class Node : ImmutableList {
+        var _element: Any
+        var _next: ImmutableList
 
-        private Object _element;
-
-        private ImmutableList _next;
-
-        Node(Object element, ImmutableList next) {
-            _element = element;
-            _next = next;
+        constructor(element: Any, next: ImmutableList) {
+            _element = element
+            _next = next
         }
 
-        Node(Object element) {
-            _element = element;
-            _next = EMPTY;
+        constructor(element: Any) {
+            _element = element
+            _next = EMPTY
         }
 
-        public ImmutableList removeIf(Predicate p) {
-            ImmutableList n = _next.remove(p);
-            if (p.evaluate(_element)) {
-                return n;
-            } else if (n == _next) {
-                return this;
+        override fun removeIf(p: Predicate): ImmutableList {
+            val n = _next.remove(p)
+            return if (p.evaluate(_element)) {
+                n
+            } else if (n === _next) {
+                this
             } else {
-                return new Node(_element, n);
+                Node(_element, n)
             }
         }
 
-        public ImmutableList remove(Object old) {
-            if (_element == old) {
-                return _next;
+        override fun remove(old: Any): ImmutableList {
+            return if (_element === old) {
+                _next
             } else {
-                ImmutableList n = _next.remove(old);
-                if (n == _next) {
-                    return this;
+                val n = _next.remove(old)
+                if (n === _next) {
+                    this
                 } else {
-                    return new Node(_element, n);
+                    Node(_element, n)
                 }
             }
         }
 
-        public void forAll(Procedure proc) {
-            proc.execute(_element);
-            _next.forAll(proc);
+        override fun forAll(proc: Procedure) {
+            proc.execute(_element)
+            _next.forAll(proc)
         }
 
-        public ImmutableList map(Function fn) {
-            return new Node(fn.evaluate(_element), _next.map(fn));
+        override fun map(fn: Function): ImmutableList {
+            return Node(fn.evaluate(_element)!!, _next.map(fn))
         }
-
     }
 
+    companion object {
+        /**
+         * The empty list.  Variables of type ImmutableList should be
+         * initialised to this value to create new empty lists.
+         */
+        val EMPTY: ImmutableList = object : ImmutableList() {
+            override fun removeIf(p: Predicate): ImmutableList {
+                return this
+            }
+
+            override fun remove(o: Any): ImmutableList {
+                return this
+            }
+
+            override fun forAll(proc: Procedure) {
+                return
+            }
+
+            override fun map(fn: Function): ImmutableList {
+                return this
+            }
+        }
+    }
 }
-
-

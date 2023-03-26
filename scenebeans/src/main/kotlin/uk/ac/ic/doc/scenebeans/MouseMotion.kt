@@ -1,208 +1,153 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import uk.ac.ic.doc.scenebeans.behaviour.DoubleBehaviourBase;
-import uk.ac.ic.doc.scenebeans.behaviour.PointBehaviourBase;
-
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-
+import uk.ac.ic.doc.scenebeans.behaviour.DoubleBehaviourBase
+import uk.ac.ic.doc.scenebeans.behaviour.PointBehaviourBase
+import java.awt.geom.AffineTransform
+import java.awt.geom.NoninvertibleTransformException
+import java.awt.geom.Point2D
 
 /**
- * The <a href="../../../../../../beans/mousemotion.html">MouseMotion</a>
+ * The [MouseMotion](../../../../../../beans/mousemotion.html)
  * SceneBean.
  */
-public class MouseMotion extends InputBase {
+class MouseMotion : InputBase() {
+    var isActive = true
+    var isDragged = true
+    private val _pos = PositionFacet()
+    private val _x = DoubleFacet()
+    private val _y = DoubleFacet()
+    private val _angle = DoubleFacet()
+    val positionFacet: PointBehaviour
+        get() = _pos
 
-    private boolean _is_active = true;
-
-    private boolean _is_dragged = true;
-
-    private PositionFacet _pos = new PositionFacet();
-
-    private DoubleFacet _x = new DoubleFacet();
-
-    private DoubleFacet _y = new DoubleFacet();
-
-    private DoubleFacet _angle = new DoubleFacet();
-
-    public static void mouseMoved(SceneGraph sg, double x, double y)
-            throws NoninvertibleTransformException {
-        Processor p = new Processor(x, y, false);
-        dispatchMouseMotion(sg, p);
+    fun getxFacet(): DoubleBehaviour {
+        return _x
     }
 
-    public static void mouseDragged(SceneGraph sg, double x, double y)
-            throws NoninvertibleTransformException {
-        Processor p = new Processor(x, y, true);
-        dispatchMouseMotion(sg, p);
+    fun getyFacet(): DoubleBehaviour {
+        return _y
     }
 
-    private static void dispatchMouseMotion(SceneGraph sg, Processor p)
-            throws NoninvertibleTransformException {
-        try {
-            sg.accept(p);
-        } catch (TransformFailure ex) {
-            throw ex.cause;
-        }
-    }
+    val angleFacet: DoubleBehaviour
+        get() = _angle
 
-    public boolean isActive() {
-        return _is_active;
-    }
-
-    public void setActive(boolean b) {
-        _is_active = b;
-    }
-
-    public boolean isDragged() {
-        return _is_dragged;
-    }
-
-    public void setDragged(boolean b) {
-        _is_dragged = b;
-    }
-
-    public PointBehaviour getPositionFacet() {
-        return _pos;
-    }
-
-    public DoubleBehaviour getxFacet() {
-        return _x;
-    }
-
-    public DoubleBehaviour getyFacet() {
-        return _y;
-    }
-
-    public DoubleBehaviour getAngleFacet() {
-        return _angle;
-    }
-
-    public void updatePosition(double x, double y) {
-        double angle = Math.atan(y / x);
-
-        if (x >= 0.0) {
-            angle = Math.atan(y / x) - Math.PI / 2;
+    fun updatePosition(x: Double, y: Double) {
+        var angle = Math.atan(y / x)
+        angle = if (x >= 0.0) {
+            Math.atan(y / x) - Math.PI / 2
         } else {
-            angle = Math.atan(y / x) + Math.PI / 2;
+            Math.atan(y / x) + Math.PI / 2
         }
-
-        _pos.postUpdate(new Point2D.Double(x, y));
-        _x.postUpdate(x);
-        _y.postUpdate(y);
-        _angle.postUpdate(angle);
+        _pos.postUpdate(Point2D.Double(x, y))
+        _x.postUpdate(x)
+        _y.postUpdate(y)
+        _angle.postUpdate(angle)
     }
 
-    private static class PositionFacet extends PointBehaviourBase {
-
-        public void postUpdate(Point2D p) {
-            super.postUpdate(p);
+    private class PositionFacet : PointBehaviourBase() {
+        public override fun postUpdate(p: Point2D) {
+            super.postUpdate(p)
         }
-
     }
 
-    ;
-
-    private static class DoubleFacet extends DoubleBehaviourBase {
-
-        public void postUpdate(double d) {
-            super.postUpdate(d);
+    private class DoubleFacet : DoubleBehaviourBase() {
+        public override fun postUpdate(d: Double) {
+            super.postUpdate(d)
         }
-
     }
 
-    ;
+    private class TransformFailure internal constructor(override var cause: NoninvertibleTransformException) :
+            RuntimeException()
 
-    private static class TransformFailure extends RuntimeException {
+    private class Processor internal constructor(x: Double, y: Double, private val _dragged: Boolean) :
+            SceneGraphProcessor {
+        private val _transform = AffineTransform()
+        private var _point: Point2D
 
-        NoninvertibleTransformException cause;
-
-        TransformFailure(NoninvertibleTransformException ex) {
-            cause = ex;
+        init {
+            _point = Point2D.Double(x, y)
         }
 
-    }
-
-    private static class Processor
-            implements SceneGraphProcessor {
-
-        private AffineTransform _transform = new AffineTransform();
-
-        private Point2D _point;
-
-        private boolean _dragged;
-
-        Processor(double x, double y, boolean dragged) {
-            _point = new Point2D.Double(x, y);
-            _dragged = dragged;
+        override fun process(sg: Primitive) {/* This space intentionally left blank */
         }
 
-        public void process(Primitive sg) {
-            /* This space intentionally left blank */
-        }
-
-        public void process(CompositeNode sg) {
-            for (int i = 0; i < sg.getVisibleSubgraphCount(); i++) {
-                sg.getVisibleSubgraph(i).accept(this);
+        override fun process(sg: CompositeNode) {
+            for (i in 0 until sg.visibleSubgraphCount) {
+                sg.getVisibleSubgraph(i)!!.accept(this)
             }
         }
 
-        public void process(Transform sg) {
-            Point2D old_point = _point;
-            try {
-                _point = sg.getTransform().inverseTransform(_point, null);
-            } catch (NoninvertibleTransformException ex) {
-                throw new TransformFailure(ex);
+        override fun process(sg: Transform) {
+            val old_point = _point
+            _point = try {
+                sg.transform.inverseTransform(_point, null)
+            } catch (ex: NoninvertibleTransformException) {
+                throw TransformFailure(ex)
             }
-
-            sg.getTransformedGraph().accept(this);
-            _point = old_point;
+            sg.transformedGraph!!.accept(this)
+            _point = old_point
         }
 
-        public void process(Style sg) {
-            sg.getStyledGraph().accept(this);
+        override fun process(sg: Style) {
+            sg.styledGraph!!.accept(this)
         }
 
-        public void process(Input sg) {
-            if (sg instanceof MouseMotion) {
-                MouseMotion m = (MouseMotion) sg;
-
-                if (m.isActive() &&
-                        ((m.isDragged() && _dragged) || !m.isDragged())) {
-                    Point2D p = _transform.transform(_point, null);
-                    m.updatePosition(p.getX(), p.getY());
+        override fun process(sg: Input) {
+            if (sg is MouseMotion) {
+                val m = sg
+                if (m.isActive && (m.isDragged && _dragged || !m.isDragged)) {
+                    val p = _transform.transform(_point, null)
+                    m.updatePosition(p.x, p.y)
                 }
             }
-
-            sg.getSensitiveGraph().accept(this);
+            sg.sensitiveGraph!!.accept(this)
         }
-
     }
 
+    companion object {
+        @Throws(NoninvertibleTransformException::class)
+        fun mouseMoved(sg: SceneGraph, x: Double, y: Double) {
+            val p = Processor(x, y, false)
+            dispatchMouseMotion(sg, p)
+        }
+
+        @Throws(NoninvertibleTransformException::class)
+        fun mouseDragged(sg: SceneGraph, x: Double, y: Double) {
+            val p = Processor(x, y, true)
+            dispatchMouseMotion(sg, p)
+        }
+
+        @Throws(NoninvertibleTransformException::class)
+        private fun dispatchMouseMotion(sg: SceneGraph, p: Processor) {
+            try {
+                sg.accept(p)
+            } catch (ex: TransformFailure) {
+                throw ex.cause
+            }
+        }
+    }
 }
-
-
-

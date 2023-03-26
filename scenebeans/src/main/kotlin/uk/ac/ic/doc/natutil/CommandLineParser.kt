@@ -1,49 +1,45 @@
-package uk.ac.ic.doc.natutil;
+package uk.ac.ic.doc.natutil
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.lang.reflect.Field;
+import java.io.OutputStream
+import java.io.PrintWriter
 
-
-public class CommandLineParser {
+object CommandLineParser {
 
     /**
      * Prints the command-line options defined by the Object <var>opts</var>
-     * to {@link System.err}.
+     * to [System.err].
      */
-    public static void printOptions(Object opts) {
-        printOptions(System.err, opts);
+    fun printOptions(opts: Any) {
+        printOptions(System.err, opts)
     }
 
     /**
      * Prints the command-line options defined by the Object <var>opts</var>
      * to the stream <var>out</var>.
      */
-    public static void printOptions(OutputStream out, Object opts) {
-        printOptions(new PrintWriter(out), opts);
+    fun printOptions(out: OutputStream, opts: Any) {
+        printOptions(PrintWriter(out), opts)
     }
 
     /**
      * Prints the command-line options defined by the Object <var>opts</var>
      * to the character stream <var>out</var>.
      */
-    public static void printOptions(PrintWriter out, Object opts) {
+    fun printOptions(out: PrintWriter, opts: Any) {
         try {
-            Field[] fields = opts.getClass().getFields();
-
-            for (int i = 0; i < fields.length; i++) {
-                Field f = fields[i];
-
-                out.print(fieldNameToOption(f.getName()));
-                out.print(" : ");
-                out.print(f.getType().getName());
-                out.print(" [");
-                out.print(f.get(opts).toString());
-                out.println("]");
+            val fields = opts.javaClass.fields
+            for (i in fields.indices) {
+                val f = fields[i]
+                out.print(fieldNameToOption(f.name))
+                out.print(" : ")
+                out.print(f.type.name)
+                out.print(" [")
+                out.print(f[opts].toString())
+                out.println("]")
             }
-            out.flush();
-        } catch (IllegalAccessException e) {
-            throw new Error("cannot access fields of options structure");
+            out.flush()
+        } catch (e: IllegalAccessException) {
+            throw Error("cannot access fields of options structure")
         }
     }
 
@@ -51,82 +47,70 @@ public class CommandLineParser {
      * Parses the command-options defined by the Object <var>opts</var>
      * from the arguments in the array <var>args</var>.
      */
-    public static void parseOptions(Object opts, String[] args)
-            throws CommandLineException {
-        int i = 0;
-
+    @Throws(CommandLineException::class)
+    fun parseOptions(opts: Any, args: Array<String>) {
+        var i = 0
         try {
-            Class opts_class = opts.getClass();
-
-            for (i = 0; i < args.length; i += 2) {
-                String field_name = optionToFieldName(args[i].substring(1));
-
-                Field field = opts_class.getField(field_name);
-                Object value = Instantiate.newObject(field.getType(),
-                        args[i + 1]);
-                field.set(opts, value);
+            val optsClass = opts.javaClass
+            i = 0
+            while (i < args.size) {
+                val fieldName = optionToFieldName(args[i].substring(1))
+                val field = optsClass.getField(fieldName)
+                val value = Instantiate.newObject(field.type, args[i + 1])
+                field[opts] = value
+                i += 2
             }
-        } catch (Exception e) {
-            throw new CommandLineException("failed to parse " + args[i] +
-                    " option: " + e.getMessage());
+        } catch (e: Exception) {
+            throw CommandLineException("failed to parse " + args[i] + " option: " + e.message)
         }
     }
 
-    private static String optionToFieldName(String opt)
-            throws CommandLineException {
-        StringBuffer buf = new StringBuffer();
-
-        for (int i = 0; i < opt.length(); i++) {
-            char ch = opt.charAt(i);
-            if (ch == 0 && Character.isJavaIdentifierStart(ch) ||
-                    ch > 0 && Character.isJavaIdentifierPart(ch)) {
-                buf.append(ch);
-            } else if (ch == '-') {
-                buf.append('_');
+    @Throws(CommandLineException::class)
+    private fun optionToFieldName(opt: String): String {
+        val buf = StringBuffer()
+        for (element in opt) {
+            if (element.code == 0 && Character.isJavaIdentifierStart(
+                            element) || element.code > 0 && Character.isJavaIdentifierPart(element)) {
+                buf.append(element)
+            } else if (element == '-') {
+                buf.append('_')
             } else {
-                throw new CommandLineException("invalid option name \"" +
-                        opt + "\"");
+                throw CommandLineException("invalid option name \"$opt\"")
             }
         }
-
-        return buf.toString();
+        return buf.toString()
     }
 
-    private static String fieldNameToOption(String opt) {
-        StringBuffer buf = new StringBuffer();
-
-        for (int i = 0; i < opt.length(); i++) {
-            char ch = opt.charAt(i);
-            if (ch == '_') {
-                buf.append('-');
+    private fun fieldNameToOption(opt: String): String {
+        val buf = StringBuffer()
+        for (element in opt) {
+            if (element == '_') {
+                buf.append('-')
             } else {
-                buf.append(ch);
+                buf.append(element)
             }
         }
-
-        return buf.toString();
+        return buf.toString()
     }
-    
-    
-    
+
     /*-- Example usage ------------------------------------------------------
- 
+
     public static class Options {
         public String name = "anonymous";
         public int count = 0;
         public double ratio = 1.0;
         public boolean flag = true;
     }
-    
+
     public static void main( String args[] ) {
         try {
             Options options = new Options();
             System.out.println( "default options:" );
             CommandLineParser.printOptions(options);
             System.err.println();
-            
+
             CommandLineParser.parseOptions( options, args );
-            
+
             System.out.println( "user-specified options:" );
             CommandLineParser.printOptions(options);
         }
@@ -134,6 +118,7 @@ public class CommandLineParser {
             e.printStackTrace();
         }
     }
-    
+
     -----------------------------------------------------------------------*/
+
 }

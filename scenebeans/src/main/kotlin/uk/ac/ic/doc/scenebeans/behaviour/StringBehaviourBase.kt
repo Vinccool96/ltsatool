@@ -1,51 +1,46 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.behaviour
 
-
-package uk.ac.ic.doc.scenebeans.behaviour;
-
-import uk.ac.ic.doc.scenebeans.StringBehaviour;
-import uk.ac.ic.doc.scenebeans.StringBehaviourListener;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import uk.ac.ic.doc.scenebeans.StringBehaviour
+import uk.ac.ic.doc.scenebeans.StringBehaviourListener
+import java.io.Serializable
 
 /**
- * Base class for {@link StringBehaviour} beans.
+ * Base class for [StringBehaviour] beans.
  * Manages the list of behaviour listeners and provides subclasses with
  * a method with which they can announce behaviour updates.
  */
-public abstract class StringBehaviourBase
-        implements StringBehaviour, Serializable {
-
-    private List _behaviour_listeners;
+abstract class StringBehaviourBase : StringBehaviour, Serializable {
+    private var _behaviour_listeners: MutableList<StringBehaviourListener>
 
     /**
      * Constructs a StringBehaviourBase.
      */
-    protected StringBehaviourBase() {
-        _behaviour_listeners = new ArrayList();
+    protected constructor() {
+        _behaviour_listeners = ArrayList()
     }
 
     /**
@@ -55,8 +50,8 @@ public abstract class StringBehaviourBase
      *
      * @param l The list to hold listener references.
      */
-    protected StringBehaviourBase(List l) {
-        _behaviour_listeners = l;
+    protected constructor(l: MutableList<StringBehaviourListener>) {
+        _behaviour_listeners = l
     }
 
     /**
@@ -64,9 +59,9 @@ public abstract class StringBehaviourBase
      *
      * @param l The listener to add.
      */
-    public synchronized void
-    addStringBehaviourListener(StringBehaviourListener l) {
-        _behaviour_listeners.add(l);
+    @Synchronized
+    override fun addStringBehaviourListener(l: StringBehaviourListener) {
+        _behaviour_listeners.add(l)
     }
 
     /**
@@ -74,9 +69,9 @@ public abstract class StringBehaviourBase
      *
      * @param l The listener to remove.
      */
-    public synchronized void
-    removeStringBehaviourListener(StringBehaviourListener l) {
-        _behaviour_listeners.remove(l);
+    @Synchronized
+    override fun removeStringBehaviourListener(l: StringBehaviourListener) {
+        _behaviour_listeners.remove(l)
     }
 
     /**
@@ -84,10 +79,11 @@ public abstract class StringBehaviourBase
      *
      * @param v The new value of the behaviour.
      */
-    protected synchronized void postUpdate(String v) {
-        for (Iterator i = _behaviour_listeners.iterator(); i.hasNext(); ) {
-            ((StringBehaviourListener) i.next()).behaviourUpdated(v);
+    @Synchronized
+    protected fun postUpdate(v: String?) {
+        val i: Iterator<*> = _behaviour_listeners.iterator()
+        while (i.hasNext()) {
+            (i.next() as StringBehaviourListener).behaviourUpdated(v)
         }
     }
-
 }

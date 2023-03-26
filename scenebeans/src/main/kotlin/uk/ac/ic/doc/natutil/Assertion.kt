@@ -1,29 +1,24 @@
 /**
  * The Regent Distributed Programming Environment
- * <p>
+ *
+ *
  * by Nat Pryce, 1998
  */
+package uk.ac.ic.doc.natutil
 
-package uk.ac.ic.doc.natutil;
+class Assertion private constructor(msg: String) : RuntimeException(msg) {
 
+    private constructor() : this("Assertion failed")
 
-public class Assertion extends RuntimeException {
+    companion object {
 
-    public static boolean DEBUG = Boolean.getBoolean("uk.ac.ic.doc.natutil.assert");
+        var DEBUG = java.lang.Boolean.getBoolean("uk.ac.ic.doc.natutil.assert")
 
-    private Assertion() {
-        super("Assertion failed");
-    }
-
-    private Assertion(String msg) {
-        super(msg);
-    }
-
-    public static void check(boolean b, String str) {
-        if (DEBUG && !b) {
-            throw new Assertion(str);
+        fun check(b: Boolean, str: String) {
+            if (DEBUG && !b) {
+                throw Assertion(str)
+            }
         }
+
     }
-
 }
-

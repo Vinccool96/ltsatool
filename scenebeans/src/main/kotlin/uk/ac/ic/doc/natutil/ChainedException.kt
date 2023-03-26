@@ -1,65 +1,56 @@
 /**
  *
  */
+package uk.ac.ic.doc.natutil
 
-package uk.ac.ic.doc.natutil;
+import java.io.PrintStream
+import java.io.PrintWriter
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
+class ChainedException : Exception {
 
+    override var cause: Throwable?
+        private set
 
-public class ChainedException extends Exception {
-
-    private Throwable _cause;
-
-    public ChainedException(String message, Throwable cause) {
-        super(message);
-        _cause = cause;
+    constructor(message: String?, cause: Throwable) : super(message) {
+        this.cause = cause
     }
 
-    public ChainedException(String message) {
-        super(message);
-        _cause = null;
+    constructor(message: String?) : super(message) {
+        cause = null
     }
 
-    public ChainedException() {
-        super();
-        _cause = null;
+    constructor() : super() {
+        cause = null
     }
 
-    public String getMessage() {
-        String m1 = super.getMessage();
-        String m2 = (_cause == null) ? null : _cause.getMessage();
+    override val message: String?
+        get() {
+            val m1 = super.message
+            val m2 = cause?.message
+            return if (m1 == null && m2 == null) {
+                null
+            } else if (m1 == null) {
+                m2!!
+            } else if (m2 == null) {
+                m1
+            } else {
+                "$m1 ($m2)"
+            }
+        }
 
-        if (m1 == null && m2 == null) {
-            return null;
-        } else if (m1 == null) {
-            return m2;
-        } else if (m2 == null) {
-            return m1;
-        } else {
-            return m1 + " (" + m2 + ")";
+    override fun printStackTrace(out: PrintWriter) {
+        super.printStackTrace(out)
+        if (cause != null) {
+            out.println("Caused by")
+            cause!!.printStackTrace(out)
         }
     }
 
-    public Throwable getCause() {
-        return _cause;
-    }
-
-    public void printStackTrace(PrintWriter out) {
-        super.printStackTrace(out);
-        if (_cause != null) {
-            out.println("Caused by");
-            _cause.printStackTrace(out);
+    override fun printStackTrace(out: PrintStream) {
+        super.printStackTrace(out)
+        if (cause != null) {
+            out.println("Caused by")
+            cause!!.printStackTrace(out)
         }
     }
-
-    public void printStackTrace(PrintStream out) {
-        super.printStackTrace(out);
-        if (_cause != null) {
-            out.println("Caused by");
-            _cause.printStackTrace(out);
-        }
-    }
-
 }

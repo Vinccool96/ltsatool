@@ -1,158 +1,129 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import java.awt.*;
-import java.awt.geom.Point2D;
-import java.io.Serializable;
+import java.awt.Color
+import java.awt.GradientPaint
+import java.awt.Graphics2D
+import java.awt.Paint
+import java.awt.geom.Point2D
+import java.io.Serializable
 
 /**
  * The Gradient SceneBean is currently experimental and will be fully supported
  * in a later release.
  */
-public class Gradient extends StyleBase {
+class Gradient : StyleBase() {
+    private var _is_cyclic = false
+    private var _from_pt: Point2D? = null
+    private var _to_pt: Point2D? = null
+    private var _from_col: Color? = null
+    private var _to_col: Color? = null
+    var isCyclic: Boolean
+        get() = _is_cyclic
+        set(is_cyclic) {
+            _is_cyclic = true
+            isDirty = true
+        }
+    var fromPoint: Point2D?
+        get() = _from_pt
+        set(p) {
+            _from_pt = p
+            isDirty = true
+        }
+    var fromColor: Color?
+        get() = _from_col
+        set(color) {
+            _from_col = color
+            isDirty = true
+        }
+    var toPoint: Point2D?
+        get() = _to_pt
+        set(p) {
+            _to_pt = p
+            isDirty = true
+        }
+    var toColor: Color?
+        get() = _to_col
+        set(color) {
+            _to_col = color
+            isDirty = true
+        }
 
-    private boolean _is_cyclic = false;
-
-    private Point2D _from_pt, _to_pt;
-
-    private Color _from_col, _to_col;
-
-
-    public boolean isCyclic() {
-        return _is_cyclic;
-    }
-
-    public void setCyclic(boolean is_cyclic) {
-        _is_cyclic = true;
-        setDirty(true);
-    }
-
-    public Point2D getFromPoint() {
-        return _from_pt;
-    }
-
-    public void setFromPoint(Point2D p) {
-        _from_pt = p;
-        setDirty(true);
-    }
-
-    public Color getFromColor() {
-        return _from_col;
-    }
-
-    public void setFromColor(Color color) {
-        _from_col = color;
-        setDirty(true);
-    }
-
-    public Point2D getToPoint() {
-        return _to_pt;
-    }
-
-    public void setToPoint(Point2D p) {
-        _to_pt = p;
-        setDirty(true);
-    }
-
-    public Color getToColor() {
-        return _to_col;
-    }
-
-    public void setToColor(Color color) {
-        _to_col = color;
-        setDirty(true);
-    }
-
-
-    public Change changeStyle(final Graphics2D g) {
-        final Paint old_paint = g.getPaint();
-        final Paint new_paint = new GradientPaint(_from_pt, _from_col,
-                _to_pt, _to_col,
-                _is_cyclic);
-        g.setPaint(new_paint);
-
-        return new Change() {
-            public void restoreStyle(Graphics2D g) {
-                g.setPaint(old_paint);
+    override fun changeStyle(g: Graphics2D?): Style.Change {
+        val old_paint = g!!.paint
+        val new_paint: Paint = GradientPaint(_from_pt, _from_col, _to_pt, _to_col, _is_cyclic)
+        g.paint = new_paint
+        return object : Style.Change {
+            override fun restoreStyle(g: Graphics2D?) {
+                g!!.paint = old_paint
             }
 
-            public void reapplyStyle(Graphics2D g) {
-                g.setPaint(new_paint);
+            override fun reapplyStyle(g: Graphics2D?) {
+                g!!.paint = new_paint
             }
-        };
-    }
-
-    public final FromPointAdapter newFromPointAdapter() {
-        return new FromPointAdapter();
-    }
-
-    public final ToPointAdapter newToPointAdapter() {
-        return new ToPointAdapter();
-    }
-
-    public final FromColorAdapter newFromColorAdapter() {
-        return new FromColorAdapter();
-    }
-
-    public final ToColorAdapter newToColorAdapter() {
-        return new ToColorAdapter();
-    }
-
-    class FromPointAdapter
-            implements PointBehaviourListener, Serializable {
-
-        public void behaviourUpdated(Point2D p) {
-            setFromPoint(p);
         }
-
     }
 
-    class ToPointAdapter
-            implements PointBehaviourListener, Serializable {
+    fun newFromPointAdapter(): FromPointAdapter {
+        return FromPointAdapter()
+    }
 
-        public void behaviourUpdated(Point2D p) {
-            setToPoint(p);
+    fun newToPointAdapter(): ToPointAdapter {
+        return ToPointAdapter()
+    }
+
+    fun newFromColorAdapter(): FromColorAdapter {
+        return FromColorAdapter()
+    }
+
+    fun newToColorAdapter(): ToColorAdapter {
+        return ToColorAdapter()
+    }
+
+    inner class FromPointAdapter : PointBehaviourListener, Serializable {
+        override fun behaviourUpdated(p: Point2D) {
+            fromPoint = p
         }
-
     }
 
-    class FromColorAdapter
-            implements ColorBehaviourListener, Serializable {
-
-        public void behaviourUpdated(Color color) {
-            setFromColor(color);
+    inner class ToPointAdapter : PointBehaviourListener, Serializable {
+        override fun behaviourUpdated(p: Point2D) {
+            toPoint = p
         }
-
     }
 
-    class ToColorAdapter
-            implements ColorBehaviourListener, Serializable {
-
-        public void behaviourUpdated(Color color) {
-            setToColor(color);
+    inner class FromColorAdapter : ColorBehaviourListener, Serializable {
+        override fun behaviourUpdated(color: Color) {
+            fromColor = color
         }
-
     }
 
+    inner class ToColorAdapter : ColorBehaviourListener, Serializable {
+        override fun behaviourUpdated(color: Color) {
+            toColor = color
+        }
+    }
 }

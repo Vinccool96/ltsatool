@@ -1,181 +1,158 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import java.awt.*;
-import java.io.Serializable;
-
+import java.awt.Color
+import java.awt.Graphics2D
+import java.awt.Paint
+import java.io.Serializable
 
 /**
- * The <a href="../../../../../../beans/rgbacolor.html">RGBAColor</a>
+ * The [RGBAColor](../../../../../../beans/rgbacolor.html)
  * SceneBean.
  */
-public class RGBAColor extends StyleBase {
+class RGBAColor : StyleBase {
+    private var _r = 0f
+    private var _g = 0f
+    private var _b = 0f
+    private var _a = 0f
 
-    private float _r, _g, _b, _a;
-
-    public RGBAColor() {
-        _r = _g = _b = (float) 0.5;
-        _a = (float) 1.0;
+    constructor() {
+        _b = 0.5.toFloat()
+        _g = _b
+        _r = _g
+        _a = 1.0.toFloat()
     }
 
-    public RGBAColor(double r, double g, double b, double a, SceneGraph sg) {
-        super(sg);
-        _r = (float) r;
-        _g = (float) g;
-        _b = (float) b;
-        _a = (float) a;
+    constructor(r: Double, g: Double, b: Double, a: Double, sg: SceneGraph?) : super(sg) {
+        _r = r.toFloat()
+        _g = g.toFloat()
+        _b = b.toFloat()
+        _a = a.toFloat()
     }
 
-    public RGBAColor(Color color, SceneGraph g) {
-        super(g);
-        setColor(color);
+    constructor(color: Color, g: SceneGraph?) : super(g) {
+        this.color = color
     }
 
-    public Color getColor() {
-        return new Color(_r, _g, _b, _a);
-    }
+    var color: Color
+        get() = Color(_r, _g, _b, _a)
+        set(color) {
+            _r = (color.red / 255.0).toFloat()
+            _g = (color.green / 255.0).toFloat()
+            _b = (color.blue / 255.0).toFloat()
+            _a = (color.alpha / 255.0).toFloat()
+            isDirty = true
+        }
+    var red: Double
+        get() = _r.toDouble()
+        set(r) {
+            _r = r.toFloat()
+            isDirty = true
+        }
+    var green: Double
+        get() = _g.toDouble()
+        set(g) {
+            _g = g.toFloat()
+            isDirty = true
+        }
+    var blue: Double
+        get() = _b.toDouble()
+        set(b) {
+            _b = b.toFloat()
+            isDirty = true
+        }
+    var alpha: Double
+        get() = _a.toDouble()
+        set(a) {
+            _a = a.toFloat()
+            isDirty = true
+        }
 
-    public void setColor(Color color) {
-        _r = (float) (color.getRed() / 255.0);
-        _g = (float) (color.getGreen() / 255.0);
-        _b = (float) (color.getBlue() / 255.0);
-        _a = (float) (color.getAlpha() / 255.0);
-        setDirty(true);
-    }
-
-    public double getRed() {
-        return _r;
-    }
-
-    public void setRed(double r) {
-        _r = (float) r;
-        setDirty(true);
-    }
-
-    public double getGreen() {
-        return _g;
-    }
-
-    public void setGreen(double g) {
-        _g = (float) g;
-        setDirty(true);
-    }
-
-    public double getBlue() {
-        return _b;
-    }
-
-    public void setBlue(double b) {
-        _b = (float) b;
-        setDirty(true);
-    }
-
-    public double getAlpha() {
-        return _a;
-    }
-
-    public void setAlpha(double a) {
-        _a = (float) a;
-        setDirty(true);
-    }
-
-    public Change changeStyle(final Graphics2D g) {
-        final Paint old_paint = g.getPaint();
-        final Paint new_paint = getColor();
-
-        g.setPaint(getColor());
-
-        return new Change() {
-            public void restoreStyle(Graphics2D g) {
-                g.setPaint(old_paint);
+    override fun changeStyle(g: Graphics2D?): Style.Change {
+        val old_paint = g!!.paint
+        val new_paint: Paint = color
+        g.paint = color
+        return object : Style.Change {
+            override fun restoreStyle(g: Graphics2D?) {
+                g!!.paint = old_paint
             }
 
-            public void reapplyStyle(Graphics2D g) {
-                g.setPaint(new_paint);
+            override fun reapplyStyle(g: Graphics2D?) {
+                g!!.paint = new_paint
             }
-        };
-    }
-
-    public final ColorAdapter newColorAdapter() {
-        return new ColorAdapter();
-    }
-
-    public final RedAdapter newRedAdapter() {
-        return new RedAdapter();
-    }
-
-    public final GreenAdapter newGreenAdapter() {
-        return new GreenAdapter();
-    }
-
-    public final BlueAdapter newBlueAdapter() {
-        return new BlueAdapter();
-    }
-
-    public final AlphaAdapter newAlphaAdapter() {
-        return new AlphaAdapter();
-    }
-
-    public class ColorAdapter implements ColorBehaviourListener, Serializable {
-
-        public void behaviourUpdated(Color color) {
-            setColor(color);
         }
-
     }
 
-    public class RedAdapter implements DoubleBehaviourListener, Serializable {
+    fun newColorAdapter(): ColorAdapter {
+        return ColorAdapter()
+    }
 
-        public void behaviourUpdated(double v) {
-            setRed(v);
+    fun newRedAdapter(): RedAdapter {
+        return RedAdapter()
+    }
+
+    fun newGreenAdapter(): GreenAdapter {
+        return GreenAdapter()
+    }
+
+    fun newBlueAdapter(): BlueAdapter {
+        return BlueAdapter()
+    }
+
+    fun newAlphaAdapter(): AlphaAdapter {
+        return AlphaAdapter()
+    }
+
+    inner class ColorAdapter : ColorBehaviourListener, Serializable {
+        override fun behaviourUpdated(color: Color) {
+            this@RGBAColor.color = color
         }
-
     }
 
-    public class GreenAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setGreen(v);
+    inner class RedAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            red = v
         }
-
     }
 
-    public class BlueAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setBlue(v);
+    inner class GreenAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            green = v
         }
-
     }
 
-    public class AlphaAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setAlpha(v);
+    inner class BlueAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            blue = v
         }
-
     }
 
+    inner class AlphaAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            alpha = v
+        }
+    }
 }
-

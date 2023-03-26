@@ -1,156 +1,105 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.behaviour
 
-
-package uk.ac.ic.doc.scenebeans.behaviour;
-
-import uk.ac.ic.doc.scenebeans.ColorBehaviourListener;
-import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener;
-
-import java.awt.*;
-import java.io.Serializable;
-
+import uk.ac.ic.doc.scenebeans.ColorBehaviourListener
+import uk.ac.ic.doc.scenebeans.DoubleBehaviourListener
+import java.awt.Color
+import java.io.Serializable
 
 /**
- * The <a href="../../../../../../../beans/colorfade.html">ColorFade</a>
+ * The [ColorFade](../../../../../../../beans/colorfade.html)
  * behaviour bean.
  */
-public class ColorFade extends ColorActivityBase {
+class ColorFade @JvmOverloads constructor(var from: Color = Color.black, var to: Color = Color.white,
+        var duration: Double = 1.0) : ColorActivityBase() {
+    private var _from_r = 0f
+    private var _from_g = 0f
+    private var _from_b = 0f
+    private var _from_a = 0f
+    private var _to_r = 0f
+    private var _to_g = 0f
+    private var _to_b = 0f
+    private var _to_a = 0f
+    private var _timeout = 0.0
+    val value: Color
+        get() = Color(current(_from_r, _to_r), current(_from_g, _to_g), current(_from_b, _to_g),
+                current(_from_a, _to_a))
+    override val isFinite: Boolean
+        get() = true
 
-    private float _from_r, _from_g, _from_b, _from_a;
-
-    private float _to_r, _to_g, _to_b, _to_a;
-
-    private double _duration, _timeout;
-
-
-    public ColorFade() {
-        this(Color.black, Color.white, 1.0);
+    override fun reset() {
+        _timeout = 0.0
+        postUpdate(value)
     }
 
-    public ColorFade(Color from, Color to, double t) {
-        setFrom(from);
-        setTo(to);
-        _duration = t;
-        _timeout = 0.0;
-    }
-
-    public Color getFrom() {
-        return new Color(_from_r, _from_g, _from_b, _from_a);
-    }
-
-    public void setFrom(Color c) {
-        _from_r = (float) (c.getRed() / 255.0);
-        _from_g = (float) (c.getGreen() / 255.0);
-        _from_b = (float) (c.getBlue() / 255.0);
-        _from_a = (float) (c.getAlpha() / 255.0);
-    }
-
-    public Color getTo() {
-        return new Color(_to_r, _to_g, _to_b, _to_a);
-    }
-
-    public void setTo(Color c) {
-        _to_r = (float) (c.getRed() / 255.0);
-        _to_g = (float) (c.getGreen() / 255.0);
-        _to_b = (float) (c.getBlue() / 255.0);
-        _to_a = (float) (c.getAlpha() / 255.0);
-    }
-
-    public double getDuration() {
-        return _duration;
-    }
-
-    public void setDuration(double t) {
-        _duration = t;
-    }
-
-    public Color getValue() {
-        return new Color(current(_from_r, _to_r),
-                current(_from_g, _to_g),
-                current(_from_b, _to_g),
-                current(_from_a, _to_a));
-    }
-
-    public boolean isFinite() {
-        return true;
-    }
-
-    public void reset() {
-        _timeout = 0.0;
-        postUpdate(getValue());
-    }
-
-    public void performActivity(double t) {
-        _timeout += t;
-        if (_timeout >= _duration) {
-            _timeout = _duration;
-            postActivityComplete();
+    override fun performActivity(t: Double) {
+        _timeout += t
+        if (_timeout >= duration) {
+            _timeout = duration
+            postActivityComplete()
         } else {
-            postUpdate(getValue());
+            postUpdate(value)
         }
     }
 
-    private final double ratio() {
-        return _timeout / _duration;
+    private fun ratio(): Double {
+        return _timeout / duration
     }
 
-    private final float current(float from, float to) {
-        return (float) (from + (ratio() * (to - from)));
+    private fun current(from: Float, to: Float): Float {
+        return (from + ratio() * (to - from)).toFloat()
     }
 
-    public final ColorBehaviourListener newFromAdapter() {
-        return new FromAdapter();
+    fun newFromAdapter(): ColorBehaviourListener {
+        return FromAdapter()
     }
 
-    public final ColorBehaviourListener newToAdapter() {
-        return new ToAdapter();
+    fun newToAdapter(): ColorBehaviourListener {
+        return ToAdapter()
     }
 
-    public final DoubleBehaviourListener newDurationAdapter() {
-        return new DurationAdapter();
+    fun newDurationAdapter(): DoubleBehaviourListener {
+        return DurationAdapter()
     }
 
-    class FromAdapter implements ColorBehaviourListener, Serializable {
-
-        public void behaviourUpdated(Color v) {
-            setFrom(v);
+    internal inner class FromAdapter : ColorBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Color) {
+            from = v
         }
-
     }
 
-    class ToAdapter implements ColorBehaviourListener, Serializable {
-
-        public void behaviourUpdated(Color v) {
-            setTo(v);
+    internal inner class ToAdapter : ColorBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Color) {
+            to = v
         }
-
     }
 
-    class DurationAdapter implements DoubleBehaviourListener, Serializable {
-
-        public void behaviourUpdated(double v) {
-            setDuration(v);
+    internal inner class DurationAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            duration = v
         }
-
     }
-
 }

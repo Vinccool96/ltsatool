@@ -1,157 +1,104 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.animation.parse
 
-
-package uk.ac.ic.doc.scenebeans.animation.parse;
-
-import java.util.*;
-
-
-class BeanFactory {
-
-    private Map _categories = new HashMap();
+internal class BeanFactory {
+    private val _categories: MutableMap<String, Category> = HashMap()
 
     /**
      * Add a new bean category.
      */
-    public void addCategory(String name, String prefix, String postfix,
-            boolean capitalise) {
-        if (_categories.get(name) != null) {
-            throw new IllegalArgumentException("category name \"" + name +
-                    "\" already defined");
+    fun addCategory(name: String, prefix: String, postfix: String, capitalise: Boolean) {
+        require(_categories[name] == null) {
+            "category name \"" + name + "\" already defined"
         }
-
-        _categories.put(name,
-                new Category(name, prefix, postfix, capitalise));
+        _categories[name] = Category(name, prefix, postfix, capitalise)
     }
 
     /**
      * Add a package to a bean category.
      */
-    public void addPackage(String category, String pkg_name) {
-        getCategory(category).addPackage(pkg_name);
+    fun addPackage(category: String, pkg_name: String) {
+        getCategory(category).addPackage(pkg_name)
     }
 
     /**
      * Add a package to a bean category.
      */
-    public void addPackage(String category,
-            ClassLoader loader, String pkg_name) {
-        getCategory(category).addPackage(loader, pkg_name);
+    fun addPackage(category: String, loader: ClassLoader, pkg_name: String) {
+        getCategory(category).addPackage(loader, pkg_name)
     }
 
     /**
      * Allocate a new Bean of the given type in the given category.
      */
-    public Object newBean(String category, String type)
-            throws ClassNotFoundException,
-            IllegalAccessException, InstantiationException {
-        return getCategory(category).newBean(type);
+    @Throws(ClassNotFoundException::class, IllegalAccessException::class, InstantiationException::class)
+    fun newBean(category: String, type: String): Any {
+        return getCategory(category).newBean(type)
     }
 
-    private Category getCategory(String name) {
-        Category c = (Category) _categories.get(name);
-
-        if (c != null) {
-            return c;
-        } else {
-            throw new IllegalArgumentException("no category named \"" +
-                    name + "\"");
-        }
+    private fun getCategory(name: String): Category {
+        val c = _categories[name] as Category?
+        return c ?: throw IllegalArgumentException("no category named \"" + name + "\"")
     }
 
-    private static class Package {
+    private class Package(private val _loader: ClassLoader, private val _package: String) {
+        constructor(pkg: String) : this(ClassLoader.getSystemClassLoader(), pkg)
 
-        private ClassLoader _loader;
-
-        private String _package;
-
-        public Package(ClassLoader loader, String pkg) {
-            _loader = loader;
-            _package = pkg;
-        }
-
-        public Package(String pkg) {
-            this(ClassLoader.getSystemClassLoader(), pkg);
-        }
-
-        public Class loadClass(String class_name) {
-            String full_name = _package + "." + class_name;
-            try {
-                return _loader.loadClass(full_name);
-            } catch (ClassNotFoundException ex) {
-                return null;
+        fun loadClass(class_name: String): Class<*>? {
+            val full_name = "$_package.$class_name"
+            return try {
+                _loader.loadClass(full_name)
+            } catch (ex: ClassNotFoundException) {
+                null
             }
         }
-
     }
 
-    private static class Category {
-
-        private String _name;
-
-        private List _packages = new ArrayList();
-
-        private String _prefix;
-
-        private String _postfix;
-
-        private boolean _capitalise;
-
-        Category(String name,
-                String prefix, String postfix, boolean capitalise) {
-            _name = name;
-            _prefix = prefix;
-            _postfix = postfix;
-            _capitalise = capitalise;
+    private class Category internal constructor(private val _name: String, private val _prefix: String,
+            private val _postfix: String, private val _capitalise: Boolean) {
+        private val _packages: MutableList<Package> = ArrayList()
+        fun addPackage(loader: ClassLoader, pkg_name: String) {
+            _packages.add(Package(loader, pkg_name))
         }
 
-        public void addPackage(ClassLoader loader, String pkg_name) {
-            _packages.add(new Package(loader, pkg_name));
+        fun addPackage(pkg_name: String) {
+            _packages.add(Package(pkg_name))
         }
 
-        public void addPackage(String pkg_name) {
-            _packages.add(new Package(pkg_name));
-        }
-
-        Object newBean(String type)
-                throws ClassNotFoundException,
-                InstantiationException, IllegalAccessException {
-            String class_name =
-                    _prefix + Character.toUpperCase(type.charAt(0)) +
-                            type.substring(1) + _postfix;
-
-            Iterator i = _packages.iterator();
+        @Throws(ClassNotFoundException::class, InstantiationException::class, IllegalAccessException::class)
+        fun newBean(type: String): Any {
+            val class_name = _prefix + type[0].uppercaseChar() + type.substring(1) + _postfix
+            val i: Iterator<*> = _packages.iterator()
             while (i.hasNext()) {
-                Class c = ((Package) i.next()).loadClass(class_name);
+                val c = (i.next() as Package).loadClass(class_name)
                 if (c != null) {
-                    return c.newInstance();
+                    return c.newInstance()
                 }
             }
-
-            throw new ClassNotFoundException("no class found for " + _name +
-                    " bean of type \"" + type + "\"");
+            throw ClassNotFoundException("no class found for " + _name + " bean of type \"" + type + "\"")
         }
-
     }
-
 }
-

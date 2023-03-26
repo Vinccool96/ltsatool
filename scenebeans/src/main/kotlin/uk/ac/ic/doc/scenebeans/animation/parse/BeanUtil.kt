@@ -1,179 +1,145 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans.animation.parse
 
-
-package uk.ac.ic.doc.scenebeans.animation.parse;
-
-import java.beans.*;
-import java.lang.reflect.Method;
-
+import java.beans.*
 
 /**
  * Convenience functions for accessing features of Java Beans.
  */
-class BeanUtil {
-
-    static BeanInfo getBeanInfo(Class c)
-            throws AnimationParseException {
-        try {
-            return Introspector.getBeanInfo(c);
-        } catch (IntrospectionException ex) {
-            throw new AnimationParseException(
-                    "could not find information about " + c.getName() +
-                            " bean: " + ex.getMessage());
+internal object BeanUtil {
+    @Throws(AnimationParseException::class)
+    fun getBeanInfo(c: Class<*>): BeanInfo {
+        return try {
+            Introspector.getBeanInfo(c)
+        } catch (ex: IntrospectionException) {
+            throw AnimationParseException("could not find information about " + c.name + " bean: " + ex.message)
         }
     }
 
-    static BeanInfo getBeanInfo(Object o)
-            throws AnimationParseException {
-        return getBeanInfo(o.getClass());
+    @Throws(AnimationParseException::class)
+    fun getBeanInfo(o: Any?): BeanInfo {
+        return getBeanInfo(o!!.javaClass)
     }
 
-    static Object getProperty(Object bean, String name)
-            throws AnimationParseException {
-        BeanInfo info = getBeanInfo(bean);
-        return getProperty(bean, info, name);
+    @Throws(AnimationParseException::class)
+    fun getProperty(bean: Any?, name: String): Any {
+        val info = getBeanInfo(bean)
+        return getProperty(bean, info, name)
     }
 
-    static Object getProperty(Object bean, BeanInfo info, String name)
-            throws AnimationParseException {
-        PropertyDescriptor pd = getPropertyDescriptor(info, name);
-
-        try {
-            Method get = pd.getReadMethod();
-            return get.invoke(bean, new Object[0]);
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new AnimationParseException("cannot get " + name +
-                    " property of bean: " +
-                    ex.getMessage());
+    @Throws(AnimationParseException::class)
+    fun getProperty(bean: Any?, info: BeanInfo?, name: String): Any {
+        val pd = getPropertyDescriptor(info, name)
+        return try {
+            val get = pd.readMethod
+            get.invoke(bean, *arrayOfNulls(0))
+        } catch (ex: RuntimeException) {
+            throw ex
+        } catch (ex: Exception) {
+            throw AnimationParseException("cannot get " + name + " property of bean: " + ex.message)
         }
     }
 
-    static void setProperty(Object bean, BeanInfo info,
-            String name, String value_str,
-            ValueParser parser)
-            throws AnimationParseException {
-        PropertyDescriptor pd = getPropertyDescriptor(info, name);
-        Object value = parser.newObject(pd.getPropertyType(), value_str);
-
+    @Throws(AnimationParseException::class)
+    fun setProperty(bean: Any?, info: BeanInfo?, name: String, value_str: String?, parser: ValueParser) {
+        val pd = getPropertyDescriptor(info, name)
+        val value = parser.newObject(pd.propertyType, value_str!!)
         try {
-            Method set = pd.getWriteMethod();
+            val set = pd.writeMethod
             if (set != null) {
-                set.invoke(bean, new Object[]{value});
+                set.invoke(bean, *arrayOf(value))
             } else {
-                throw new AnimationParseException(
-                        "attempted to set read-only property " + name);
+                throw AnimationParseException("attempted to set read-only property $name")
             }
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new AnimationParseException("cannot set " + name +
-                    " property of bean: " +
-                    ex.getMessage());
+        } catch (ex: RuntimeException) {
+            throw ex
+        } catch (ex: Exception) {
+            throw AnimationParseException("cannot set " + name + " property of bean: " + ex.message)
         }
     }
 
-    static void setIndexedProperty(Object bean, BeanInfo info,
-            String name, int index,
-            String value_str, ValueParser parser)
-            throws AnimationParseException {
-        PropertyDescriptor pd = getPropertyDescriptor(info, name);
-        if (!(pd instanceof IndexedPropertyDescriptor)) {
-            throw new AnimationParseException("the " + name +
-                    " property is not indexed");
-        }
-        IndexedPropertyDescriptor ipd = (IndexedPropertyDescriptor) pd;
-        Object value = parser.newObject(ipd.getIndexedPropertyType(),
-                value_str);
-
+    @Throws(AnimationParseException::class)
+    fun setIndexedProperty(bean: Any?, info: BeanInfo?, name: String, index: Int, value_str: String?,
+            parser: ValueParser) {
+        val pd = getPropertyDescriptor(info, name) as? IndexedPropertyDescriptor ?: throw AnimationParseException(
+                "the " + name + " property is not indexed")
+        val ipd = pd
+        val value = parser.newObject(ipd.indexedPropertyType, value_str!!)
         try {
-            Method set = ipd.getIndexedWriteMethod();
+            val set = ipd.indexedWriteMethod
             if (set != null) {
-                set.invoke(bean, new Object[]{new Integer(index), value});
+                set.invoke(bean, *arrayOf(index, value))
             } else {
-                throw new AnimationParseException(
-                        "attempted to set read-only property " + name);
+                throw AnimationParseException("attempted to set read-only property $name")
             }
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new AnimationParseException("cannot set " + name +
-                    " property of bean: " +
-                    ex.getMessage());
+        } catch (ex: RuntimeException) {
+            throw ex
+        } catch (ex: Exception) {
+            throw AnimationParseException("cannot set " + name + " property of bean: " + ex.message)
         }
     }
 
-    static PropertyDescriptor getPropertyDescriptor(BeanInfo info,
-            String name)
-            throws AnimationParseException {
-        PropertyDescriptor[] props = info.getPropertyDescriptors();
-        for (int i = 0; i < props.length; i++) {
-            if (props[i].getName().equals(name)) {
-                return props[i];
+    @Throws(AnimationParseException::class)
+    fun getPropertyDescriptor(info: BeanInfo?, name: String): PropertyDescriptor {
+        val props = info!!.propertyDescriptors
+        for (i in props.indices) {
+            if (props[i].name == name) {
+                return props[i]
             }
         }
-
-        throw new AnimationParseException("beans of type " +
-                info.getBeanDescriptor().getName() +
-                " do not have a property named " +
-                name);
+        throw AnimationParseException(
+                "beans of type " + info.beanDescriptor.name + " do not have a property named " + name)
     }
 
-    static void bindEventListener(Object listener, Object event_source)
-            throws AnimationParseException {
-        EventSetDescriptor ev = findCompatibleEvent(listener, event_source);
-        Method add = ev.getAddListenerMethod();
-
+    @Throws(AnimationParseException::class)
+    fun bindEventListener(listener: Any?, event_source: Any?) {
+        val ev = findCompatibleEvent(listener, event_source)
+        val add = ev.addListenerMethod
         try {
-            add.invoke(event_source, new Object[]{listener});
-        } catch (Exception ex) {
-            throw new AnimationParseException(
-                    "failed to register event listener: " + ex.getMessage());
+            add.invoke(event_source, *arrayOf(listener))
+        } catch (ex: Exception) {
+            throw AnimationParseException("failed to register event listener: " + ex.message)
         }
     }
 
-    static EventSetDescriptor findCompatibleEvent(Object listener,
-            Object event_source)
-            throws AnimationParseException {
-        BeanInfo source_info;
-        try {
-            source_info = Introspector.getBeanInfo(event_source.getClass());
-        } catch (IntrospectionException ex) {
-            throw new AnimationParseException(
-                    "cannot find info about event source: " + ex.getMessage());
+    @Throws(AnimationParseException::class)
+    fun findCompatibleEvent(listener: Any?, event_source: Any?): EventSetDescriptor {
+        val source_info: BeanInfo
+        source_info = try {
+            Introspector.getBeanInfo(event_source!!.javaClass)
+        } catch (ex: IntrospectionException) {
+            throw AnimationParseException("cannot find info about event source: " + ex.message)
         }
-
-        EventSetDescriptor[] events = source_info.getEventSetDescriptors();
-        for (int i = 0; i < events.length; i++) {
-            Class ev_listener_type = events[i].getListenerType();
-
+        val events = source_info.eventSetDescriptors
+        for (i in events.indices) {
+            val ev_listener_type = events[i].listenerType
             if (ev_listener_type.isInstance(listener)) {
-                return events[i];
+                return events[i]
             }
         }
-
-        throw new AnimationParseException(
-                "listener not compatible with event source");
+        throw AnimationParseException("listener not compatible with event source")
     }
-
 }

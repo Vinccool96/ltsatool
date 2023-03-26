@@ -1,58 +1,49 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
-
-
-package uk.ac.ic.doc.scenebeans;
+package uk.ac.ic.doc.scenebeans
 
 /**
- * The <a href="../../../../../../beans/switch.html">Switch</a>
+ * The [Switch](../../../../../../beans/switch.html)
  * SceneBean.
  */
-public class Switch extends CompositeBase {
+class Switch : CompositeBase() {
+    private var _current = 0
+    var current: Int
+        get() = _current
+        set(n) {
+            _current = n
+            isDirty = true
+        }
+    override val visibleSubgraphCount: Int
+        get() = 1
 
-    private int _current = 0;
-
-    public Switch() {
-    }
-
-    public int getCurrent() {
-        return _current;
-    }
-
-    public void setCurrent(int n) {
-        _current = n;
-        setDirty(true);
-    }
-
-    public int getVisibleSubgraphCount() {
-        return 1;
-    }
-
-    public SceneGraph getVisibleSubgraph(int n) {
-        if (n == 0) {
-            return getSubgraph(_current);
+    override fun getVisibleSubgraph(n: Int): SceneGraph? {
+        return if (n == 0) {
+            getSubgraph(_current)
         } else {
-            throw new IndexOutOfBoundsException("invalid subgraph index");
+            throw IndexOutOfBoundsException("invalid subgraph index")
         }
     }
-
 }
-

@@ -1,142 +1,106 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-
+import java.awt.Graphics2D
+import java.awt.Shape
+import java.awt.geom.Rectangle2D
+import java.io.Serializable
 
 /**
- * The <a href="../../../../../../beans/rectangle.html">Rectangle</a>
+ * The [Rectangle](../../../../../../beans/rectangle.html)
  * SceneBean.
  */
-public class Rectangle extends PrimitiveBase {
-
-    private double _x, _y;
-
-    private double _w, _h;
-
-    public Rectangle() {
-        this(0.0, 0.0, 1.0, 1.0);
+class Rectangle @JvmOverloads constructor(private var _x: Double = 0.0, private var _y: Double = 0.0,
+        private var _w: Double = 1.0, private var _h: Double = 1.0) : PrimitiveBase() {
+    override fun getShape(g: Graphics2D): Shape? {
+        return Rectangle2D.Double(_x, _y, _w, _h)
     }
 
-    public Rectangle(double x, double y, double w, double h) {
-        _x = x;
-        _y = y;
-        _w = w;
-        _h = h;
-    }
-
-    public Shape getShape(Graphics2D g) {
-        return new Rectangle2D.Double(_x, _y, _w, _h);
-    }
-
-    public double getX() {
-        return _x;
-    }
-
-    public void setX(double x) {
-        _x = x;
-        setDirty(true);
-    }
-
-    public double getY() {
-        return _y;
-    }
-
-    public void setY(double y) {
-        _y = y;
-        setDirty(true);
-    }
-
-    public double getWidth() {
-        return _w;
-    }
-
-    public void setWidth(double v) {
-        _w = v;
-        setDirty(true);
-    }
-
-    public double getHeight() {
-        return _h;
-    }
-
-    public void setHeight(double v) {
-        _h = v;
-        setDirty(true);
-    }
-
-    public final XAdapter newXAdapter() {
-        return new XAdapter();
-    }
-
-    public final YAdapter newYAdapter() {
-        return new YAdapter();
-    }
-
-    public final WidthAdapter newWidthAdapter() {
-        return new WidthAdapter();
-    }
-
-    public final HeightAdapter newHeightAdapter() {
-        return new HeightAdapter();
-    }
-
-    class XAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(double v) {
-            setX(v);
+    var x: Double
+        get() = _x
+        set(x) {
+            _x = x
+            isDirty = true
+        }
+    var y: Double
+        get() = _y
+        set(y) {
+            _y = y
+            isDirty = true
+        }
+    var width: Double
+        get() = _w
+        set(v) {
+            _w = v
+            isDirty = true
+        }
+    var height: Double
+        get() = _h
+        set(v) {
+            _h = v
+            isDirty = true
         }
 
+    fun newXAdapter(): XAdapter {
+        return XAdapter()
     }
 
-    class YAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
+    fun newYAdapter(): YAdapter {
+        return YAdapter()
+    }
 
-        public void behaviourUpdated(double v) {
-            setY(v);
+    fun newWidthAdapter(): WidthAdapter {
+        return WidthAdapter()
+    }
+
+    fun newHeightAdapter(): HeightAdapter {
+        return HeightAdapter()
+    }
+
+    inner class XAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            x = v
         }
-
     }
 
-    class WidthAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(double v) {
-            setWidth(v);
+    inner class YAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            y = v
         }
-
     }
 
-    class HeightAdapter
-            implements DoubleBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(double v) {
-            setHeight(v);
+    inner class WidthAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            width = v
         }
-
     }
 
+    inner class HeightAdapter : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            height = v
+        }
+    }
 }

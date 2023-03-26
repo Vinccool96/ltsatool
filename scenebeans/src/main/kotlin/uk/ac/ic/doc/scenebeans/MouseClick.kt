@@ -1,123 +1,99 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import uk.ac.ic.doc.scenebeans.event.AnimationEvent;
-import uk.ac.ic.doc.scenebeans.event.AnimationListener;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-
+import uk.ac.ic.doc.scenebeans.event.AnimationEvent
+import uk.ac.ic.doc.scenebeans.event.AnimationListener
 
 /**
- * The <a href="../../../../../../beans/mouseclick.html">MouseClick</a>
+ * The [MouseClick](../../../../../../beans/mouseclick.html)
  * SceneBean.
  */
-public class MouseClick extends InputBase {
+class MouseClick : InputBase {
+    private var _activity_listeners: MutableList<AnimationListener>? = null
+    var pressedEvent = "pressed"
+    var releasedEvent = "released"
 
-    private List _activity_listeners = null;
+    constructor() : super()
+    constructor(sg: SceneGraph) : super(sg)
 
-    private String _pressed_event = "pressed";
-
-    private String _released_event = "released";
-
-
-    public MouseClick() {
-        super();
+    fun postMousePressed() {
+        postAnimationEvent(pressedEvent)
     }
 
-    public MouseClick(SceneGraph sg) {
-        super(sg);
+    fun postMouseReleased() {
+        postAnimationEvent(releasedEvent)
     }
 
-    public static void mousePressed(List pick_path) {
-        ListIterator i = pick_path.listIterator(pick_path.size());
-        while (i.hasPrevious()) {
-            Object o = i.previous();
-            if (o instanceof MouseClick) {
-                ((MouseClick) o).postMousePressed();
-                return;
-            }
-        }
-    }
-
-    public static void mouseReleased(List pick_path) {
-        ListIterator i = pick_path.listIterator(pick_path.size());
-        while (i.hasPrevious()) {
-            Object o = i.previous();
-            if (o instanceof MouseClick) {
-                ((MouseClick) o).postMouseReleased();
-                return;
-            }
-        }
-    }
-
-    public String getPressedEvent() {
-        return _pressed_event;
-    }
-
-    public void setPressedEvent(String ev) {
-        _pressed_event = ev;
-    }
-
-    public String getReleasedEvent() {
-        return _released_event;
-    }
-
-    public void setReleasedEvent(String ev) {
-        _released_event = ev;
-    }
-
-    public void postMousePressed() {
-        postAnimationEvent(_pressed_event);
-    }
-
-    public void postMouseReleased() {
-        postAnimationEvent(_released_event);
-    }
-
-    public synchronized void addAnimationListener(AnimationListener l) {
+    @Synchronized
+    fun addAnimationListener(l: AnimationListener) {
         if (_activity_listeners == null) {
-            _activity_listeners = new ArrayList();
+            _activity_listeners = ArrayList()
         }
-        _activity_listeners.add(l);
+        _activity_listeners!!.add(l)
     }
 
-    public synchronized void removeAnimationListener(AnimationListener l) {
+    @Synchronized
+    fun removeAnimationListener(l: AnimationListener) {
         if (_activity_listeners != null) {
-            _activity_listeners.remove(l);
+            _activity_listeners!!.remove(l)
         }
     }
 
-    protected synchronized void postAnimationEvent(String activity_name) {
+    @Synchronized
+    protected fun postAnimationEvent(activity_name: String) {
         if (_activity_listeners != null) {
-            AnimationEvent ev = new AnimationEvent(this, activity_name);
-            for (Iterator i = _activity_listeners.iterator(); i.hasNext(); ) {
-                ((AnimationListener) i.next()).animationEvent(ev);
+            val ev = AnimationEvent(this, activity_name)
+            val i: Iterator<*> = _activity_listeners!!.iterator()
+            while (i.hasNext()) {
+                (i.next() as AnimationListener).animationEvent(ev)
             }
         }
     }
 
+    companion object {
+        fun mousePressed(pick_path: List<*>) {
+            val i = pick_path.listIterator(pick_path.size)
+            while (i.hasPrevious()) {
+                val o = i.previous()!!
+                if (o is MouseClick) {
+                    o.postMousePressed()
+                    return
+                }
+            }
+        }
+
+        fun mouseReleased(pick_path: List<*>) {
+            val i = pick_path.listIterator(pick_path.size)
+            while (i.hasPrevious()) {
+                val o = i.previous()!!
+                if (o is MouseClick) {
+                    o.postMouseReleased()
+                    return
+                }
+            }
+        }
+    }
 }

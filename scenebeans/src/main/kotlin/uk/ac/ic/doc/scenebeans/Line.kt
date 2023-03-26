@@ -1,217 +1,179 @@
 /**
  * SceneBeans, a Java API for animated 2D graphics.
- * <p>
+ *
+ *
  * Copyright (C) 2000 Nat Pryce and Imperial College
- * <p>
+ *
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * <p>
+ *
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * <p>
+ *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307,
  * USA.
  */
+package uk.ac.ic.doc.scenebeans
 
-
-package uk.ac.ic.doc.scenebeans;
-
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-
+import java.awt.Graphics2D
+import java.awt.Shape
+import java.awt.geom.Line2D
+import java.awt.geom.Point2D
+import java.io.Serializable
 
 /**
- * The <a href="../../../../../../beans/line.html">Line</a>
+ * The [Line](../../../../../../beans/line.html)
  * SceneBean.
  */
-public class Line
-        extends SceneGraphBase
-        implements Primitive {
+class Line : SceneGraphBase, Primitive {
+    private var _x0: Double
+    private var _y0: Double
+    private var _x1: Double
+    private var _y1: Double
+    override var lastDrawnShape: Shape? = null
+        private set
 
-    private double _x0, _y0, _x1, _y1;
-
-    private Shape _last_drawn = null;
-
-
-    public Line() {
-        _x0 = 0.0;
-        _y0 = 0.0;
-        _x1 = 1.0;
-        _y1 = 1.0;
+    constructor() {
+        _x0 = 0.0
+        _y0 = 0.0
+        _x1 = 1.0
+        _y1 = 1.0
     }
 
-    public Line(Point2D start, Point2D end) {
-        _x0 = start.getX();
-        _y0 = start.getY();
-        _x1 = end.getX();
-        _y1 = end.getY();
+    constructor(start: Point2D, end: Point2D) {
+        _x0 = start.x
+        _y0 = start.y
+        _x1 = end.x
+        _y1 = end.y
     }
 
-    public Line(double x0, double y0, double x1, double y1) {
-        _x0 = x0;
-        _y0 = y0;
-        _x1 = x1;
-        _y1 = y1;
+    constructor(x0: Double, y0: Double, x1: Double, y1: Double) {
+        _x0 = x0
+        _y0 = y0
+        _x1 = x1
+        _y1 = y1
     }
 
-    public Shape getShape(Graphics2D g) {
-        return new Line2D.Double(_x0, _y0, _x1, _y1);
+    override fun getShape(g: Graphics2D): Shape? {
+        return Line2D.Double(_x0, _y0, _x1, _y1)
     }
 
-    public Shape getLastDrawnShape() {
-        return _last_drawn;
-    }
-
-    public Point2D getStart() {
-        return new Point2D.Double(_x0, _y0);
-    }
-
-    public void setStart(Point2D p) {
-        _x0 = p.getX();
-        _y0 = p.getY();
-        setDirty(true);
-    }
-
-    public Point2D getEnd() {
-        return new Point2D.Double(_x1, _y1);
-    }
-
-    public void setEnd(Point2D p) {
-        _x1 = p.getX();
-        _y1 = p.getY();
-        setDirty(true);
-    }
-
-    public double getStartX() {
-        return _x0;
-    }
-
-    public void setStartX(double v) {
-        _x0 = v;
-        setDirty(true);
-    }
-
-    public double getStartY() {
-        return _y0;
-    }
-
-    public void setStartY(double v) {
-        _y0 = v;
-        setDirty(true);
-    }
-
-    public double getEndX() {
-        return _x1;
-    }
-
-    public void setEndX(double v) {
-        _x1 = v;
-        setDirty(true);
-    }
-
-    public double getEndY() {
-        return _y1;
-    }
-
-    public void setEndY(double v) {
-        _y1 = v;
-        setDirty(true);
-    }
-
-    public void accept(SceneGraphProcessor p) {
-        p.process((Primitive) this);
-    }
-
-    public void draw(Graphics2D g) {
-        Shape s = getShape(g);
-        g.draw(s);
-        _last_drawn = s;
-        setDirty(false);
-    }
-
-    public final Start newStartAdapter() {
-        return new Start();
-    }
-
-    public final End newEndAdapter() {
-        return new End();
-    }
-
-    public final StartX newStartXAdapter() {
-        return new StartX();
-    }
-
-    public final StartY newStartYAdapter() {
-        return new StartY();
-    }
-
-    public final EndX newEndXAdapter() {
-        return new EndX();
-    }
-
-    public final EndY newEndYAdapter() {
-        return new EndY();
-    }
-
-    public class Start
-            implements PointBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(Point2D p) {
-            setStart(p);
+    var start: Point2D
+        get() = Point2D.Double(_x0, _y0)
+        set(p) {
+            _x0 = p.x
+            _y0 = p.y
+            isDirty = true
+        }
+    var end: Point2D
+        get() = Point2D.Double(_x1, _y1)
+        set(p) {
+            _x1 = p.x
+            _y1 = p.y
+            isDirty = true
+        }
+    var startX: Double
+        get() = _x0
+        set(v) {
+            _x0 = v
+            isDirty = true
+        }
+    var startY: Double
+        get() = _y0
+        set(v) {
+            _y0 = v
+            isDirty = true
+        }
+    var endX: Double
+        get() = _x1
+        set(v) {
+            _x1 = v
+            isDirty = true
+        }
+    var endY: Double
+        get() = _y1
+        set(v) {
+            _y1 = v
+            isDirty = true
         }
 
+    override fun accept(p: SceneGraphProcessor) {
+        p.process(this as Primitive)
     }
 
-    public class End
-            implements PointBehaviourListener, java.io.Serializable {
+    override fun draw(g: Graphics2D) {
+        val s = getShape(g)
+        g.draw(s)
+        lastDrawnShape = s
+        isDirty = false
+    }
 
-        public void behaviourUpdated(Point2D p) {
-            setEnd(p);
+    fun newStartAdapter(): Start {
+        return Start()
+    }
+
+    fun newEndAdapter(): End {
+        return End()
+    }
+
+    fun newStartXAdapter(): StartX {
+        return StartX()
+    }
+
+    fun newStartYAdapter(): StartY {
+        return StartY()
+    }
+
+    fun newEndXAdapter(): EndX {
+        return EndX()
+    }
+
+    fun newEndYAdapter(): EndY {
+        return EndY()
+    }
+
+    inner class Start : PointBehaviourListener, Serializable {
+        override fun behaviourUpdated(p: Point2D) {
+            start = p
         }
-
     }
 
-    public class StartX
-            implements DoubleBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(double v) {
-            setStartX(v);
+    inner class End : PointBehaviourListener, Serializable {
+        override fun behaviourUpdated(p: Point2D) {
+            end = p
         }
-
     }
 
-    public class StartY
-            implements DoubleBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(double v) {
-            setStartY(v);
+    inner class StartX : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            startX = v
         }
-
     }
 
-    public class EndX
-            implements DoubleBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(double v) {
-            setEndX(v);
+    inner class StartY : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            startY = v
         }
-
     }
 
-    public class EndY
-            implements DoubleBehaviourListener, java.io.Serializable {
-
-        public void behaviourUpdated(double v) {
-            setEndY(v);
+    inner class EndX : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            endX = v
         }
-
     }
 
+    inner class EndY : DoubleBehaviourListener, Serializable {
+        override fun behaviourUpdated(v: Double) {
+            endY = v
+        }
+    }
 }
